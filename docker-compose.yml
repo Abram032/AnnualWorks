@@ -1,0 +1,64 @@
+version: "3.9"
+services:
+  app:
+    image: ncu-annual-works
+    ports:
+      # Host:Container
+      - 80:80
+      - 443:443
+    container_name: ncu-annual-works-app
+    restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+    volumes:
+      - type: volume
+        source: files       # Host
+        target: /app/files  # Container
+        volume:
+          nocopy: true
+      - type: volume
+        source: logs
+        target: /app/logs
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./storage/backups
+        target: /app/backups
+    secrets:
+      - app_secrets
+  mariadb:
+    image: mariadb:10.5.9-focal
+    ports:
+      - 3306:3306
+    container_name: ncu-annual-works-mariadb
+    restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+    volumes:
+      - ./config/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - type: bind
+        source: ./storage/data
+        target: /var/lib/mysql
+    environment:
+      TZ: Europe/Warsaw
+      MYSQL_DATABASE: ncuannualworksdb
+      MYSQL_USER: ncuawapp
+      MYSQL_PASSWORD_FILE: /run/secrets/db_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    secrets:
+      - db_root_password
+      - db_user_password
+volumes:
+  files:
+  logs:
+secrets:
+  app_secrets:
+    file: ./secrets/app/secrets.json
+  db_root_password:
+    file: ./secrets/db/root_password
+  db_user_password:
+    file: ./secrets/db/user_password

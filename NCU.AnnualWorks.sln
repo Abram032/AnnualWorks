@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks", "NCU.AnnualWorks.csproj", "{43460802-3742-4F0F-BBD0-70A0DD56CB7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks", "./src/NCU.AnnualWorks/NCU.AnnualWorks.csproj", "{43460802-3742-4F0F-BBD0-70A0DD56CB7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
