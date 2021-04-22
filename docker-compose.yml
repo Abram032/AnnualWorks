@@ -26,8 +26,12 @@ services:
       - type: bind
         source: ./storage/backups
         target: /app/backups
+    env_file: 
+      - ./config/app.env
+      - ./secrets/secrets.env
     secrets:
-      - app_secrets
+      - secrets.json
+      - certificate.pfx
   mariadb:
     image: mariadb:10.5.9-focal
     ports:
@@ -43,12 +47,8 @@ services:
       - type: bind
         source: ./storage/data
         target: /var/lib/mysql
-    environment:
-      TZ: Europe/Warsaw
-      MYSQL_DATABASE: ncuannualworksdb
-      MYSQL_USER: ncuawapp
-      MYSQL_PASSWORD_FILE: /run/secrets/db_user_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    env_file:
+      - ./config/mariadb.env
     secrets:
       - db_root_password
       - db_user_password
@@ -56,9 +56,11 @@ volumes:
   files:
   logs:
 secrets:
-  app_secrets:
-    file: ./secrets/app/secrets.json
+  secrets.json:
+    file: ./secrets/secrets.json
+  certificate.pfx:
+    file: ./secrets/certificate.pfx
   db_root_password:
-    file: ./secrets/db/root_password
+    file: ./secrets/db_root_password
   db_user_password:
-    file: ./secrets/db/user_password
+    file: ./secrets/db_user_password
