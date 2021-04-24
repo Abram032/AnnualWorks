@@ -1,0 +1,66 @@
+version: "3.9"
+services:
+  app:
+    image: ncu-annual-works
+    ports:
+      # Host:Container
+      - 80:80
+      - 443:443
+    container_name: ncu-annual-works-app
+    restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+    volumes:
+      - type: volume
+        source: files       # Host
+        target: /app/files  # Container
+        volume:
+          nocopy: true
+      - type: volume
+        source: logs
+        target: /app/logs
+        volume:
+          nocopy: true
+      - type: bind
+        source: ./storage/backups
+        target: /app/backups
+    env_file: 
+      - ./config/app.env
+      - ./secrets/secrets.env
+    secrets:
+      - secrets.json
+      - certificate.pfx
+  mariadb:
+    image: mariadb:10.5.9-focal
+    ports:
+      - 3306:3306
+    container_name: ncu-annual-works-mariadb
+    restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 15s
+    volumes:
+      - ./config/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - type: bind
+        source: ./storage/data
+        target: /var/lib/mysql
+    env_file:
+      - ./config/mariadb.env
+    secrets:
+      - db_root_password
+      - db_user_password
+volumes:
+  files:
+  logs:
+secrets:
+  secrets.json:
+    file: ./secrets/secrets.json
+  certificate.pfx:
+    file: ./secrets/certificate.pfx
+  db_root_password:
+    file: ./secrets/db_root_password
+  db_user_password:
+    file: ./secrets/db_user_password
