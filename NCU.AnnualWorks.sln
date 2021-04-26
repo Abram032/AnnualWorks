@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks", "./src/NCU.AnnualWorks/NCU.AnnualWorks.csproj", "{43460802-3742-4F0F-BBD0-70A0DD56CB7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks", "src\NCU.AnnualWorks\NCU.AnnualWorks.csproj", "{43460802-3742-4F0F-BBD0-70A0DD56CB7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FE0F5E20-5BEE-4BC8-805D-2D629C7F029B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication", "lib\NCU.AnnualWorks.Authentication\NCU.AnnualWorks.Authentication.csproj", "{0669ED09-A545-467E-92FE-7DCEFF9EB639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Integrations.Usos", "lib\NCU.AnnualWorks.Integrations.Usos\NCU.AnnualWorks.Integrations.Usos.csproj", "{750A6D43-3394-4AED-BD9D-B8600C12DA67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Integrations.Usos.Core", "lib\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj", "{5FF7220B-94B3-4766-A927-BAB0F48ED959}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Authentication.Core", "lib\NCU.AnnualWorks.Authentication.Core\NCU.AnnualWorks.Authentication.Core.csproj", "{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +27,32 @@ Global
 		{43460802-3742-4F0F-BBD0-70A0DD56CB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43460802-3742-4F0F-BBD0-70A0DD56CB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43460802-3742-4F0F-BBD0-70A0DD56CB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0669ED09-A545-467E-92FE-7DCEFF9EB639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0669ED09-A545-467E-92FE-7DCEFF9EB639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0669ED09-A545-467E-92FE-7DCEFF9EB639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0669ED09-A545-467E-92FE-7DCEFF9EB639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{750A6D43-3394-4AED-BD9D-B8600C12DA67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{750A6D43-3394-4AED-BD9D-B8600C12DA67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{750A6D43-3394-4AED-BD9D-B8600C12DA67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{750A6D43-3394-4AED-BD9D-B8600C12DA67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF7220B-94B3-4766-A927-BAB0F48ED959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF7220B-94B3-4766-A927-BAB0F48ED959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF7220B-94B3-4766-A927-BAB0F48ED959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF7220B-94B3-4766-A927-BAB0F48ED959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{43460802-3742-4F0F-BBD0-70A0DD56CB7A} = {FE0F5E20-5BEE-4BC8-805D-2D629C7F029B}
+		{0669ED09-A545-467E-92FE-7DCEFF9EB639} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
+		{750A6D43-3394-4AED-BD9D-B8600C12DA67} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
+		{5FF7220B-94B3-4766-A927-BAB0F48ED959} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
+		{6A7D464D-EAB3-4BE5-9B1E-2D20B0A2C8F8} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {799C9AE3-56F4-4700-846F-7FB4620205D1}
