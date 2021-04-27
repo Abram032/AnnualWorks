@@ -1,8 +1,8 @@
 ﻿using NCU.AnnualWorks.Authentication.Core.Enums;
 
-namespace NCU.AnnualWorks.Authentication.Core.Models
+namespace NCU.AnnualWorks.Authentication.Core.Models.Claims
 {
-    public class OAuthClaims
+    public class AuthClaims
     {
         public long Id { get; set; }
         public UserType UserType { get; set; }

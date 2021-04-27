@@ -1,5 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using NCU.AnnualWorks.Authentication.Core.Models;
+using NCU.AnnualWorks.Authentication.Core.Models.Claims;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,7 +9,7 @@ namespace NCU.AnnualWorks.Authentication.Core.Utils
 {
     public static class JWTAuthenticationUtils
     {
-        public static string GenerateOAuthJWT(OAuthClaims claims, string secret)
+        public static string GenerateOAuthJWT(AuthClaims claims, string secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
@@ -18,7 +18,7 @@ namespace NCU.AnnualWorks.Authentication.Core.Utils
                 Subject = new ClaimsIdentity(new[] {
                     new Claim("id", claims.Id.ToString()),
                     new Claim("userType", claims.UserType.ToString()),
-                    new Claim("token", claims.Token)
+                    new Claim("token", claims.Token.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)

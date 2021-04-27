@@ -1,4 +1,4 @@
-﻿namespace NCU.AnnualWorks.Authentication.Core.Models
+﻿namespace NCU.AnnualWorks.Authentication.Core.Models.Claims
 {
     public class UserClaims
     {

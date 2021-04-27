@@ -1,6 +1,6 @@
-﻿namespace NCU.AnnualWorks.Authentication.Core.Models
+﻿namespace NCU.AnnualWorks.Authentication.Core.Models.OAuth
 {
-    public class OAuthFields
+    public class OAuthRequest
     {
         public string OAuthConsumerKey { get; set; }
         public string OAuthConsumerSecret { get; set; }

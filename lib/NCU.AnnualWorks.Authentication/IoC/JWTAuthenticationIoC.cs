@@ -5,7 +5,7 @@ using NCU.AnnualWorks.Authentication.Core.Options;
 
 namespace NCU.AnnualWorks.Authentication.IoC
 {
-    public static class JWTAuthenticationMiddlewareIoC
+    public static class JWTAuthenticationIoC
     {
         public static IServiceCollection AddJWTAuthentication(this IServiceCollection services, IConfiguration configuration)
         {

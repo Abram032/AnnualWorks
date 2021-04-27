@@ -1,5 +1,5 @@
 ﻿using NCU.AnnualWorks.Authentication.Core.Constants;
-using NCU.AnnualWorks.Authentication.Core.Models;
+using NCU.AnnualWorks.Authentication.Core.Models.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,35 +22,35 @@ namespace NCU.AnnualWorks.Authentication.Core.Utils
         public static string GetTimestamp()
             => DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
 
-        public static Dictionary<string, string> GenerateOAuthHeaders(OAuthFields oauthFields)
+        public static Dictionary<string, string> GenerateOAuthHeaders(OAuthRequest oauthFields)
         {
             var headers = new Dictionary<string, string>();
 
-            headers.Add(OAuthHeaderFields.OAuthConsumerKey, oauthFields.OAuthConsumerKey);
-            headers.Add(OAuthHeaderFields.OAuthSignatureMethod, oauthFields.OAuthSignatureMethod);
-            headers.Add(OAuthHeaderFields.OAuthTimestamp, GetTimestamp());
-            headers.Add(OAuthHeaderFields.OAuthNonce, GenerateNonce());
-            headers.Add(OAuthHeaderFields.OAuthVersion, "1.0");
+            headers.Add(OAuthFieldsConsts.OAuthConsumerKey, oauthFields.OAuthConsumerKey);
+            headers.Add(OAuthFieldsConsts.OAuthSignatureMethod, oauthFields.OAuthSignatureMethod);
+            headers.Add(OAuthFieldsConsts.OAuthTimestamp, GetTimestamp());
+            headers.Add(OAuthFieldsConsts.OAuthNonce, GenerateNonce());
+            headers.Add(OAuthFieldsConsts.OAuthVersion, "1.0");
 
             if (!string.IsNullOrWhiteSpace(oauthFields.OAuthToken))
             {
-                headers.Add(OAuthHeaderFields.OAuthToken, oauthFields.OAuthToken);
+                headers.Add(OAuthFieldsConsts.OAuthToken, oauthFields.OAuthToken);
             }
 
             if (!string.IsNullOrWhiteSpace(oauthFields.OAuthVerifier))
             {
-                headers.Add(OAuthHeaderFields.OAuthVerifier, oauthFields.OAuthVerifier);
+                headers.Add(OAuthFieldsConsts.OAuthVerifier, oauthFields.OAuthVerifier);
             }
 
             if (!string.IsNullOrWhiteSpace(oauthFields.OAuthCallback))
             {
-                headers.Add(OAuthHeaderFields.OAuthCallback, oauthFields.OAuthCallback);
+                headers.Add(OAuthFieldsConsts.OAuthCallback, oauthFields.OAuthCallback);
             }
 
             return headers;
         }
 
-        public static string GenerateSignature(OAuthFields oauthFields, Dictionary<string, string> headers, HttpRequestMessage request)
+        public static string GenerateSignature(OAuthRequest oauthFields, Dictionary<string, string> headers, HttpRequestMessage request)
         {
             var baseString = CreateBaseString(headers, request);
             var encodedConsumerSecret = Uri.EscapeDataString(oauthFields.OAuthConsumerSecret);
