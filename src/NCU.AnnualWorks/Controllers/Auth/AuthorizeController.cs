@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using NCU.AnnualWorks.Authentication.Core.Abstractions;
-using NCU.AnnualWorks.Authentication.Core.Constants;
-using NCU.AnnualWorks.Authentication.Core.Enums;
-using NCU.AnnualWorks.Authentication.Core.Models.Claims;
-using NCU.AnnualWorks.Authentication.Core.Models.OAuth;
-using NCU.AnnualWorks.Authentication.Core.Options;
-using NCU.AnnualWorks.Authentication.Core.Utils;
+using NCU.AnnualWorks.Authentication.JWT.Core;
+using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
+using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
+using NCU.AnnualWorks.Authentication.JWT.Core.Models;
+using NCU.AnnualWorks.Authentication.OAuth.Core;
+using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos;
-using NCU.AnnualWorks.Integrations.Usos.Core.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -21,39 +18,38 @@ namespace NCU.AnnualWorks.Controllers.Auth
     [ApiController]
     public class AuthorizeController : ControllerBase
     {
-        private readonly IOAuthTokenService _tokenService;
-        private readonly JWTAuthenticationOptions _jwtOptions;
-        private readonly UsosClientOptions _usosOptions;
+        private readonly IOAuthService _oauthService;
+        private readonly IJWTAuthenticationService _jwtService;
         private readonly UsosClient _client;
-        public AuthorizeController(IOptions<JWTAuthenticationOptions> jwtOptions,
-            IOptions<UsosClientOptions> usosOptions, UsosClient client, IOAuthTokenService tokenService)
+        public AuthorizeController(IOAuthService oauthService, IJWTAuthenticationService jwtService, UsosClient client)
         {
-            _jwtOptions = jwtOptions.Value;
-            _usosOptions = usosOptions.Value;
+            _oauthService = oauthService;
+            _jwtService = jwtService;
             _client = client;
-            _tokenService = tokenService;
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync(OAuthRequest request)
         {
-            request.OAuthTokenSecret = _tokenService.Get(request.OAuthToken);
-            var response = await _client.GetAccessTokenAsync(HttpContext, request);
+            request.OAuthTokenSecret = _oauthService.Get(request.OAuthToken);
+            var response = await _client.GetAccessTokenAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 var tokenResponse = await _client.ParseAccessTokenResponseAsync(response.Content);
 
-                _tokenService.Remove(request.OAuthToken);
-                _tokenService.SetAccessToken(tokenResponse.OAuthToken, tokenResponse.OAuthTokenSecret);
+                _oauthService.Remove(request.OAuthToken);
+                _oauthService.SetAccessToken(tokenResponse.OAuthToken, tokenResponse.OAuthTokenSecret);
 
                 //TODO: Send request to usos for user data and privilages
                 var authClaims = new AuthClaims
                 {
                     Id = 0,
                     UserType = UserType.Student,
-                    Token = tokenResponse.OAuthToken
+                    Token = tokenResponse.OAuthToken,
+                    TokenSecret = tokenResponse.OAuthTokenSecret
                 };
-                var authJWT = JWTAuthenticationUtils.GenerateOAuthJWT(authClaims, _jwtOptions.Secret);
+                var authClaimsIdentity = _jwtService.GenerateClaimsIdentity(authClaims);
+                var authJWT = _jwtService.GenerateJWE(authClaimsIdentity);
 
                 var userClaims = new UserClaims
                 {
@@ -61,7 +57,8 @@ namespace NCU.AnnualWorks.Controllers.Auth
                     Email = "",
                     Name = ""
                 };
-                var userJWT = JWTAuthenticationUtils.GenerateUserJWT(userClaims, _jwtOptions.Secret);
+                var userClaimsIdentity = _jwtService.GenerateClaimsIdentity(userClaims);
+                var userJWT = _jwtService.GenerateJWS(userClaimsIdentity);
 
                 var cookieOptions = new CookieOptions
                 {

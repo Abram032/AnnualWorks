@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using NCU.AnnualWorks.Authentication.Core.Abstractions;
-using NCU.AnnualWorks.Authentication.Core.Constants;
+using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Integrations.Usos;
-using NCU.AnnualWorks.Integrations.Usos.Core.Options;
-using System;
 using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Controllers.Auth
@@ -15,14 +11,12 @@ namespace NCU.AnnualWorks.Controllers.Auth
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
-        private readonly IOAuthTokenService _tokenService;
-        private readonly UsosClientOptions _options;
         private readonly UsosClient _client;
-        public AuthenticateController(IOptions<UsosClientOptions> options, UsosClient client, IOAuthTokenService tokenService)
+        private readonly IOAuthService _oauthService;
+        public AuthenticateController(UsosClient client, IOAuthService oauthService)
         {
-            _options = options.Value;
             _client = client;
-            _tokenService = tokenService;
+            _oauthService = oauthService;
         }
 
         [HttpPost]
@@ -32,11 +26,9 @@ namespace NCU.AnnualWorks.Controllers.Auth
             if (response.IsSuccessStatusCode)
             {
                 var tokenResponse = await _client.ParseRequestTokenResponseAsync(response.Content);
-                _tokenService.SetRequestToken(tokenResponse.OAuthToken, tokenResponse.OAuthTokenSecret);
-                var baseAddress = new Uri(_options.BaseApiAddress);
-                var redirectUri = new Uri(baseAddress, $"{_options.AuthorizeEndpoint}?{OAuthFieldsConsts.OAuthToken}={tokenResponse.OAuthToken}");
+                _oauthService.SetRequestToken(tokenResponse.OAuthToken, tokenResponse.OAuthTokenSecret);
 
-                return new OkObjectResult(redirectUri.ToString());
+                return new OkObjectResult(_client.GetRedirectAddress(tokenResponse.OAuthToken).ToString());
             }
 
             //TODO: Add logging

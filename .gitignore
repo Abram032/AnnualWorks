@@ -1,3 +1,6 @@
 .vs
 secrets
 storage
+
+**/bin
+**/obj
