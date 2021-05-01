@@ -5,17 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.14" />
-    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NCU.AnnualWorks.Authentication.OAuth.Core\NCU.AnnualWorks.Authentication.OAuth.Core.csproj" />
-    <ProjectReference Include="..\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj" />
   </ItemGroup>
 
 </Project>

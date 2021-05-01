@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NCU.AnnualWorks.Authentication.Core.Constants;
+using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace NCU.AnnualWorks.Controllers
 {
+    [AutoValidateAntiforgeryToken]
     [Authorize(AuthenticationSchemes = AuthenticationSchemes.JWTAuthenticationScheme)]
     [ApiController]
     [Route("[controller]")]
