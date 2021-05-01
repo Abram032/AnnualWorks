@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NCU.AnnualWorks.Authentication.JWT.Core;
+using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
+using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
+using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.OAuth.Core;
-using NCU.AnnualWorks.Integrations.Usos;
+using NCU.AnnualWorks.Integrations.Usos.Core;
+using System;
 using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Controllers.Auth
@@ -11,29 +16,35 @@ namespace NCU.AnnualWorks.Controllers.Auth
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
-        private readonly UsosClient _client;
+        private readonly IUsosService _usosService;
         private readonly IOAuthService _oauthService;
-        public AuthenticateController(UsosClient client, IOAuthService oauthService)
+        private readonly IJWTAuthenticationService _jwtService;
+        public AuthenticateController(IUsosService usosService, IJWTAuthenticationService jwtService, IOAuthService oauthService)
         {
-            _client = client;
+            _usosService = usosService;
             _oauthService = oauthService;
+            _jwtService = jwtService;
         }
 
         [HttpPost]
         public async Task<IActionResult> PostAsync()
         {
-            var response = await _client.GetRequestTokenAsync(HttpContext);
-            if (response.IsSuccessStatusCode)
+            var response = await _usosService.GetRequestTokenAsync(HttpContext);
+
+            var claims = new AuthClaims
             {
-                var tokenResponse = await _client.ParseRequestTokenResponseAsync(response.Content);
-                _oauthService.SetRequestToken(tokenResponse.OAuthToken, tokenResponse.OAuthTokenSecret);
+                Id = -1,
+                AccessType = AccessType.Unknown,
+                Token = response.OAuthToken,
+                TokenSecret = response.OAuthTokenSecret,
+            };
+            var claimsIdentity = _jwtService.GenerateClaimsIdentity(claims);
+            var jwt = _jwtService.GenerateJWE(claimsIdentity);
+            var cookieOptions = _jwtService.GetDefaultCookieOptions();
+            cookieOptions.Expires = DateTimeOffset.UtcNow.AddMinutes(15);
+            HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureToken, jwt, cookieOptions);
 
-                return new OkObjectResult(_client.GetRedirectAddress(tokenResponse.OAuthToken).ToString());
-            }
-
-            //TODO: Add logging
-            //Something went terribly wrong and USOS did not returned a request token
-            return new StatusCodeResult(500);
+            return new OkObjectResult(_usosService.GetRedirectAddress(response.OAuthToken).ToString());
         }
     }
 }

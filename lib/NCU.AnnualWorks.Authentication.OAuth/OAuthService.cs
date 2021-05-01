@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using NCU.AnnualWorks.Authentication.OAuth.Core;
+﻿using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Constants;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
 using System;
@@ -15,41 +14,10 @@ namespace NCU.AnnualWorks.Authentication.OAuth
     public class OAuthService : IOAuthService
     {
         private readonly RNGCryptoServiceProvider cryptoRNG;
-        private readonly IMemoryCache _cache;
 
-        public OAuthService(IMemoryCache cache)
+        public OAuthService()
         {
-            _cache = cache;
-
             cryptoRNG = new RNGCryptoServiceProvider();
-        }
-
-        public string Get(string key)
-        {
-            if (_cache.TryGetValue<string>(key, out var value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
-        public void Remove(string key) => _cache.Remove(key);
-
-        public void SetRequestToken(string key, string value)
-        {
-            _cache.Set(key, value, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
-            });
-        }
-
-        public void SetAccessToken(string key, string value)
-        {
-            _cache.Set(key, value, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(90)
-            });
         }
 
         public string GenerateNonce(int length = 8)
@@ -121,7 +89,7 @@ namespace NCU.AnnualWorks.Authentication.OAuth
 
             if (query.StartsWith('?'))
             {
-                query = query.Substring(1);
+                query = Uri.UnescapeDataString(query.Substring(1));
             }
 
             if (!string.IsNullOrWhiteSpace(query))

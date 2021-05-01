@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NCU.AnnualWorks.Authentication.JWT.Core;
@@ -23,12 +24,22 @@ namespace NCU.AnnualWorks.Authentication.JWT
             _logger = logger;
         }
 
+        public CookieOptions GetDefaultCookieOptions() =>
+            new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(60),
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                HttpOnly = true,
+                IsEssential = true
+            };
+
         public ClaimsIdentity GenerateClaimsIdentity(AuthClaims claims)
         {
             return new ClaimsIdentity(new[]
             {
                 new Claim(nameof(claims.Id), claims.Id.ToString()),
-                new Claim(nameof(claims.UserType), claims.UserType.ToString()),
+                new Claim(nameof(claims.AccessType), claims.AccessType.ToString()),
                 new Claim(nameof(claims.Token), claims.Token),
                 new Claim(nameof(claims.TokenSecret), claims.TokenSecret)
             });
@@ -40,7 +51,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
             {
                 new Claim(nameof(claims.Id), claims.Id.ToString()),
                 new Claim(nameof(claims.Name), claims.Name),
-                new Claim(nameof(claims.Email), claims.Email),
+                new Claim(nameof(claims.AvatarUrl), claims.AvatarUrl),
             });
         }
 
@@ -55,7 +66,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
                 Issuer = _options.ClaimsIssuer,
                 Subject = claimsIdentity,
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(90), //TODO: Shorten expiration time to 15 minutes at most with refreshing/sliding window
+                Expires = DateTime.UtcNow.AddMinutes(60), //TODO: Shorten expiration time to 15 minutes at most with refreshing/sliding window
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -74,7 +85,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
                 Issuer = _options.ClaimsIssuer,
                 Subject = claimsIdentity,
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(90), //TODO: Shorten expiration time to 15 minutes at most with refreshing/sliding window
+                Expires = DateTime.UtcNow.AddMinutes(60), //TODO: Shorten expiration time to 15 minutes at most with refreshing/sliding window
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(signingKey), SecurityAlgorithms.HmacSha512Signature),
                 EncryptingCredentials = new EncryptingCredentials(new SymmetricSecurityKey(encryptionKey), SecurityAlgorithms.Aes256KW, SecurityAlgorithms.Aes256CbcHmacSha512)
             };

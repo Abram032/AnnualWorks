@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.JWT.IoC\NCU.AnnualWorks.Authentication.JWT.IoC.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj" />
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj" />
   </ItemGroup>
 

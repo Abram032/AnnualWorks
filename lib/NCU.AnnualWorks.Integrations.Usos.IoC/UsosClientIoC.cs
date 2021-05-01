@@ -1,16 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NCU.AnnualWorks.Integrations.Usos.Options;
+using NCU.AnnualWorks.Integrations.Usos.Core;
+using NCU.AnnualWorks.Integrations.Usos.Core.Options;
 
 namespace NCU.AnnualWorks.Integrations.Usos.IoC
 {
-    public static class UsosClientIoC
+    public static class UsosServiceIoC
     {
-        public static IServiceCollection AddUsosClient(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddUsosService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<UsosClientOptions>(options => configuration.GetSection(nameof(UsosClientOptions)).Bind(options));
+            services.Configure<UsosServiceOptions>(options => configuration.GetSection(nameof(UsosServiceOptions)).Bind(options));
 
-            services.AddHttpClient<UsosClient>();
+            services.AddHttpClient<IUsosService, UsosService>();
 
             return services;
         }

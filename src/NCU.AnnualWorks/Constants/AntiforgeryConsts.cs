@@ -4,7 +4,7 @@
     {
         public const string FormFieldName = "__RequestAntiforgeryToken";
         public const string HeaderName = "X-CSRF-TOKEN";
-        public const string CookieName = "X-CSRF-TOKEN";
-        public const string FormCookieName = "X-CSRF-REQUEST-TOKEN";
+        public const string CookieName = "CSRF-TOKEN";
+        public const string FormCookieName = "CSRF-REQUEST-TOKEN";
     }
 }

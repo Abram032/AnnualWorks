@@ -27,13 +27,26 @@ namespace NCU.AnnualWorks.Authentication.JWT
             //TODO: Skip middleware if requesting static files
             var hasAuthorizationHeader = this.Context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
             var hasAuthCookie = this.Context.Request.Cookies.TryGetValue(AuthenticationCookies.SecureAuth, out var authCookie);
+            var hasTokenCookie = this.Context.Request.Cookies.TryGetValue(AuthenticationCookies.SecureToken, out var tokenCookie);
 
-            if (!hasAuthorizationHeader && !hasAuthCookie)
+            if (!hasAuthorizationHeader && !hasAuthCookie && !hasTokenCookie)
             {
                 return AuthenticateResult.Fail("Authorization missing.");
             }
 
-            var token = hasAuthorizationHeader ? authorizationHeader.FirstOrDefault()?.Split(' ').LastOrDefault() : authCookie;
+            var token = string.Empty;
+            if (hasAuthorizationHeader)
+            {
+                token = authorizationHeader.FirstOrDefault()?.Split(' ').LastOrDefault();
+            }
+            else if (hasAuthCookie)
+            {
+                token = authCookie;
+            }
+            else if (hasTokenCookie)
+            {
+                token = tokenCookie;
+            }
 
             if (string.IsNullOrWhiteSpace(token))
             {
