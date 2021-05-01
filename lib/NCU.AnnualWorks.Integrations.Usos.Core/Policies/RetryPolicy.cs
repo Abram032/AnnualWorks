@@ -2,6 +2,7 @@
 {
     public static class RetryPolicy
     {
+        //TODO: Implement retry policy via polly
         //public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         //{
         //    return HttpPolicyExtensions

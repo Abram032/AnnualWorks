@@ -41,6 +41,7 @@ namespace NCU.AnnualWorks.Controllers.Auth
                 OAuthTokenSecret = accessTokenResponse.OAuthTokenSecret
             };
 
+            //TODO: Clean up with GetUserPermission and such
             var usosUser = await _usosService.GetCurrentUser(oauthRequest);
             var currentTerm = await _usosService.GetCurrentTerm(oauthRequest);
             var isParticipant = await _usosService.IsCurrentUserCourseParticipant(oauthRequest, currentTerm.Id);

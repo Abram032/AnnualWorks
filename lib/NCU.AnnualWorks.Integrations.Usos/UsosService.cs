@@ -49,6 +49,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
         {
+            //TODO: Replace with polly retry policy
             var retryCount = 10;
             for (int i = 0; i < retryCount; i++)
             {
@@ -163,6 +164,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var fields = _options.UsosFields.Users.ToFields();
             var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUser}?fields={fields}");
 
+            //TOOD: Figure out a way for adding headers in middleware/delegating handler
             var oauth = GetBaseOAuthRequestFields();
             oauth.OAuthToken = oauthRequest.OAuthToken;
             oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;

@@ -34,7 +34,7 @@ namespace NCU.AnnualWorks.Authentication.OAuth
             var headers = new Dictionary<string, string>();
 
             headers.Add(OAuthFields.OAuthConsumerKey, oauthFields.OAuthConsumerKey);
-            headers.Add(OAuthFields.OAuthSignatureMethod, SignatureMethods.HMACSHA1);
+            headers.Add(OAuthFields.OAuthSignatureMethod, oauthFields.OAuthSignatureMethod);
             headers.Add(OAuthFields.OAuthTimestamp, GetTimestamp());
             headers.Add(OAuthFields.OAuthNonce, GenerateNonce());
             headers.Add(OAuthFields.OAuthVersion, "1.0");
