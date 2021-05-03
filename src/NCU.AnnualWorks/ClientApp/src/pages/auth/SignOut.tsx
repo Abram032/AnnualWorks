@@ -4,9 +4,9 @@ import Loader from '../../components/loader/Loader';
 
 export const Login: React.FC = () =>
 {
-    //TODO: Move to api
+  //TODO: Move to api
     useEffect(() => {
-        axios.post('/api/auth/authenticate')
+        axios.post('/api/auth/signout')
         .then(response => {
             window.location.href = response.data;
             console.log(response);
@@ -14,7 +14,7 @@ export const Login: React.FC = () =>
         .catch(error => console.log(error));
     }, [])
 
-    return <Loader size='medium' label='Łączenie z systemem USOS...'/>
+    return <Loader size='medium' label='Wylogowywanie...'/>
 }
 
 export default Login;

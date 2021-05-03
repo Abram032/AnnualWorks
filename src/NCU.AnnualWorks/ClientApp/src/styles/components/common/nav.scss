@@ -1,11 +1,11 @@
 @import "@fluentui/react/dist/sass/References";
 
 .nav {
-    padding: 1em 2em;
     align-items: center;
     justify-content: flex-end;
 
-    &-header {
+    &-header { 
+        padding: 1em 2em;
         margin-right: auto;
 
         &-title {
@@ -40,6 +40,7 @@
     }
 
     &-content {
+        padding: 0 1em;
         font-size: $ms-font-size-16;
 
         &-link {

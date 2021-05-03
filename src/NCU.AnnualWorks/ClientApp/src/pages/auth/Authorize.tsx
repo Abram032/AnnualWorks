@@ -4,6 +4,7 @@ import Loader from '../../components/loader/Loader';
 
 export const Authorize: React.FC = () =>
 {
+    //TODO: Move to api
     useEffect(() => {
         const query = window.location.search.substring(1);
         const params = query.split('&');
@@ -20,7 +21,7 @@ export const Authorize: React.FC = () =>
         .catch(error => console.log(error));
     }, [])
 
-    return <Loader size='huge' label='Autoryzacja...'/>
+    return <Loader size='medium' label='Autoryzacja...'/>
 }
 
 export default Authorize;

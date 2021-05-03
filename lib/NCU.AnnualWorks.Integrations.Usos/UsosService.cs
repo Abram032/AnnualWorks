@@ -46,6 +46,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public Uri GetBaseAddress() => _client.BaseAddress;
         public Uri GetRedirectAddress(string token) =>
             new Uri(_client.BaseAddress, $"{_options.UsosEndpoints.Authorize}?{OAuthFields.OAuthToken}={token}");
+        public Uri GetLogoutAddress() => new Uri(_options.LogoutAddress);
 
         private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
         {
@@ -156,6 +157,18 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var response = await SendRequestAsync(request);
 
             return await ParseAccessTokenResponseAsync(response.Content);
+        }
+
+        public async Task RevokeAccessTokenAsync(OAuthRequest oauthRequest)
+        {
+            var request = GetBaseRequest(_options.UsosEndpoints.RevokeToken);
+
+            var oauth = GetBaseOAuthRequestFields();
+            oauth.OAuthToken = oauthRequest.OAuthToken;
+            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
+            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+
+            await SendRequestAsync(request);
         }
 
         public async Task<UsosUser> GetCurrentUser(OAuthRequest oauthRequest)

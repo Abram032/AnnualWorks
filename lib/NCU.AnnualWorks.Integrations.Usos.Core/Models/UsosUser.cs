@@ -17,6 +17,9 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core.Models
 
         [JsonPropertyName("first_name")]
         public string FirstName { get; set; }
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
     }
 
     public class UsosUserPhotos

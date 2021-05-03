@@ -2,7 +2,7 @@ import { Spinner, SpinnerSize, Stack } from "@fluentui/react";
 import React from "react";
 
 interface LoaderProps {
-  label: string;
+  label?: string;
   labelPosition?: "bottom" | "left" | "right" | "top";
   size: "huge" | "large" | "medium" | "small";
 }
@@ -10,7 +10,7 @@ interface LoaderProps {
 export const Loader: React.FC<LoaderProps> = (props) => (
   <Stack>
     <Spinner
-      label={props.label}
+      label={props.label ?? ""}
       labelPosition={props.labelPosition ?? "bottom"}
       className={`loader ${props.size}`}
     />

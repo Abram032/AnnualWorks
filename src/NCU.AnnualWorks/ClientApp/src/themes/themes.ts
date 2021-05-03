@@ -1,4 +1,10 @@
 import { PartialTheme } from "@fluentui/react";
+//TODO: Clean up
+export type ThemeName = 'lightTheme' | 'darkTheme' | 'highContrastLightTheme' | 'highContrastDarkTheme';
+export interface Theme {
+  name: ThemeName
+  theme: PartialTheme
+}
 
 export const lightTheme: PartialTheme = {
   palette: {
@@ -107,3 +113,16 @@ export const highContrastDarkTheme: PartialTheme = {
     white: "#000000",
   },
 };
+
+export const getThemeByName = (themeName: ThemeName) => {
+  switch(themeName) {
+    case 'lightTheme':
+      return lightTheme;
+    case 'darkTheme':
+      return darkTheme;
+    case 'highContrastLightTheme':
+      return highContrastLightTheme;
+    case 'highContrastDarkTheme':
+      return highContrastDarkTheme;
+  }
+}

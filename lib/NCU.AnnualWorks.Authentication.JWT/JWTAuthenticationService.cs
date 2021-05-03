@@ -24,13 +24,33 @@ namespace NCU.AnnualWorks.Authentication.JWT
             _logger = logger;
         }
 
-        public CookieOptions GetDefaultCookieOptions() =>
+        public CookieOptions GetTokenCookieOptions() =>
+            new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(15),
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                HttpOnly = true,
+                IsEssential = true
+            };
+
+        public CookieOptions GetAuthCookieOptions() =>
             new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddMinutes(60),
                 SameSite = SameSiteMode.Strict,
                 Secure = true,
                 HttpOnly = true,
+                IsEssential = true
+            };
+
+        public CookieOptions GetUserCookieOptions() =>
+            new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(60),
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                HttpOnly = false,
                 IsEssential = true
             };
 
@@ -51,7 +71,9 @@ namespace NCU.AnnualWorks.Authentication.JWT
             {
                 new Claim(nameof(claims.Id), claims.Id.ToString()),
                 new Claim(nameof(claims.Name), claims.Name),
+                new Claim(nameof(claims.Email), claims.Email),
                 new Claim(nameof(claims.AvatarUrl), claims.AvatarUrl),
+                new Claim(nameof(claims.AccessType), claims.AccessType.ToString()),
             });
         }
 

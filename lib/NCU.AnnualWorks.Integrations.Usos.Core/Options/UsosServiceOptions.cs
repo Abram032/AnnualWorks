@@ -8,6 +8,7 @@
 
         //USOS API properties
         public string BaseApiAddress { get; set; }
+        public string LogoutAddress { get; set; }
         public string[] DefaultScopes { get; set; }
         public UsosFields UsosFields { get; set; }
         public UsosEndpoints UsosEndpoints { get; set; }
