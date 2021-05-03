@@ -43,6 +43,8 @@ namespace NCU.AnnualWorks.Controllers.Auth
             var cookieOptions = _jwtService.GetDefaultCookieOptions();
             cookieOptions.Expires = DateTimeOffset.UtcNow.AddMinutes(15);
             HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureToken, jwt, cookieOptions);
+            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureAuth, cookieOptions);
+            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureUser, cookieOptions);
 
             return new OkObjectResult(_usosService.GetRedirectAddress(response.OAuthToken).ToString());
         }

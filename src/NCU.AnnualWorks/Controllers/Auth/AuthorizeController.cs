@@ -90,7 +90,7 @@ namespace NCU.AnnualWorks.Controllers.Auth
             HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureUser, userJWT, cookieOptions);
 
             //TODO: Redirect user somewhere
-            return new RedirectToPageResult("/");
+            return new OkResult();
         }
     }
 }

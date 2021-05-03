@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
+import Loader from '../../components/loader/Loader';
 
 export const Login: React.FC = () =>
 {
@@ -12,11 +13,7 @@ export const Login: React.FC = () =>
         .catch(error => console.log(error));
     }, [])
 
-    return (
-        <>
-
-        </>
-    );
+    return <Loader size='huge' label='Łączenie z systemem USOS...'/>
 }
 
 export default Login;

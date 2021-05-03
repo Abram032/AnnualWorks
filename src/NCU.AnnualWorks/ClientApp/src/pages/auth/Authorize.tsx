@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
+import Loader from '../../components/loader/Loader';
 
 export const Authorize: React.FC = () =>
 {
@@ -13,16 +14,13 @@ export const Authorize: React.FC = () =>
             OAuthVerifier: verifier
         })
         .then(response => {
-            console.log(response);
+            window.location.search='';
+            window.location.pathname='/';
         })
         .catch(error => console.log(error));
     }, [])
 
-    return (
-        <>
-
-        </>
-    );
+    return <Loader size='huge' label='Autoryzacja...'/>
 }
 
 export default Authorize;
