@@ -1,0 +1,56 @@
+@import "@fluentui/react/dist/sass/References";
+
+.nav {
+    align-items: center;
+    justify-content: flex-end;
+
+    &-header { 
+        padding: 1em 2em;
+        margin-right: auto;
+
+        &-title {
+            font-size: $ms-font-size-20;
+        }
+        
+        &-title.primary {
+            font-weight: 600;
+        }
+    
+        &-title.secondary {
+            font-weight: 400;
+        }
+
+        &-link {
+            text-decoration: none;
+            padding: 1em 0em;
+
+            &:hover, &:active, &:active:hover {
+                text-decoration: none;
+            }
+        }
+    }
+
+    &-separator {
+        margin-left: 2em!important;
+        margin-right: 2em!important;
+
+        &:after {
+            width: 2px;
+        }
+    }
+
+    &-content {
+        padding: 0 1em;
+        font-size: $ms-font-size-16;
+
+        &-link {
+            text-decoration: none;
+            font-weight: 500;
+            padding: 1em 0em;
+
+            &:hover, &:active, &:active:hover {
+                text-decoration: none;
+            }
+        }
+    }
+}

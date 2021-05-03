@@ -78,19 +78,19 @@ namespace NCU.AnnualWorks.Controllers.Auth
             {
                 Id = long.Parse(usosUser.Id),
                 Name = $"{usosUser.FirstName} {usosUser.LastName}",
+                Email = usosUser.Email ?? string.Empty,
                 AvatarUrl = usosUser.PhotoUrls.FirstOrDefault().Value ?? string.Empty,
                 AccessType = accessType
             };
             var userClaimsIdentity = _jwtService.GenerateClaimsIdentity(userClaims);
             var userJWT = _jwtService.GenerateJWS(userClaimsIdentity);
-            var cookieOptions = _jwtService.GetDefaultCookieOptions();
 
-            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureToken, cookieOptions);
-            HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureAuth, authJWT, cookieOptions);
-            HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureUser, userJWT, cookieOptions);
+            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
+            HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureAuth, authJWT, _jwtService.GetAuthCookieOptions());
+            HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureUser, userJWT, _jwtService.GetUserCookieOptions());
 
             //TODO: Redirect user somewhere
-            return new RedirectToPageResult("/");
+            return new OkResult();
         }
     }
 }

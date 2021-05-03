@@ -1,0 +1,33 @@
+import React, { useContext } from "react";
+import { Stack } from "@fluentui/react";
+import NavHeader from "./NavHeader";
+import NavContent from "./NavContent";
+import NavContentLink from "./NavContentLink";
+import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
+import MeControl from '../me/MeControl';
+
+//TODO: Clean up, move to env addresses
+
+export const Nav: React.FC = () => {
+  const authContext = useContext(AuthenticationContext);
+
+  const content = !authContext.isAuthenticated || !authContext.user ? 
+    <NavContentLink label="Zaloguj się" href="/signin" /> :
+    <MeControl user={authContext.user} />
+
+  return (
+    <Stack className="nav" horizontal>
+    <NavHeader
+      primaryLabel="Instytut Psychologii"
+      primaryHref="http://psychologia.umk.pl/"
+      secondarylabel="Prace roczne"
+      secondaryHref="/"
+    />
+    <NavContent>
+      {content}
+    </NavContent>
+  </Stack>
+  )
+};
+
+export default Nav;

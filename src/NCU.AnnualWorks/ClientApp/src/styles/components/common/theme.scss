@@ -1,0 +1,9 @@
+@import "@fluentui/react/dist/sass/References";
+
+.theme-toggle  {
+    margin: 0;
+
+    &-icon {
+        font-size: $ms-font-size-18;
+    }
+}

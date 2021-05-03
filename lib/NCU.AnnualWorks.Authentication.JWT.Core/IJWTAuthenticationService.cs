@@ -7,7 +7,9 @@ namespace NCU.AnnualWorks.Authentication.JWT.Core
 {
     public interface IJWTAuthenticationService
     {
-        CookieOptions GetDefaultCookieOptions();
+        CookieOptions GetTokenCookieOptions();
+        CookieOptions GetAuthCookieOptions();
+        CookieOptions GetUserCookieOptions();
         ClaimsIdentity GenerateClaimsIdentity(AuthClaims claims);
         ClaimsIdentity GenerateClaimsIdentity(UserClaims claims);
         string GenerateJWS(ClaimsIdentity claimsIdentity);
