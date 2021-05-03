@@ -1,33 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
-import { themeCookieName, languageCookieName } from "../consts/cookieNames";
+import { CookieNames } from "../consts/CookieNames";
 import { useCookies } from "react-cookie";
 import { PartialTheme, ThemeContext, ThemeProvider } from "@fluentui/react";
-import {
-  Theme,
-  ThemeName,
-  getThemeByName,
-  lightTheme,
-} from "../../themes/themes";
-
-//TODO: Clean up
-
-interface PersonalizationContextProps {
-  theme: Theme;
+import { AvailableThemes } from "../../themes/themes";
+import { ThemeNames, ThemeName } from "../consts/ThemeNames";
+interface IPersonalizationContext {
+  themeName: ThemeName;
   switchTheme: (themeName: ThemeName) => void;
 }
 
-export const PersonalizationContext = React.createContext<PersonalizationContextProps>({
-  theme: {
-    name: 'lightTheme',
-    theme: lightTheme
-  },
+export const PersonalizationContext = React.createContext<IPersonalizationContext>({
+  themeName: ThemeNames.light,
   switchTheme: (themeName: ThemeName) => {}
 });
 
 export const PersonalizationProvider: React.FC = (props) => {
-  const [cookies, setCookie] = useCookies([themeCookieName, languageCookieName]);
+  const [cookies, setCookie] = useCookies([CookieNames.theme, CookieNames.language]);
   const saveSettings = (themeName: ThemeName) => {
-    setCookie(themeCookieName, themeName, {
+    setCookie(CookieNames.theme, themeName, {
       expires: new Date((new Date).getTime() + (1000 * 60 * 60 * 24 * 365 * 10)), //10 years
       httpOnly: false,
       secure: true,
@@ -35,35 +25,25 @@ export const PersonalizationProvider: React.FC = (props) => {
     });
   };
   
-  const [theme, setTheme] = useState<Theme>(() => {
-    const themeName = cookies[themeCookieName];
+  const [theme, setTheme] = useState<ThemeName>(() => {
+    const themeName = cookies[CookieNames.theme];
     if(!themeName) {
-      saveSettings('lightTheme');
-      return {
-        name: 'lightTheme',
-        theme: lightTheme
-      }
+      saveSettings(ThemeNames.light);
+      return ThemeNames.light;
     }
 
-    return {
-      name: themeName,
-      theme: getThemeByName(themeName)
-    }
+    return themeName;
   });
 
   const switchTheme = (themeName: ThemeName) => {
-    const theme = getThemeByName(themeName);
-    setTheme({
-      name: themeName,
-      theme: theme
-    });
+    setTheme(themeName);
     saveSettings(themeName);
   }
 
   return (
-    <ThemeProvider theme={theme.theme}>
+    <ThemeProvider theme={AvailableThemes[theme]}>
       <PersonalizationContext.Provider value={{
-        theme: theme,
+        themeName: theme,
         switchTheme: (themeName: ThemeName) => switchTheme(themeName)
       }}>
         {props.children}

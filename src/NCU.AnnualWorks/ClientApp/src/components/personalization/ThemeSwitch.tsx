@@ -1,34 +1,31 @@
 import { Icon, IStackTokens, Label, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
-import { ThemeName } from "../../themes/themes";
-
-//TODO: Clean up
+import { ThemeNames, ThemeName } from '../../shared/consts/ThemeNames';
 
 export const ThemeSwitch: React.FC = () => {
   const context = useContext(PersonalizationContext);
-  
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(
-    context.theme.name === 'darkTheme' || 
-    context.theme.name === 'highContrastDarkTheme'
+    context.themeName === ThemeNames.dark || 
+    context.themeName === ThemeNames.darkHighContrast
   );
   const [isHighContrast, setIsHighContrast] = useState<boolean>(
-    context.theme.name === 'highContrastLightTheme' ||
-    context.theme.name === 'highContrastDarkTheme'
+    context.themeName === ThemeNames.lightHighContrast ||
+    context.themeName === ThemeNames.darkHighContrast
   );
 
   const getThemeName = (): ThemeName => {
     if(isDarkTheme && isHighContrast) {
-      return 'highContrastDarkTheme';
+      return ThemeNames.darkHighContrast;
     }
     else if(!isDarkTheme && isHighContrast) {
-      return 'highContrastLightTheme';
+      return ThemeNames.lightHighContrast;
     }
     else if(isDarkTheme && !isHighContrast) {
-      return 'darkTheme';
+      return ThemeNames.dark;
     }
     else {
-      return 'lightTheme';
+      return ThemeNames.light;
     }
   }
 

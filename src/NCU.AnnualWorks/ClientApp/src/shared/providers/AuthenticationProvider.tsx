@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import User from '../models/User';
 import UserData from '../models/UserData';
-import { userCookieName } from '../consts/cookieNames';
+import { CookieNames } from '../consts/CookieNames';
 import { useCookies } from 'react-cookie';
 import jwtDecode from 'jwt-decode';
 
-//TODO: Clean up move to separate props User / isAuthenticated / isFetching
+interface IAuthenticationContext {
+  user: User | null,
+  isAuthenticated: boolean,
+  isFetching: boolean
+}
 
-export const AuthenticationContext = React.createContext<User | null | undefined>(undefined);
+export const AuthenticationContext = React.createContext<IAuthenticationContext>({
+  user: null,
+  isAuthenticated: false,
+  isFetching: true
+});
 
 export const AuthenticationProvider: React.FC = (props) => {
-  const [user, setUser] = useState<User | null | undefined>(undefined);
-  const [cookies] = useCookies([userCookieName]);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [cookies] = useCookies([CookieNames.user]);
 
   useEffect(() => {
-    const userToken = cookies[userCookieName];
+    const userToken = cookies[CookieNames.user];
     try
     {
       const userData = jwtDecode<UserData>(userToken);
@@ -24,17 +34,25 @@ export const AuthenticationProvider: React.FC = (props) => {
         avatarUrl: userData.AvatarUrl,
         accessType: userData.AccessType,
         email: userData.Email
-      })
+      });
+      setIsAuthenticated(true);
+      setIsFetching(false);
     }
     catch
     {
+      setIsAuthenticated(false);
+      setIsFetching(false);
       setUser(null);
     }
   }, [cookies])
 
   return (
     <AuthenticationContext.Provider
-      value={user}
+      value={{
+        user: user,
+        isAuthenticated: isAuthenticated,
+        isFetching: isFetching
+      }}
     >
       {props.children}
     </AuthenticationContext.Provider>

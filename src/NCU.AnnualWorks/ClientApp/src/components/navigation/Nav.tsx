@@ -4,17 +4,16 @@ import NavHeader from "./NavHeader";
 import NavContent from "./NavContent";
 import NavContentLink from "./NavContentLink";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import User from "../../shared/models/User";
 import MeControl from '../me/MeControl';
 
 //TODO: Clean up, move to env addresses
 
 export const Nav: React.FC = () => {
-  const user = useContext<User | null | undefined>(AuthenticationContext);
+  const authContext = useContext(AuthenticationContext);
 
-  const content = !user ? 
+  const content = !authContext.isAuthenticated || !authContext.user ? 
     <NavContentLink label="Zaloguj się" href="/signin" /> :
-    <MeControl user={user} />
+    <MeControl user={authContext.user} />
 
   return (
     <Stack className="nav" horizontal>

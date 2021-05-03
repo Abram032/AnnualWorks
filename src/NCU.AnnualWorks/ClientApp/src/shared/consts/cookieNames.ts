@@ -1,6 +1,6 @@
-export const csrfCookieName = 'CSRF-REQUEST-TOKEN';
-export const userCookieName = '__Secure-User';
-export const themeCookieName = 'app-theme';
-export const languageCookieName = 'app-lang';
-
-//TODO: Clean up
+export namespace CookieNames {
+  export const csrfToken = 'CSRF-REQUEST-TOKEN';
+  export const user = '__Secure-User';
+  export const theme = 'app-theme';
+  export const language = 'app-lang';
+}

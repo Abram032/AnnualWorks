@@ -4,7 +4,7 @@ import { AuthenticationContext } from '../../shared/providers/AuthenticationProv
 import User from "../../shared/models/User";
 
 export const Home: React.FC = () => {
-  const user = useContext<User | null | undefined>(AuthenticationContext);
+  const user = useContext(AuthenticationContext);
   
   return (
     <></>

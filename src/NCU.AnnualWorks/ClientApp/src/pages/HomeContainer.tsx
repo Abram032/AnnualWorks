@@ -1,24 +1,21 @@
-import React, { useContext, useEffect } from "react";
-import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
+import React, { useContext } from "react";
 import { AuthenticationContext } from '../shared/providers/AuthenticationProvider';
-import User from "../shared/models/User";
+import { AccessTypes } from '../shared/models/AccessType';
 import HomeSignIn from "./home/HomeSignIn";
 import HomeSignUp from "./home/HomeSignUp";
 import Home from "./home/Home";
 import Loader from "../components/loader/Loader";
 
-//TODO: Clean up
-
 export const HomeContainer: React.FC = () => {
-  const user = useContext<User | null | undefined>(AuthenticationContext);
+  const authContext = useContext(AuthenticationContext);
 
-  if(user === undefined) {
+  if(authContext.isFetching) {
     return <Loader size='medium' />
   } 
-  else if(user === null) {
+  else if(!authContext.isAuthenticated) {
     return <HomeSignIn />
   }
-  else if(user && user.accessType === 'Unknown') {
+  else if(authContext.isAuthenticated && authContext.user?.accessType === AccessTypes.Unknown) {
     return <HomeSignUp />
   }
   else {
