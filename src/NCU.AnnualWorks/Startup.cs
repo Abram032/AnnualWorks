@@ -1,10 +1,15 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NCU.AnnualWorks.Authentication.JWT.IoC;
+using NCU.AnnualWorks.Authentication.OAuth.IoC;
+using NCU.AnnualWorks.Constants;
+using NCU.AnnualWorks.Integrations.Usos.IoC;
 
 namespace NCU.AnnualWorks
 {
@@ -20,18 +25,32 @@ namespace NCU.AnnualWorks
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddMemoryCache();
+
+            services.AddJWTAuthentication(Configuration);
+            services.AddOAuthAuthentication();
+            services.AddAntiforgery(options =>
+            {
+                options.FormFieldName = AntiforgeryConsts.FormFieldName;
+                options.HeaderName = AntiforgeryConsts.HeaderName;
+                options.Cookie.Name = AntiforgeryConsts.CookieName;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+            });
+
+            services.AddUsosService(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery)
         {
             if (env.IsDevelopment())
             {
@@ -45,10 +64,29 @@ namespace NCU.AnnualWorks
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseRouting();
+            app.Use(next => context =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    var tokens = antiforgery.GetAndStoreTokens(context);
+                    var cookieOptions = new CookieOptions
+                    {
+                        HttpOnly = false,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                    };
+                    context.Response.Cookies.Append(AntiforgeryConsts.FormCookieName, tokens.RequestToken, cookieOptions);
+                }
+                return next(context);
+            });
 
             app.UseEndpoints(endpoints =>
             {
@@ -66,6 +104,8 @@ namespace NCU.AnnualWorks
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+
         }
     }
 }

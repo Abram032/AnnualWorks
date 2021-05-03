@@ -1,0 +1,26 @@
+.me-control {
+    &-button {
+        border: 0;
+        height: 100%;
+
+        .ms-Button-label {
+            margin-right: 1em;
+        }
+    }
+
+    &-label {
+        padding: 0 1em;
+    }
+
+    .ms-Persona-details {
+        display: none;
+    }
+
+    &-callout {
+        padding: 1em;
+    }
+
+    &-signout {
+        border: 0;
+    }
+}

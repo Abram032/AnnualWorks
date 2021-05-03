@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.12" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.14" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +19,12 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.JWT.IoC\NCU.AnnualWorks.Authentication.JWT.IoC.csproj" />
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj" />
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Controllers
 {
+    [AutoValidateAntiforgeryToken]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemes.JWTAuthenticationScheme)]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -29,6 +32,7 @@ namespace NCU.AnnualWorks.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var user = this.HttpContext.User;
             Console.WriteLine(_config["DB_CONNECTION_STRING"]);
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
