@@ -9,7 +9,6 @@ import SignIn from "./pages/auth/SignIn";
 import SignOut from "./pages/auth/SignOut";
 import Authorize from "./pages/auth/Authorize";
 import { initializeIcons } from '@fluentui/font-icons-mdl2';
-import "./App.scss";
 import "./styles/index.scss";
 
 initializeIcons();

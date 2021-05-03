@@ -1,4 +1,4 @@
-import { Spinner, SpinnerSize, Stack } from "@fluentui/react";
+import { Spinner, Stack } from "@fluentui/react";
 import React from "react";
 
 interface LoaderProps {

@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CookieNames } from "../consts/CookieNames";
 import { useCookies } from "react-cookie";
-import { PartialTheme, ThemeContext, ThemeProvider } from "@fluentui/react";
+import {  ThemeProvider } from "@fluentui/react";
 import { AvailableThemes } from "../../themes/themes";
 import { ThemeNames, ThemeName } from "../consts/ThemeNames";
 interface IPersonalizationContext {
