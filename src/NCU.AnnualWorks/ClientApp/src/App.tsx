@@ -1,26 +1,22 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
-import { Login } from './pages/auth/Login';
-import { Authorize } from './pages/auth/Authorize';
+import React from "react";
+import Layout from "./layout/Layout";
+import Home from "./pages/Home";
+import { loadTheme, ThemeProvider } from "@fluentui/react";
+import {
+  lightTheme,
+  darkTheme,
+  highContrastDarkTheme,
+  highContrastLightTheme,
+} from "./themes/themes";
+import "./App.scss";
+import "./styles/index.scss";
 
-import './custom.css'
-
-export default class App extends Component {
-  static displayName = App.name;
-
-  render () {
-    return (
+export const App: React.FunctionComponent = () => {
+  return (
+    <ThemeProvider theme={lightTheme}>
       <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/counter' component={Counter} />
-        <Route path='/fetch-data' component={FetchData} />
-        <Route path="/login" component={Login}/>
-        <Route path='/authorize' component={Authorize} />
+        <Home />
       </Layout>
-    );
-  }
-}
+    </ThemeProvider>
+  );
+};

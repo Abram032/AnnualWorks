@@ -1,0 +1,14 @@
+.footer {
+    padding: 1em 5em;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+
+    &-link {
+        padding: 1em 0em;
+    }
+    
+    &-item {
+        margin: 0em 1em;
+    }
+}
