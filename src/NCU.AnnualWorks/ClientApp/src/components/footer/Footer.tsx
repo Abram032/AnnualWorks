@@ -7,6 +7,7 @@ import { RouteNames } from '../../shared/consts/RouteNames';
 
 export const Footer: React.FC = () => {
   return (
+    //TODO: Add dropdown for language pick and theme pick
     <Stack className="footer" horizontal>
       <FooterContent>
         <Label className="footer-item copyright">© {(new Date).getFullYear()} {AppSettings.Copyright}</Label>
