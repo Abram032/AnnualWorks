@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../components/loader/Loader';
+import { AppSettings } from '../../AppSettings';
 
 export const Authorize: React.FC = () =>
 {
@@ -10,7 +11,7 @@ export const Authorize: React.FC = () =>
         const params = query.split('&');
         const token = params[0].split('=')[1];
         const verifier = params[1].split('=')[1];
-        axios.post('/api/auth/authorize', {
+        axios.post(AppSettings.API.Auth.Authorize, {
             OAuthToken: token,
             OAuthVerifier: verifier
         })

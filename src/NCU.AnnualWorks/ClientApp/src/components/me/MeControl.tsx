@@ -13,6 +13,9 @@ import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
 import User from "../../shared/models/User";
 import ThemeSwitch from '../../components/personalization/ThemeSwitch';
+import LanguageSwitch from '../../components/personalization/LanguageSwitch';
+import { AppSettings } from '../../AppSettings';
+import { RouteNames } from '../../shared/consts/RouteNames';
 
 interface MeControlProps {
   user: User;
@@ -45,10 +48,10 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
   const calloutContent = (
     <Stack className='me-control-callout' tokens={stackTokens}>
       <Stack verticalAlign='center' tokens={stackTokens} horizontal>
-        <Link href='https://usosweb.umk.pl/'>Przejdź do USOSa</Link>
+        <Link href={AppSettings.Urls.USOS}>Przejdź do USOSa</Link>
         <DefaultButton
           className='me-control-signout'
-          href='/signout'
+          href={RouteNames.signOut}
           text='Wyloguj się'
         />
       </Stack>
@@ -66,7 +69,12 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
       </Stack.Item>
       <Stack.Item tokens={stackTokens}>
         <Label>Personalizacja</Label>
+      </Stack.Item>
+      <Stack.Item tokens={stackTokens}>
         <ThemeSwitch />
+      </Stack.Item>
+      <Stack.Item tokens={stackTokens}>
+        <LanguageSwitch />
       </Stack.Item>
     </Stack>
   )
