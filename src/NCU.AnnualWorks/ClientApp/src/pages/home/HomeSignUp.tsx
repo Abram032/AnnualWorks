@@ -9,6 +9,7 @@ export const HomeSignUp: React.FC = () => (
       </Label>
     </Stack.Item>
     <Stack.Item align="center">
+      //TODO: Get url to course code from backend or get the course code and build url to it
       <PrimaryButton href="https://usosweb.umk.pl/kontroler.php?_action=katalog2/przedmioty/pokazPrzedmiot&prz_kod=0800-SEMMGR">Zarejestruj się</PrimaryButton>
     </Stack.Item>
   </Stack>

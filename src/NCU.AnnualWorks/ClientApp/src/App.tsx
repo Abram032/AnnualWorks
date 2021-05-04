@@ -9,6 +9,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignOut from "./pages/auth/SignOut";
 import Authorize from "./pages/auth/Authorize";
 import { initializeIcons } from '@fluentui/font-icons-mdl2';
+import { RouteNames } from "./shared/consts/RouteNames";
 import "./styles/index.scss";
 
 initializeIcons();
@@ -21,10 +22,10 @@ export const App: React.FC = () => {
           <Layout>
             <BrowserRouter>
               <Switch>
-                <Route exact path="/" component={HomeContainer} />
-                <Route exact path="/signin" component={SignIn} />
-                <Route exact path="/signout" component={SignOut} />
-                <Route path="/authorize" component={Authorize} />
+                <Route exact path={RouteNames.root} component={HomeContainer} />
+                <Route exact path={RouteNames.signIn} component={SignIn} />
+                <Route exact path={RouteNames.signOut} component={SignOut} />
+                <Route path={RouteNames.authorize} component={Authorize} />
               </Switch>
             </BrowserRouter>
           </Layout>

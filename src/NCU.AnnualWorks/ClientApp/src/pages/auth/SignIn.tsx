@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../components/loader/Loader';
+import { AppSettings } from '../../AppSettings';
 
 export const Login: React.FC = () =>
 {
     //TODO: Move to api
     useEffect(() => {
-        axios.post('/api/auth/authenticate')
+        axios.post(AppSettings.API.Auth.Authenticate)
         .then(response => {
             window.location.href = response.data;
             console.log(response);
