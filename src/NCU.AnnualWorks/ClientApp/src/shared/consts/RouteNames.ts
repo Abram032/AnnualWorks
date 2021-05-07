@@ -7,4 +7,5 @@ export namespace RouteNames {
   export const authorize = '/authorize';
   export const thesis = '/thesis';
   export const add = '/add';
+  export const review = '/review';
 }

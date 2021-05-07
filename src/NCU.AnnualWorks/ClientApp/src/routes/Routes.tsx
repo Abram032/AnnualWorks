@@ -7,6 +7,7 @@ import SignOut from '../pages/auth/SignOut';
 import Authorize from '../pages/auth/Authorize';
 import ThesisView from '../pages/thesisView/ThesisView';
 import Add from '../pages/add/Add';
+import Review from '../pages/review/Review';
 
 export const Routes: React.FC = () => (
   <BrowserRouter>
@@ -17,6 +18,7 @@ export const Routes: React.FC = () => (
       <Route path={RouteNames.authorize} component={Authorize} />
       <Route path={RouteNames.thesis} component={ThesisView} />
       <Route path={RouteNames.add} component={Add} />
+      <Route path={RouteNames.review} component={Review} />
     </Switch>
   </BrowserRouter>
 );

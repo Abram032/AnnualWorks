@@ -13,7 +13,7 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
     filter: string,
     selectedItems?: ITag[]
   ): ITag[] | Promise<ITag[]> => {
-    if(filter.endsWith(props.separator ?? ';')) {
+    if(filter.endsWith(props.separator ?? ' ')) {
       const value = filter.slice(0, filter.length - 1);
       const tag: ITag = {
         key: value,
