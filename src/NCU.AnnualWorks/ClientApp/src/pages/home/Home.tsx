@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
-import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import React from "react";
 import {  IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
 import Tile from '../../components/tile/tile';
 import ThesisList from '../../components/thesisList/thesisList';
 
 export const Home: React.FC = () => {
-  const authContext = useContext(AuthenticationContext);
 
   const itemsP: any[] = [
     {

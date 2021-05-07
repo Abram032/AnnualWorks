@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
 
   return (
     <Stack className={footerStyle} horizontalAlign='center' verticalAlign='center' horizontal tokens={stackTokens}>
-      <Label className={copyrightStyle}>© {(new Date).getFullYear()} {AppSettings.Copyright}</Label>
+      <Label className={copyrightStyle}>© {(new Date()).getFullYear()} {AppSettings.Copyright}</Label>
       <Link href={AppSettings.Urls.UMK}>UMK</Link>
       <Link href={AppSettings.Urls.USOS}>USOSWEB</Link>
       <Link href={AppSettings.Urls.InstituteOfPsychology}>Instytut Psychologii</Link>

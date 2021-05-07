@@ -7,7 +7,7 @@ interface TagPickerProps {
 }
 
 export const TagPicker: React.FC<TagPickerProps> = (props) => {
-  const [tags, setTags] = useState<ITag[]>(props.tagList);
+  const [tags] = useState<ITag[]>(props.tagList);
 
   const onFilterChanged = (
     filter: string,

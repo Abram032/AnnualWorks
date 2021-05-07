@@ -1,4 +1,4 @@
-import { Dropdown, FontSizes, Icon, IconFontSizes, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
+import { Dropdown, FontSizes, Icon, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
 import { ThemeNames, ThemeName } from '../../shared/consts/ThemeNames';
@@ -18,6 +18,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
     context.themeName === ThemeNames.darkHighContrast
   );
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(context.themeName);
+  const stackTokens: IStackTokens = { childrenGap: 10 };
 
   const getThemeName = (): ThemeName => {
     if(isDarkTheme && isHighContrast) {
@@ -33,8 +34,6 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
       return ThemeNames.light;
     }
   };
-
-  const stackTokens: IStackTokens = { childrenGap: 10 };
 
   useEffect(() => {
     const themeName = getThemeName();

@@ -43,7 +43,7 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
       <Stack horizontal verticalAlign='center' tokens={stackTokens}>
         <Icon iconName='Globe' />
         <Dropdown 
-          selectedKey={language}
+          selectedKey={context.languageName}
           options={dropdownOptions}
           onChange={(event, item) => {
             const lang = item as IDropdownOption<LanguageName>;

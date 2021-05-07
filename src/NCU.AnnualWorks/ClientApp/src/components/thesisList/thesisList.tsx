@@ -1,5 +1,5 @@
 import React from 'react';
-import { CommandBar, DetailsList, FontSizes, IColumn, ICommandBarItemProps, IGroup, Link, SelectionMode } from '@fluentui/react';
+import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Link, SelectionMode } from '@fluentui/react';
 import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/thesisActions';
 
 interface ThesisListProps {

@@ -1,4 +1,4 @@
-import { DefaultButton, IPersonaProps, IStackTokens, ITag, Label, merge, mergeStyles, PrimaryButton, Stack, StackItem, TextField } from '@fluentui/react';
+import { DefaultButton, IPersonaProps, IStackTokens, ITag, Label, mergeStyles, PrimaryButton, Stack, StackItem, TextField } from '@fluentui/react';
 import React, { useState } from 'react';
 import FilePicker from '../../components/filePicker/filePicker';
 import FilePickerOptions from '../../components/filePicker/filePickerOptions';
@@ -13,7 +13,7 @@ export const ThesisForm: React.FC = (props) => {
     maxFileCount: 1
   };
 
-  const [tags, setTags] = useState<ITag[]>([]);
+  //const [tags, setTags] = useState<ITag[]>([]);
 
   const stackTokens: IStackTokens = {childrenGap: 15}
 

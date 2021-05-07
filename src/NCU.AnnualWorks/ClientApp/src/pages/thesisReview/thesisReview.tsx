@@ -1,4 +1,4 @@
-import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, DropdownMenuItemType, PrimaryButton, DefaultButton } from '@fluentui/react';
+import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, PrimaryButton, DefaultButton } from '@fluentui/react';
 import React from 'react';
 import Tile from '../../components/tile/tile';
 import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';

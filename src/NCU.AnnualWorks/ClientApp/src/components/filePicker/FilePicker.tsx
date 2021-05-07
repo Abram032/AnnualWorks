@@ -18,7 +18,7 @@ export const FilePicker: React.FC<FilePickerProps> = (props) => {
   //Set input element after first render
   useEffect(() => {
     setInputElement(document.getElementById(props.id));
-  }, []);
+  }, [props.id]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.persist();

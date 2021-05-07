@@ -1,4 +1,4 @@
-import { IBasePickerSuggestionsProps, IPersonaProps, mergeStyles, NormalPeoplePicker } from '@fluentui/react';
+import { IBasePickerSuggestionsProps, IPersonaProps, NormalPeoplePicker } from '@fluentui/react';
 import React, { useState } from 'react';
 
 interface PeoplePickerProps {

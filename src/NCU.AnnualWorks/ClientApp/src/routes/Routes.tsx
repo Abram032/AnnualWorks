@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { RouteNames } from '../shared/consts/RouteNames';
-import HomeContainer from '../pages/homeContainer';
+import HomeContainer from '../pages/home/homeContainer';
 import SignIn from '../pages/auth/signIn';
 import SignOut from '../pages/auth/signOut';
 import Authorize from '../pages/auth/authorize';

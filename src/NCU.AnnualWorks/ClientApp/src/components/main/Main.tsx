@@ -1,4 +1,4 @@
-import { merge, mergeStyles, useTheme } from '@fluentui/react';
+import { mergeStyles, useTheme } from '@fluentui/react';
 import React from 'react';
 
 export const Main: React.FC = (props) => {
