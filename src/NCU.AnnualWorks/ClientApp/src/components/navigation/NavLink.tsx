@@ -1,12 +1,12 @@
 import { Link, useTheme } from "@fluentui/react";
 import React from "react";
 
-interface NavContentLinkProps {
+interface NavLinkProps {
   label: string;
   href: string;
 }
 
-export const NavContentLink: React.FC<NavContentLinkProps> = (props) => {
+export const NavLink: React.FC<NavLinkProps> = (props) => {
   const theme = useTheme();
   const styles = {
     root: [
@@ -31,10 +31,10 @@ export const NavContentLink: React.FC<NavContentLinkProps> = (props) => {
   };
 
   return (
-    <Link className="nav-content-link" styles={styles} href={props.href}>
+    <Link className="nav-link" styles={styles} href={props.href}>
       {props.label}
     </Link>
   );
 };
 
-export default NavContentLink;
+export default NavLink;

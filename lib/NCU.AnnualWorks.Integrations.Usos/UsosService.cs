@@ -9,13 +9,13 @@ using NCU.AnnualWorks.Integrations.Usos.Core.Exceptions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Extensions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -184,8 +184,9 @@ namespace NCU.AnnualWorks.Integrations.Usos
             _oauthService.AddOAuthAuthorizationHeader(request, oauth);
 
             var response = await SendRequestAsync(request);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var user = await JsonSerializer.DeserializeAsync<UsosUser>(stream);
+            var value = await response.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UsosUser>(value);
+
             return user;
         }
 
@@ -200,8 +201,8 @@ namespace NCU.AnnualWorks.Integrations.Usos
             _oauthService.AddOAuthAuthorizationHeader(request, oauth);
 
             var response = await SendRequestAsync(request);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var terms = await JsonSerializer.DeserializeAsync<UsosTerm[]>(stream);
+            var value = await response.Content.ReadAsStringAsync();
+            var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
 
             var pattern = @"^\d{4}\/\d{2}(Z|L)$"; //Ex. 2020/21Z
             var term = terms.Where(t => Regex.IsMatch(t.Id, pattern)).FirstOrDefault();

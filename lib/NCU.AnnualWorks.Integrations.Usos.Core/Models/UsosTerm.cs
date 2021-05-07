@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace NCU.AnnualWorks.Integrations.Usos.Core.Models
 {
     //Partial class for USOS term
     public class UsosTerm
     {
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; set; }
-        [JsonPropertyName("start_date")]
+        [JsonProperty("start_date")]
         public string StartDate { get; set; }
-        [JsonPropertyName("end_date")]
+        [JsonProperty("end_date")]
         public string EndDate { get; set; }
-        [JsonPropertyName("finish_date")]
+        [JsonProperty("finish_date")]
         public string FinishDate { get; set; }
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public Dictionary<string, string> Names { get; set; }
     }
 }

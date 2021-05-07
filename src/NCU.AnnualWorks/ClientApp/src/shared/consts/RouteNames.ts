@@ -4,5 +4,7 @@ export namespace RouteNames {
   export const privacy = '/privacy';
   export const signOut = '/signout';
   export const signIn = '/signin';
-  export const authorize = '/authorize'
+  export const authorize = '/authorize';
+  export const thesis = '/thesis';
+  export const add = '/add';
 }

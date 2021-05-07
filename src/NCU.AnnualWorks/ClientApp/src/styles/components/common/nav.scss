@@ -2,11 +2,10 @@
 
 .nav {
     align-items: center;
-    justify-content: flex-end;
 
     &-header { 
         padding: 1em 2em;
-        margin-right: auto;
+        margin-right: 2em;
 
         &-title {
             font-size: $ms-font-size-20;
@@ -29,7 +28,7 @@
             }
         }
     }
-
+    
     &-separator {
         margin-left: 2em!important;
         margin-right: 2em!important;
@@ -39,18 +38,22 @@
         }
     }
 
-    &-content {
+    &-links {
+        margin-right: auto;
+    }
+
+    &-link {
+        text-decoration: none;
+        font-weight: 500;
+        padding: 1em 0em;
+
+        &:hover, &:active, &:active:hover {
+            text-decoration: none;
+        }
+    }
+
+    &-actions {
         padding: 0 1em;
         font-size: $ms-font-size-16;
-
-        &-link {
-            text-decoration: none;
-            font-weight: 500;
-            padding: 1em 0em;
-
-            &:hover, &:active, &:active:hover {
-                text-decoration: none;
-            }
-        }
     }
 }

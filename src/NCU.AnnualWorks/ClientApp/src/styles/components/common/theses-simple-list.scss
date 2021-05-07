@@ -1,0 +1,17 @@
+.theses-simple-list {
+    .ms-FocusZone {
+        &:hover {
+            background: none;
+        }
+    }
+
+    .ms-DetailsRow-fields {
+        align-items: center;
+    }
+
+    &-actions {
+        .ms-OverflowSet {
+            justify-content: flex-end;
+        }
+    }
+}

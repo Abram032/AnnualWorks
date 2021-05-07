@@ -1,19 +1,20 @@
 import React from "react";
-import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
+import { Label, PrimaryButton, Stack, FontSizes, IStackTokens } from "@fluentui/react";
 import { RouteNames } from "../../shared/consts/RouteNames";
 import { useTranslation } from "react-i18next";
 
 export const HomeSignIn: React.FC = () => {
   const { t } = useTranslation();
 
+  const stackTokens: IStackTokens = { childrenGap: 15 };
   return (
-    <Stack>
-      <Stack.Item align="center">
+    <Stack tokens={stackTokens}>
+      <Stack.Item align="center" tokens={stackTokens}>
         <Label style={{ fontSize: FontSizes.size24 }}>
           Zaloguj się, aby uzyskać dostęp
         </Label>
       </Stack.Item>
-      <Stack.Item align="center">
+      <Stack.Item align="center" tokens={stackTokens}>
         <PrimaryButton href={RouteNames.signIn}>{t('signIn')}</PrimaryButton>
       </Stack.Item>
     </Stack>
