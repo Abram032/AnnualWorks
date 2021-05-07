@@ -1,6 +1,6 @@
-import { ActionButton, IconButton, PrimaryButton, TextField } from '@fluentui/react';
+import { ActionButton, IconButton, PrimaryButton } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
-import FilePickerOptions from './FilePickerOptions';
+import FilePickerOptions from './filePickerOptions';
 
 interface FilePickerProps {
   id: string;

@@ -12,8 +12,8 @@ import {
 import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
 import User from "../../shared/models/User";
-import ThemeSwitch from '../../components/personalization/ThemeSwitch';
-import LanguageSwitch from '../../components/personalization/LanguageSwitch';
+import ThemePicker from '../themePicker/themePicker';
+import LanguagePicker from '../languagePicker/languagePicker';
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
 
@@ -71,10 +71,10 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
         <Label>Personalizacja</Label>
       </Stack.Item>
       <Stack.Item tokens={stackTokens}>
-        <ThemeSwitch />
+        <ThemePicker />
       </Stack.Item>
       <Stack.Item tokens={stackTokens}>
-        <LanguageSwitch />
+        <LanguagePicker />
       </Stack.Item>
     </Stack>
   )

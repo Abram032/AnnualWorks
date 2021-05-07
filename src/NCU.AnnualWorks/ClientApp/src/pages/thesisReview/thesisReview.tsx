@@ -1,9 +1,9 @@
 import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, DropdownMenuItemType, PrimaryButton, DefaultButton } from '@fluentui/react';
 import React from 'react';
-import Tile from '../../components/tile/Tile';
-import { viewAction, downloadAction, printAction } from '../../components/thesisActions/ThesisActions';
+import Tile from '../../components/tile/tile';
+import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';
 
-export const Review: React.FC = () => {
+export const ThesisReview: React.FC = () => {
   const actionItems = [
     viewAction({iconOnly: false}),
     downloadAction({iconOnly: false}),
@@ -121,4 +121,4 @@ export const Review: React.FC = () => {
   )
 }
 
-export default Review;
+export default ThesisReview;

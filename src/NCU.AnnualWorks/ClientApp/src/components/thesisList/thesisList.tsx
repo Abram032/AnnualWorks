@@ -1,15 +1,15 @@
 import React from 'react';
 import { CommandBar, DetailsList, FontSizes, IColumn, ICommandBarItemProps, IGroup, Link, SelectionMode } from '@fluentui/react';
-import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/ThesisActions';
+import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/thesisActions';
 
-interface ThesesSimpleListProps {
+interface ThesisListProps {
   title: string,
   items: any[],
   isCollapsed?: boolean,
   renderHeader?: boolean,
 }
 
-export const ThesesSimpleList: React.FC<ThesesSimpleListProps> = (props) => {
+export const ThesisList: React.FC<ThesisListProps> = (props) => {
   const groups: IGroup[] = [{
     key: props.title,
     name: props.title,
@@ -30,7 +30,7 @@ export const ThesesSimpleList: React.FC<ThesesSimpleListProps> = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'title':
-        return <Link style={{fontSize: FontSizes.size16}} href="/thesis">{item.title}</Link>;
+        return <Link style={{fontSize: FontSizes.size16}} href="/details">{item.title}</Link>;
       case 'actions':
         const actionItems = [];
         if(item.canAddReview) actionItems.push(addReviewAction({}));
@@ -62,4 +62,4 @@ export const ThesesSimpleList: React.FC<ThesesSimpleListProps> = (props) => {
   );
 }
 
-export default ThesesSimpleList;
+export default ThesisList;

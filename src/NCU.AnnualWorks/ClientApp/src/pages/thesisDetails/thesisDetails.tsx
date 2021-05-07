@@ -1,9 +1,9 @@
+import { CommandBar, DetailsRow, FontSizes, IColumn, IconButton, IStackTokens, Label, SelectionMode, Stack } from '@fluentui/react';
 import React from 'react';
-import { CommandBar, DetailsRow, FontSizes, IColumn, IconButton, IStackTokens, Label, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import Tile from '../tile/Tile';
-import { downloadAction, editAction, printAction, addReviewAction, editReviewAction, viewAction } from '../thesisActions/ThesisActions';
+import { addReviewAction, downloadAction, editAction, printAction, viewAction } from '../../components/thesisActions/thesisActions';
+import Tile from '../../components/tile/tile';
 
-export const ThesisDetails: React.FC = () => {
+export const ThesisDetails: React.FC = (props) => {
   const actionItems = [
     viewAction({iconOnly: false}),
     downloadAction({iconOnly: false}),

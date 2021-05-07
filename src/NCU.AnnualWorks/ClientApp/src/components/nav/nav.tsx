@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
-import { Label, Link, Stack } from "@fluentui/react";
-import NavHeader from "./NavHeader";
-import NavActions from "./NavActions";
-import NavLink from "./NavLink";
+import { Stack } from "@fluentui/react";
+import NavHeader from "./navHeader";
+import NavActions from "./navActions";
+import NavLink from "./navLink";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import MeControl from "../me/MeControl";
+import MeControl from "../meControl/meControl";
 import { AppSettings } from "../../AppSettings";
 import { RouteNames } from "../../shared/consts/RouteNames";
-import NavLinks from "./NavLinks";
+import NavLinks from "./navLinks";
 
 //TODO: Clean up, move to env addresses
 
@@ -25,7 +25,7 @@ export const Nav: React.FC = () => {
     !authContext.isAuthenticated || !authContext.user ? null : (
       <>
         <NavLink label="Wyszukiwanie prac" href="#" />
-        <NavLink label="Dodaj pracę" href="/add" />
+        <NavLink label="Dodaj pracę" href="/add-thesis" />
       </>
     );
 
@@ -37,7 +37,7 @@ export const Nav: React.FC = () => {
         secondarylabel="Prace roczne"
         secondaryHref={RouteNames.root}
       />
-      <NavLinks></NavLinks>
+      <NavLinks>{links}</NavLinks>
       <NavActions>{actions}</NavActions>
     </Stack>
   );

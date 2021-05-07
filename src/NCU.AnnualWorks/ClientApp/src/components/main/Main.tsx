@@ -1,11 +1,15 @@
-import { useTheme } from '@fluentui/react';
+import { merge, mergeStyles, useTheme } from '@fluentui/react';
 import React from 'react';
 
 export const Main: React.FC = (props) => {
   const theme = useTheme();
+
+  const style = mergeStyles({
+    backgroundColor: theme.palette.neutralLighterAlt
+  })
   
   return (
-    <main style={{ backgroundColor: theme.palette.neutralLighterAlt }}>
+    <main className={style}>
       {props.children}
     </main>
   );

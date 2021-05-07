@@ -1,7 +1,7 @@
-import { Stack } from "@fluentui/react";
+import { Stack, StackItem } from "@fluentui/react";
 import React from "react";
-import NavSeparator from "./NavSeparator";
-import NavHeaderLink from "./NavHeaderLink";
+import NavSeparator from "./navSeparator";
+import NavHeaderLink from "./navHeaderLink";
 
 interface NavHeaderProps {
   primaryLabel: string;
@@ -13,13 +13,13 @@ interface NavHeaderProps {
 export const NavHeader: React.FC<NavHeaderProps> = (props) => {
   return (
     <Stack className="nav-header" horizontal>
-      <Stack.Item className="nav-header-title primary">
+      <StackItem className="nav-header-title primary">
         <NavHeaderLink label={props.primaryLabel} href={props.primaryHref} />
-      </Stack.Item>
+      </StackItem>
       <NavSeparator />
-      <Stack.Item className="nav-header-title secondary">
+      <StackItem className="nav-header-title secondary">
         <NavHeaderLink label={props.secondarylabel} href={props.secondaryHref} />
-      </Stack.Item>
+      </StackItem>
     </Stack>
   );
 };

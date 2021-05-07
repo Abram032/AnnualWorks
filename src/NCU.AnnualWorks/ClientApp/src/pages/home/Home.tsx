@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import { AppSettings } from '../../AppSettings';
-import { ColumnActionsMode, CommandBar, DefaultButton, DetailsList, DetailsRow, FontSizes, GroupedList, ICellStyleProps, IColumn, IGroup, IStackTokens, Label, Link, OverflowSet, PrimaryButton, SelectionMode, Stack } from "@fluentui/react";
-import Tile from '../../components/tile/Tile';
-import ThesesSimpleList from '../../components/thesesLists/ThesesSimpleList';
-import ThesesGroupedList from '../../components/thesesLists/ThesesGroupedList';
+import {  IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
+import Tile from '../../components/tile/tile';
+import ThesisList from '../../components/thesisList/thesisList';
 
 export const Home: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
@@ -74,35 +72,6 @@ export const Home: React.FC = () => {
     },
   ]
 
-  // const itemsT: any[] = [
-  //   { 
-  //     id: 1, 
-  //     title: 'Praca A',
-  //     term: '2018/19Z',
-  //     termFullName: 'Semestr zimowy 2018/2019',
-  //   },
-  //   { id: 2, title: 'Praca B' },
-  //   { id: 3, title: 'Praca C' },
-  //   { id: 4, title: 'Praca D' },
-  //   { id: 5, title: 'Praca E' },
-  //   { id: 6, title: 'Praca F' },
-  //   { id: 7, title: 'Praca G' },
-  //   { id: 8, title: 'Praca H' },
-  // ];
-
-  // const itemsG: any[] = [
-  //   {
-  //     key: '2018/19Z',
-  //     term: 'Semestr zimowy 2018/2019',
-  //     items: itemsT
-  //   },
-  //   {
-  //     key: '2019/20Z',
-  //     term: 'Semestr zimowy 2019/2020',
-  //     items: itemsT
-  //   },
-  // ]
-
   const stackTokens: IStackTokens = { childrenGap: 25 }
 
   return (
@@ -111,10 +80,9 @@ export const Home: React.FC = () => {
         <PrimaryButton href='/add'>Dodaj pracę</PrimaryButton>
         <Label>Termin końcowy: 07.05.2021</Label>
       </Stack>
-      <ThesesSimpleList title='Promowane prace' items={itemsP} isCollapsed={false}/>
-      <ThesesSimpleList title='Recenzowane prace' items={itemsR} isCollapsed={false}/>
-      <ThesesSimpleList title='Semestr zimowy 2020/2021' items={itemsI} />
-      {/* <ThesesGroupedList title='Pozostałe prace' items={itemsG} /> */}
+      <ThesisList title='Promowane prace' items={itemsP} isCollapsed={false}/>
+      <ThesisList title='Recenzowane prace' items={itemsR} isCollapsed={false}/>
+      <ThesisList title='Semestr zimowy 2020/2021' items={itemsI} />
     </Tile>
   );
 };

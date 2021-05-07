@@ -7,7 +7,7 @@ export const NavActions: React.FC = (props) => {
   // ));
   const stackTokens: IStackTokens = { childrenGap: 15 }
   return (
-    <Stack className="nav-actions" horizontal>
+    <Stack className="nav-actions" horizontal tokens={stackTokens}>
       {props.children}
     </Stack>
   );

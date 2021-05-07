@@ -1,7 +1,7 @@
 import React from "react";
-import Nav from "../components/navigation/Nav";
-import Main from "../components/main/Main";
-import Footer from "../components/footer/Footer";
+import Nav from "../components/nav/nav";
+import Main from "../components/main/main";
+import Footer from "../components/footer/footer";
 
 export const Layout: React.FC = (props) => (
   <div className="layout">
