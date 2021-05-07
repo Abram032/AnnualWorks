@@ -1,6 +1,7 @@
 import React from 'react';
 import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Link, SelectionMode } from '@fluentui/react';
 import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/thesisActions';
+import { RouteNames } from '../../shared/consts/RouteNames';
 
 interface ThesisListProps {
   title: string,
@@ -33,11 +34,11 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
         return <Link style={{fontSize: FontSizes.size16}} href="/details">{item.title}</Link>;
       case 'actions':
         const actionItems = [];
-        if(item.canAddReview) actionItems.push(addReviewAction({}));
-        if(item.canEditReview) actionItems.push(editReviewAction({}));
-        if(item.canEdit) actionItems.push(editAction({}));
-        if(item.canDownload) actionItems.push(downloadAction({}));
-        if(item.canPrint) actionItems.push(printAction({}));
+        if(item.canAddReview) actionItems.push(addReviewAction({href: RouteNames.review}));
+        if(item.canEditReview) actionItems.push(editReviewAction({href: RouteNames.review}));
+        if(item.canEdit) actionItems.push(editAction({href: RouteNames.addthesis}));
+        if(item.canDownload) actionItems.push(downloadAction({disabled: true}));
+        if(item.canPrint) actionItems.push(printAction({disabled: true}));
         return (
           <CommandBar
             className='theses-simple-list-actions'

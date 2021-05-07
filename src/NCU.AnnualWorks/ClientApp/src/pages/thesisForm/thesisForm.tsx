@@ -5,6 +5,7 @@ import FilePickerOptions from '../../components/filePicker/filePickerOptions';
 import PeoplePicker from '../../components/peoplePicker/peoplePicker';
 import TagPicker from '../../components/tagPicker/tagPicker';
 import Tile from '../../components/tile/tile';
+import { RouteNames } from '../../shared/consts/RouteNames';
 
 export const ThesisForm: React.FC = (props) => {
   const [files, setFiles] = useState<FileList | null>();
@@ -108,13 +109,13 @@ export const ThesisForm: React.FC = (props) => {
       </Tile>
       <Stack horizontalAlign='end' horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton>Zapisz pracę i zrecenzuj</PrimaryButton>
+          <PrimaryButton href={RouteNames.review}>Zapisz pracę i zrecenzuj</PrimaryButton>
         </StackItem>
         <StackItem styles={{root: { marginRight: 'auto'}}}>
-          <DefaultButton>Zapisz pracę</DefaultButton>
+          <DefaultButton href={RouteNames.details}>Zapisz pracę</DefaultButton>
         </StackItem>
         <StackItem>
-          <DefaultButton>Powrót do listy prac</DefaultButton>
+          <DefaultButton href={RouteNames.root}>Powrót do listy prac</DefaultButton>
         </StackItem>
       </Stack>
     </Stack>

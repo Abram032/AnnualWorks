@@ -2,6 +2,7 @@ import React from "react";
 import {  IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
 import Tile from '../../components/tile/tile';
 import ThesisList from '../../components/thesisList/thesisList';
+import { RouteNames } from "../../shared/consts/RouteNames";
 
 export const Home: React.FC = () => {
 
@@ -75,7 +76,7 @@ export const Home: React.FC = () => {
   return (
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
-        <PrimaryButton href='/add'>Dodaj pracę</PrimaryButton>
+        <PrimaryButton href={RouteNames.addthesis}>Dodaj pracę</PrimaryButton>
         <Label>Termin końcowy: 07.05.2021</Label>
       </Stack>
       <ThesisList title='Promowane prace' items={itemsP} isCollapsed={false}/>

@@ -2,12 +2,13 @@ import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField,
 import React from 'react';
 import Tile from '../../components/tile/tile';
 import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';
+import { RouteNames } from '../../shared/consts/RouteNames';
 
 export const ThesisReview: React.FC = () => {
   const actionItems = [
-    viewAction({iconOnly: false}),
-    downloadAction({iconOnly: false}),
-    printAction({iconOnly: false}),
+    viewAction({iconOnly: false, disabled: true}),
+    downloadAction({iconOnly: false, disabled: true}),
+    printAction({iconOnly: false, disabled: true}),
   ];
 
   const grades: IDropdownOption[] = [
@@ -111,10 +112,10 @@ export const ThesisReview: React.FC = () => {
       </Tile>
       <Stack horizontalAlign='end' horizontal tokens={stackTokens}>
         <StackItem styles={{root: { marginRight: 'auto'}}}>
-          <PrimaryButton>Zapisz recenzję</PrimaryButton>
+          <PrimaryButton href={RouteNames.details}>Zapisz recenzję</PrimaryButton>
         </StackItem>
         <StackItem>
-          <DefaultButton>Powrót do listy prac</DefaultButton>
+          <DefaultButton href={RouteNames.root}>Powrót do listy prac</DefaultButton>
         </StackItem>
       </Stack>
     </Stack>

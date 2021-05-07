@@ -4,6 +4,7 @@ interface ActionProps {
   iconOnly?: boolean;
   onClick?: () => void;
   href?: string;
+  disabled?: boolean;
 };
 
 export const viewAction = (props: ActionProps): ICommandBarItemProps => {
@@ -14,7 +15,8 @@ export const viewAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'View',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
 
@@ -26,7 +28,8 @@ export const addReviewAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'Add review',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
 
@@ -38,7 +41,8 @@ export const editReviewAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'Edit review',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
 
@@ -50,7 +54,8 @@ export const editAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'Edit',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
 
@@ -62,7 +67,8 @@ export const downloadAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'Download',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
 
@@ -74,6 +80,7 @@ export const printAction = (props: ActionProps): ICommandBarItemProps => {
     ariaLabel: 'Print',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
-    href: props.href
+    href: props.href,
+    disabled: props.disabled ?? false,
   }
 };
