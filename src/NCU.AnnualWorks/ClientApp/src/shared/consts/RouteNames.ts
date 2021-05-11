@@ -3,6 +3,9 @@ export namespace RouteNames {
   export const about = '/about';
   export const privacy = '/privacy';
   export const signOut = '/signout';
-  export const signIn = '/signin';
-  export const authorize = '/authorize'
+  export const signIn = '/sign-in';
+  export const authorize = '/authorize';
+  export const details = '/details';
+  export const addthesis = '/add-thesis';
+  export const review = '/review';
 }

@@ -4,7 +4,6 @@ using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
-using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using System.Threading.Tasks;
 
@@ -16,12 +15,10 @@ namespace NCU.AnnualWorks.Controllers.Auth
     public class AuthenticateController : ControllerBase
     {
         private readonly IUsosService _usosService;
-        private readonly IOAuthService _oauthService;
         private readonly IJWTAuthenticationService _jwtService;
-        public AuthenticateController(IUsosService usosService, IJWTAuthenticationService jwtService, IOAuthService oauthService)
+        public AuthenticateController(IUsosService usosService, IJWTAuthenticationService jwtService)
         {
             _usosService = usosService;
-            _oauthService = oauthService;
             _jwtService = jwtService;
         }
 

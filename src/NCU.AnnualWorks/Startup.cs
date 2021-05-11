@@ -1,15 +1,20 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
+using NCU.AnnualWorks.Data;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
+using NCU.AnnualWorks.Mappers;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace NCU.AnnualWorks
 {
@@ -25,7 +30,7 @@ namespace NCU.AnnualWorks
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson();
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -47,6 +52,18 @@ namespace NCU.AnnualWorks
             });
 
             services.AddUsosService(Configuration);
+
+            var mapperConfiguration = new MapperConfiguration(config =>
+            {
+                config.AddProfile(new MappingProfile());
+            });
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddDbContext<ApiDbContext>(options =>
+            {
+                options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +86,14 @@ namespace NCU.AnnualWorks
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                    context.Context.Response.Headers.Add("Expires", "-1");
+                }
+            });
             app.UseSpaStaticFiles();
 
             app.Use(next => context =>
@@ -104,8 +128,6 @@ namespace NCU.AnnualWorks
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
-
         }
     }
 }

@@ -9,13 +9,13 @@ using NCU.AnnualWorks.Integrations.Usos.Core.Exceptions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Extensions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -81,6 +81,14 @@ namespace NCU.AnnualWorks.Integrations.Usos
                 OAuthConsumerSecret = _options.ConsumerSecret,
                 OAuthSignatureMethod = SignatureMethods.HMACSHA1
             };
+
+        private void AppendOAuthConsumerFields(OAuthRequest oauthRequest)
+        {
+            var baseRequest = GetBaseOAuthRequestFields();
+            oauthRequest.OAuthConsumerKey = _options.ConsumerKey;
+            oauthRequest.OAuthConsumerSecret = _options.ConsumerSecret;
+            oauthRequest.OAuthSignatureMethod = SignatureMethods.HMACSHA1;
+        }
 
         private HttpRequestMessage GetBaseRequest(string endpoint)
         {
@@ -184,9 +192,61 @@ namespace NCU.AnnualWorks.Integrations.Usos
             _oauthService.AddOAuthAuthorizationHeader(request, oauth);
 
             var response = await SendRequestAsync(request);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var user = await JsonSerializer.DeserializeAsync<UsosUser>(stream);
+            var value = await response.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UsosUser>(value);
+
             return user;
+        }
+
+        public async Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, List<string> userIds)
+        {
+            var fields = _options.UsosFields.Users.ToFields();
+            var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUsers}?user_ids={userIds.ToFields()}&fields={fields}");
+
+            AppendOAuthConsumerFields(oauthRequest);
+            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+
+            var response = await SendRequestAsync(request);
+            var value = await response.Content.ReadAsStringAsync();
+            var users = JsonConvert.DeserializeObject<Dictionary<string, UsosUser>>(value);
+
+            return users.Values.ToList();
+        }
+
+        public async Task<List<UsosTerm>> GetTerms(OAuthRequest oauthRequest)
+        {
+            var today = DateTime.Today.ToString(_options.DateFormatPattern);
+            var request = GetBaseRequest($"{_options.UsosEndpoints.TermsSearch}");
+
+            var oauth = GetBaseOAuthRequestFields();
+            oauth.OAuthToken = oauthRequest.OAuthToken;
+            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
+            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+
+            var response = await SendRequestAsync(request);
+            var value = await response.Content.ReadAsStringAsync();
+            var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
+
+            var pattern = @"^\d{4}\/\d{2}(Z|L)$"; //Ex. 2020/21Z
+
+            return terms.Where(t => Regex.IsMatch(t.Id, pattern)).ToList();
+        }
+
+        public async Task<UsosTerm> GetTerm(OAuthRequest oauthRequest, string termId)
+        {
+            var today = DateTime.Today.ToString(_options.DateFormatPattern);
+            var request = GetBaseRequest($"{_options.UsosEndpoints.TermsTerm}?term_id={termId}");
+
+            var oauth = GetBaseOAuthRequestFields();
+            oauth.OAuthToken = oauthRequest.OAuthToken;
+            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
+            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+
+            var response = await SendRequestAsync(request);
+            var value = await response.Content.ReadAsStringAsync();
+            var term = JsonConvert.DeserializeObject<UsosTerm>(value);
+
+            return term;
         }
 
         public async Task<UsosTerm> GetCurrentTerm(OAuthRequest oauthRequest)
@@ -200,8 +260,8 @@ namespace NCU.AnnualWorks.Integrations.Usos
             _oauthService.AddOAuthAuthorizationHeader(request, oauth);
 
             var response = await SendRequestAsync(request);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var terms = await JsonSerializer.DeserializeAsync<UsosTerm[]>(stream);
+            var value = await response.Content.ReadAsStringAsync();
+            var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
 
             var pattern = @"^\d{4}\/\d{2}(Z|L)$"; //Ex. 2020/21Z
             var term = terms.Where(t => Regex.IsMatch(t.Id, pattern)).FirstOrDefault();
@@ -252,6 +312,37 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var value = await response.Content.ReadAsStringAsync();
 
             return Convert.ToBoolean(int.Parse(value));
+        }
+
+        private async Task<List<UsosUser>> GetCourseEditionUsers(OAuthRequest oauthRequest, string termId, string field)
+        {
+            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={_options.CourseCode}&term_id={termId}&fields={field}");
+
+            var oauth = GetBaseOAuthRequestFields();
+            oauth.OAuthToken = oauthRequest.OAuthToken;
+            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
+            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+
+            var response = await SendRequestAsync(request);
+            var value = await response.Content.ReadAsStringAsync();
+            var users = JsonConvert.DeserializeObject<Dictionary<string, UsosUser[]>>(value);
+
+            return users.GetValueOrDefault(field).ToList();
+        }
+
+        public Task<List<UsosUser>> GetCourseEditionParticipants(OAuthRequest oauthRequest, string termId)
+        {
+            return GetCourseEditionUsers(oauthRequest, termId, "participants");
+        }
+
+        public Task<List<UsosUser>> GetCourseEditionLecturers(OAuthRequest oauthRequest, string termId)
+        {
+            return GetCourseEditionUsers(oauthRequest, termId, "lecturers");
+        }
+
+        public Task<List<UsosUser>> GetCourseEditionCoordinators(OAuthRequest oauthRequest, string termId)
+        {
+            return GetCourseEditionUsers(oauthRequest, termId, "coordinators");
         }
     }
 }

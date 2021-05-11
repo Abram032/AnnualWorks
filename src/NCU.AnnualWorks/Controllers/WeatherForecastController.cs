@@ -10,7 +10,7 @@ using System.Linq;
 namespace NCU.AnnualWorks.Controllers
 {
     [AutoValidateAntiforgeryToken]
-    [Authorize(AuthenticationSchemes = AuthenticationSchemes.JWTAuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemes.JWTAuthenticationScheme, Policy = AuthorizationPolicies.AdminOnly)]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

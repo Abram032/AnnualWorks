@@ -20,17 +20,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IoC", "IoC", "{51FF605C-0C0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication.JWT.IoC", "lib\NCU.AnnualWorks.Authentication.JWT.IoC\NCU.AnnualWorks.Authentication.JWT.IoC.csproj", "{A3287508-5FE1-45E5-A080-FEBB12788316}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Authentication.JWT", "lib\NCU.AnnualWorks.Authentication.JWT\NCU.AnnualWorks.Authentication.JWT.csproj", "{D5F809DD-4DD4-4D0A-96DB-19DB64181422}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication.JWT", "lib\NCU.AnnualWorks.Authentication.JWT\NCU.AnnualWorks.Authentication.JWT.csproj", "{D5F809DD-4DD4-4D0A-96DB-19DB64181422}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication.OAuth.Core", "lib\NCU.AnnualWorks.Authentication.OAuth.Core\NCU.AnnualWorks.Authentication.OAuth.Core.csproj", "{C840F653-C099-4085-8A77-39C71BD69B90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication.OAuth", "lib\NCU.AnnualWorks.Authentication.OAuth\NCU.AnnualWorks.Authentication.OAuth.csproj", "{3CE55DB3-561C-4851-9A37-7C232BA88416}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Authentication.OAuth.IoC", "lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj", "{C1BF75DC-8B6D-4C99-8AF8-C09AAA047528}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Authentication.OAuth.IoC", "lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj", "{C1BF75DC-8B6D-4C99-8AF8-C09AAA047528}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Integrations.Usos.IoC", "lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj", "{68A38C35-43BB-45E1-9F52-7133A17C01AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Integrations.Usos.IoC", "lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj", "{68A38C35-43BB-45E1-9F52-7133A17C01AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Integrations.Usos.Core", "lib\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj", "{64305D68-F234-47B1-9E11-5E8E8514F0AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCU.AnnualWorks.Integrations.Usos.Core", "lib\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj", "{64305D68-F234-47B1-9E11-5E8E8514F0AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCU.AnnualWorks.Core", "lib\NCU.AnnualWorks.Core\NCU.AnnualWorks.Core.csproj", "{45A512CC-9A67-4085-A0F1-14E54510A050}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,6 +164,18 @@ Global
 		{64305D68-F234-47B1-9E11-5E8E8514F0AC}.Release|x64.Build.0 = Release|Any CPU
 		{64305D68-F234-47B1-9E11-5E8E8514F0AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{64305D68-F234-47B1-9E11-5E8E8514F0AC}.Release|x86.Build.0 = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|x64.Build.0 = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Debug|x86.Build.0 = Debug|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|x64.ActiveCfg = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|x64.Build.0 = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|x86.ActiveCfg = Release|Any CPU
+		{45A512CC-9A67-4085-A0F1-14E54510A050}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +192,7 @@ Global
 		{C1BF75DC-8B6D-4C99-8AF8-C09AAA047528} = {51FF605C-0C0A-4995-A0CE-7AAF3A359660}
 		{68A38C35-43BB-45E1-9F52-7133A17C01AE} = {51FF605C-0C0A-4995-A0CE-7AAF3A359660}
 		{64305D68-F234-47B1-9E11-5E8E8514F0AC} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
+		{45A512CC-9A67-4085-A0F1-14E54510A050} = {F118FD34-84EC-4DBB-A5D2-5C4762B4BA56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {799C9AE3-56F4-4700-846F-7FB4620205D1}

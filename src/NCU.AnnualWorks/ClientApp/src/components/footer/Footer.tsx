@@ -1,22 +1,31 @@
-import { Label, Stack } from "@fluentui/react";
 import React from "react";
-import FooterContent from "./FooterContent";
-import FooterLink from "./FooterLink";
+import { IStackTokens, Label, Link, mergeStyles, Stack } from "@fluentui/react";
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
+import ThemePicker from "../themePicker/themePicker";
+import LanguagePicker from "../languagePicker/languagePicker";
 
 export const Footer: React.FC = () => {
+  const stackTokens: IStackTokens = { childrenGap: 50 }
+
+  const footerStyle = mergeStyles({
+    margin: '1em'
+  });
+
+  const copyrightStyle = mergeStyles({
+    alignSelf: 'center'
+  });
+
   return (
-    //TODO: Add dropdown for language pick and theme pick
-    <Stack className="footer" horizontal>
-      <FooterContent>
-        <Label className="footer-item copyright">© {(new Date).getFullYear()} {AppSettings.Copyright}</Label>
-        <FooterLink href={AppSettings.Urls.UMK}>UMK</FooterLink>
-        <FooterLink href={AppSettings.Urls.USOS}>USOSWEB</FooterLink>
-        <FooterLink href={AppSettings.Urls.InstituteOfPsychology}>Instytut Psychologii</FooterLink>
-        <FooterLink href={RouteNames.privacy}>Prywatność</FooterLink>
-        <FooterLink href={RouteNames.about}>O stronie</FooterLink>
-      </FooterContent>
+    <Stack className={footerStyle} horizontalAlign='center' verticalAlign='center' horizontal tokens={stackTokens}>
+      <Label className={copyrightStyle}>© {(new Date()).getFullYear()} {AppSettings.Copyright}</Label>
+      <Link href={AppSettings.Urls.UMK}>UMK</Link>
+      <Link href={AppSettings.Urls.USOS}>USOSWEB</Link>
+      <Link href={AppSettings.Urls.InstituteOfPsychology}>Instytut Psychologii</Link>
+      <Link href={RouteNames.privacy}>Prywatność</Link>
+      <Link href={RouteNames.about}>O stronie</Link>
+      <ThemePicker useDropdown/>
+      <LanguagePicker useDropdown/>
     </Stack>
   );
 };

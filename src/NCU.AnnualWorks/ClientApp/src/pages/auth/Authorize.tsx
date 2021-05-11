@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/loader/loader';
 import { AppSettings } from '../../AppSettings';
 
 export const Authorize: React.FC = () =>
