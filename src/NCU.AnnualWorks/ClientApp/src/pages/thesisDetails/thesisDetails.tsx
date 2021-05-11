@@ -30,6 +30,10 @@ export const ThesisDetails: React.FC = (props) => {
     grade: 5
   };
 
+  const iconStyles = mergeStyles({
+    fontWeight: '600!important'
+  });  
+
   const onRenderItemColumn = (
     item: any,
     itemIndex?: number,
@@ -37,7 +41,7 @@ export const ThesisDetails: React.FC = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'action':
-        return <IconButton iconProps={{ iconName: 'PageAdd' }} href={RouteNames.review} />
+        return <IconButton iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} href={RouteNames.review} />
       case 'name':
         return <Label>{item.name}</Label>
       case 'grade':
@@ -92,7 +96,7 @@ export const ThesisDetails: React.FC = (props) => {
           />
         </Stack>
       </Tile>
-      <Stack horizontalAlign='end' horizontal tokens={stackTokens}>
+      <Stack horizontal tokens={stackTokens}>
         <StackItem>
           <PrimaryButton href={RouteNames.root}>Powrót do listy prac</PrimaryButton>
         </StackItem>

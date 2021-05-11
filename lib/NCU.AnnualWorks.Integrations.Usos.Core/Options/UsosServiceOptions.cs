@@ -33,6 +33,7 @@
         public string Authorize { get; set; }
         public string AccessToken { get; set; }
         public string RevokeToken { get; set; }
+        public string TermsTerm { get; set; }
         public string TermsSearch { get; set; }
         public string UsersUser { get; set; }
         public string UsersUsers { get; set; }

@@ -11,7 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.14" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +31,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.JWT.IoC\NCU.AnnualWorks.Authentication.JWT.IoC.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj" />
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Core\NCU.AnnualWorks.Core.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

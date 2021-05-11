@@ -5,7 +5,6 @@ using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
-using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using System.Linq;
@@ -19,12 +18,10 @@ namespace NCU.AnnualWorks.Controllers.Auth
     [ApiController]
     public class AuthorizeController : ControllerBase
     {
-        private readonly IOAuthService _oauthService;
         private readonly IJWTAuthenticationService _jwtService;
         private readonly IUsosService _usosService;
-        public AuthorizeController(IOAuthService oauthService, IJWTAuthenticationService jwtService, IUsosService usosService)
+        public AuthorizeController(IJWTAuthenticationService jwtService, IUsosService usosService)
         {
-            _oauthService = oauthService;
             _jwtService = jwtService;
             _usosService = usosService;
         }

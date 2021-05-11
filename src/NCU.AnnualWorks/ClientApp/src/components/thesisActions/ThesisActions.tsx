@@ -1,4 +1,4 @@
-import { ICommandBarItemProps } from "@fluentui/react";
+import { ICommandBarItemProps, mergeStyles } from "@fluentui/react";
 
 interface ActionProps {
   iconOnly?: boolean;
@@ -7,11 +7,18 @@ interface ActionProps {
   disabled?: boolean;
 };
 
+const iconStyles = mergeStyles({
+  fontWeight: '600!important'
+});
+
 export const viewAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'view',
     text: 'Zobacz pracę',
-    iconProps: { iconName: 'View' },
+    iconProps: { 
+      iconName: 'View', 
+      className: `${iconStyles}`
+    },
     ariaLabel: 'View',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
@@ -24,7 +31,10 @@ export const addReviewAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'addReview',
     text: 'Zrecenzuj pracę',
-    iconProps: { iconName: 'PageAdd' },
+    iconProps: { 
+      iconName: 'PageAdd',
+      className: `${iconStyles}` 
+    },
     ariaLabel: 'Add review',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
@@ -37,7 +47,10 @@ export const editReviewAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'editReview',
     text: 'Edytuj recenzję pracy',
-    iconProps: { iconName: 'PageEdit' },
+    iconProps: { 
+      iconName: 'PageEdit',
+      className: `${iconStyles}`
+    },
     ariaLabel: 'Edit review',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
@@ -50,7 +63,10 @@ export const editAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'edit',
     text: 'Edytuj pracę',
-    iconProps: { iconName: 'Edit' },
+    iconProps: { 
+      iconName: 'Edit', 
+      className: `${iconStyles}`
+    },
     ariaLabel: 'Edit',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
@@ -63,7 +79,10 @@ export const downloadAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'download',
     text: 'Pobierz pracę',
-    iconProps: { iconName: 'Download' },
+    iconProps: { 
+      iconName: 'Download',
+      className: `${iconStyles}`
+    },
     ariaLabel: 'Download',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
@@ -76,7 +95,10 @@ export const printAction = (props: ActionProps): ICommandBarItemProps => {
   return {
     key: 'print',
     text: 'Wydrukuj pracę',
-    iconProps: { iconName: 'Print' },
+    iconProps: { 
+      iconName: 'Print',
+      className: `${iconStyles}`
+    },
     ariaLabel: 'Print',
     iconOnly: props.iconOnly ?? true,
     onClick: props.onClick,
