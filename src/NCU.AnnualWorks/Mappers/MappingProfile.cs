@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Models.Dto.Keywords;
 using NCU.AnnualWorks.Core.Models.Dto.Terms;
 using NCU.AnnualWorks.Core.Models.Dto.Users;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
@@ -20,6 +21,8 @@ namespace NCU.AnnualWorks.Mappers
 
             CreateMap<UserDTO, User>();
             CreateMap<User, UserDTO>();
+
+            CreateMap<Keyword, KeywordDTO>();
         }
     }
 }

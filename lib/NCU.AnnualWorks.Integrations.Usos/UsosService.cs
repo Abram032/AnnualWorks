@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Constants;
@@ -82,9 +81,8 @@ namespace NCU.AnnualWorks.Integrations.Usos
                 OAuthSignatureMethod = SignatureMethods.HMACSHA1
             };
 
-        private void AppendOAuthConsumerFields(OAuthRequest oauthRequest)
+        private void AppendOAuthConsumer(OAuthRequest oauthRequest)
         {
-            var baseRequest = GetBaseOAuthRequestFields();
             oauthRequest.OAuthConsumerKey = _options.ConsumerKey;
             oauthRequest.OAuthConsumerSecret = _options.ConsumerSecret;
             oauthRequest.OAuthSignatureMethod = SignatureMethods.HMACSHA1;
@@ -138,14 +136,13 @@ namespace NCU.AnnualWorks.Integrations.Usos
             };
         }
 
-        public async Task<OAuthResponse> GetRequestTokenAsync(HttpContext context)
+        public async Task<OAuthResponse> GetRequestTokenAsync(OAuthRequest oauthRequest)
         {
             var scopes = _options.DefaultScopes.ToScopes();
             var request = GetBaseRequest($"{_options.UsosEndpoints.RequestToken}?scopes={scopes}");
 
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthCallback = $"{context.Request.Scheme}://{context.Request.Host}{_options.CallbackEndpoint}";
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            AppendOAuthConsumer(oauthRequest);
+            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
 
             var response = await SendRequestAsync(request);
 
@@ -203,7 +200,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var fields = _options.UsosFields.Users.ToFields();
             var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUser}?user_id={userId}&fields={fields}");
 
-            AppendOAuthConsumerFields(oauthRequest);
+            AppendOAuthConsumer(oauthRequest);
             _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
 
             var response = await SendRequestAsync(request);
@@ -218,7 +215,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var fields = _options.UsosFields.Users.ToFields();
             var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUsers}?user_ids={userIds.ToFields()}&fields={fields}");
 
-            AppendOAuthConsumerFields(oauthRequest);
+            AppendOAuthConsumer(oauthRequest);
             _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
 
             var response = await SendRequestAsync(request);

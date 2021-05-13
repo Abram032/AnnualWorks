@@ -13,10 +13,10 @@ using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Repositories;
-using NCU.AnnualWorks.Data;
+using NCU.AnnualWorks.Infrastructure.Data;
+using NCU.AnnualWorks.Infrastructure.Data.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
-using NCU.AnnualWorks.Repositories;
 
 namespace NCU.AnnualWorks
 {
@@ -70,15 +70,17 @@ namespace NCU.AnnualWorks
             });
 
             //TODO: Figure out a way to move repositories to external assembly
-            services.AddTransient<IRepository<Answer>, Repository<Answer>>();
-            services.AddTransient<IRepository<File>, Repository<File>>();
-            services.AddTransient<IRepository<Keyword>, Repository<Keyword>>();
-            services.AddTransient<IRepository<Question>, Repository<Question>>();
-            services.AddTransient<IRepository<Review>, Repository<Review>>();
-            services.AddTransient<IRepository<Settings>, Repository<Settings>>();
-            services.AddTransient<IRepository<Thesis>, Repository<Thesis>>();
-            services.AddTransient<IRepository<ThesisLog>, Repository<ThesisLog>>();
-            services.AddTransient<IRepository<User>, Repository<User>>();
+            services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();
+            services.AddTransient<IAsyncRepository<File>, AsyncRepository<File>>();
+            services.AddTransient<IAsyncRepository<Keyword>, AsyncRepository<Keyword>>();
+            services.AddTransient<IAsyncRepository<Question>, AsyncRepository<Question>>();
+            services.AddTransient<IAsyncRepository<Review>, AsyncRepository<Review>>();
+            services.AddTransient<IAsyncRepository<Settings>, AsyncRepository<Settings>>();
+            services.AddTransient<IAsyncRepository<Thesis>, AsyncRepository<Thesis>>();
+            services.AddTransient<IAsyncRepository<ThesisLog>, AsyncRepository<ThesisLog>>();
+            services.AddTransient<IAsyncRepository<User>, AsyncRepository<User>>();
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,6 +89,12 @@ namespace NCU.AnnualWorks
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
             }
             else
             {
