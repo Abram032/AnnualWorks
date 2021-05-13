@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NCU.AnnualWorks.Data.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,9 +15,10 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UsosId = table.Column<string>(maxLength: 20, nullable: false),
-                    FirstLoginAt = table.Column<DateTime>(nullable: false),
-                    LastLoginAt = table.Column<DateTime>(nullable: false),
-                    AccessType = table.Column<int>(nullable: false)
+                    FirstLoginAt = table.Column<DateTime>(nullable: true),
+                    LastLoginAt = table.Column<DateTime>(nullable: true),
+                    AccessType = table.Column<int>(nullable: false),
+                    CustomAccess = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +35,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Text = table.Column<string>(maxLength: 2000, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true)
                 },
@@ -67,7 +68,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Extension = table.Column<string>(maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true)
                 },
@@ -98,7 +99,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Text = table.Column<string>(maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true)
                 },
@@ -130,7 +131,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Text = table.Column<string>(maxLength: 500, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false)
@@ -159,8 +160,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CourseCode = table.Column<string>(maxLength: 100, nullable: false),
-                    ModifiedAt = table.Column<DateTime>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.ComputedColumn),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     ModifiedById = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
@@ -188,7 +188,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     ReviewerId = table.Column<long>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true),
                     TermId = table.Column<string>(maxLength: 20, nullable: false),
@@ -240,7 +240,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     Guid = table.Column<Guid>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true),
                     Grade = table.Column<string>(maxLength: 3, nullable: false),

@@ -29,7 +29,7 @@ namespace NCU.AnnualWorks.Controllers.Auth
 
             var claims = new AuthClaims
             {
-                Id = -1,
+                Id = string.Empty,
                 AccessType = AccessType.Unknown,
                 Token = response.OAuthToken,
                 TokenSecret = response.OAuthTokenSecret,

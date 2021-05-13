@@ -11,10 +11,12 @@ using Microsoft.Extensions.Hosting;
 using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
+using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Data;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using NCU.AnnualWorks.Repositories;
 
 namespace NCU.AnnualWorks
 {
@@ -53,6 +55,7 @@ namespace NCU.AnnualWorks
 
             services.AddUsosService(Configuration);
 
+            //TODO: Move mapper to Core
             var mapperConfiguration = new MapperConfiguration(config =>
             {
                 config.AddProfile(new MappingProfile());
@@ -62,8 +65,20 @@ namespace NCU.AnnualWorks
 
             services.AddDbContext<ApiDbContext>(options =>
             {
+                //TODO: Use options instead of IConfiguration
                 options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
             });
+
+            //TODO: Figure out a way to move repositories to external assembly
+            services.AddTransient<IRepository<Answer>, Repository<Answer>>();
+            services.AddTransient<IRepository<File>, Repository<File>>();
+            services.AddTransient<IRepository<Keyword>, Repository<Keyword>>();
+            services.AddTransient<IRepository<Question>, Repository<Question>>();
+            services.AddTransient<IRepository<Review>, Repository<Review>>();
+            services.AddTransient<IRepository<Settings>, Repository<Settings>>();
+            services.AddTransient<IRepository<Thesis>, Repository<Thesis>>();
+            services.AddTransient<IRepository<ThesisLog>, Repository<ThesisLog>>();
+            services.AddTransient<IRepository<User>, Repository<User>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +103,7 @@ namespace NCU.AnnualWorks
 
             app.UseStaticFiles(new StaticFileOptions
             {
+                //TODO: Test if this works and reduces cache time
                 OnPrepareResponse = context =>
                 {
                     context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");

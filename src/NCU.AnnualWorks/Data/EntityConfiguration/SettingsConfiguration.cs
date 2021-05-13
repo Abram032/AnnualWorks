@@ -11,7 +11,7 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
             builder.HasKey(p => p.Id);
             builder.Property(p => p.CourseCode).IsRequired().HasMaxLength(100);
 
-            builder.Property(p => p.ModifiedAt).ValueGeneratedOnAddOrUpdate();
+            builder.Property(p => p.ModifiedAt).ValueGeneratedOnAddOrUpdate().IsRequired(false);
 
             builder.HasOne(p => p.ModifiedBy).WithMany(p => p.ModifiedSettings);
         }

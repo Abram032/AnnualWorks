@@ -10,9 +10,10 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
         {
             builder.HasKey(p => p.Id);
             builder.HasAlternateKey(p => p.Guid);
+            builder.Property(p => p.Guid).ValueGeneratedOnAdd();
 
             builder.Property(p => p.CreatedAt).ValueGeneratedOnAdd();
-            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate();
+            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);
             builder.Property(p => p.Grade).HasMaxLength(3).IsRequired();
 
             builder.HasOne(p => p.CreatedBy).WithMany(p => p.CreatedReviews).IsRequired();

@@ -2,7 +2,7 @@
 {
     public class UserDTO
     {
-        public string Id { get; set; }
+        public string UsosId { get; set; }
 
         public string PhotoUrl { get; set; }
 

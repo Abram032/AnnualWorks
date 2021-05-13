@@ -1,11 +1,11 @@
-﻿using NCU.AnnualWorks.Core.Models.Enums;
+﻿using NCU.AnnualWorks.Core.Models.DbModels.Base;
+using NCU.AnnualWorks.Core.Models.Enums;
 using System;
 
 namespace NCU.AnnualWorks.Core.Models.DbModels
 {
-    public class ThesisLog
+    public class ThesisLog : Entity
     {
-        public long Id { get; set; }
         public DateTime Timestamp { get; set; }
         public ModificationType ModificationType { get; set; }
 

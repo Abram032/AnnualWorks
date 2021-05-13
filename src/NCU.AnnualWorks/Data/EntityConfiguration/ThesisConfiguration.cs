@@ -10,6 +10,7 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
         {
             builder.HasKey(p => p.Id);
             builder.HasAlternateKey(p => p.Guid);
+            builder.Property(p => p.Guid).ValueGeneratedOnAdd();
 
             builder.Property(p => p.Title).IsRequired().HasMaxLength(1000);
             builder.Property(p => p.Abstract).IsRequired().HasMaxLength(4000);
@@ -18,7 +19,7 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
             builder.Property(p => p.TermId).HasMaxLength(20).IsRequired();
 
             builder.Property(p => p.CreatedAt).ValueGeneratedOnAdd();
-            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate();
+            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);
 
             builder.HasOne(p => p.Reviewer).WithMany(p => p.ReviewedTheses).IsRequired();
             builder.HasOne(p => p.Promoter).WithMany(p => p.PromotedTheses).IsRequired();

@@ -15,7 +15,7 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
             builder.Property(p => p.IsActive).IsRequired();
 
             builder.Property(p => p.CreatedAt).ValueGeneratedOnAdd();
-            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate();
+            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);
 
             builder.HasOne(p => p.CreatedBy).WithMany(p => p.CreatedQuestions).IsRequired();
             builder.HasOne(p => p.ModifiedBy).WithMany(p => p.ModifiedQuestions);

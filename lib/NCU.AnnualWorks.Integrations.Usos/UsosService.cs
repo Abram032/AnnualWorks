@@ -198,6 +198,21 @@ namespace NCU.AnnualWorks.Integrations.Usos
             return user;
         }
 
+        public async Task<UsosUser> GetUser(OAuthRequest oauthRequest, string userId)
+        {
+            var fields = _options.UsosFields.Users.ToFields();
+            var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUser}?user_id={userId}&fields={fields}");
+
+            AppendOAuthConsumerFields(oauthRequest);
+            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+
+            var response = await SendRequestAsync(request);
+            var value = await response.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UsosUser>(value);
+
+            return user;
+        }
+
         public async Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, List<string> userIds)
         {
             var fields = _options.UsosFields.Users.ToFields();

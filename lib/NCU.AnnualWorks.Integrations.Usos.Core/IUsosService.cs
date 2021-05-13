@@ -16,6 +16,7 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core
         Task<OAuthResponse> GetAccessTokenAsync(OAuthRequest oauthRequest);
         Task RevokeAccessTokenAsync(OAuthRequest oauthRequest);
         Task<UsosUser> GetCurrentUser(OAuthRequest oauthRequest);
+        Task<UsosUser> GetUser(OAuthRequest oauthRequest, string userId);
         Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, List<string> userIds);
         Task<UsosTerm> GetCurrentTerm(OAuthRequest oauthRequest);
         Task<UsosTerm> GetTerm(OAuthRequest oauthRequest, string termId);

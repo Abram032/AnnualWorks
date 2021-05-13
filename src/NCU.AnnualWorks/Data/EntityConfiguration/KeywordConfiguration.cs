@@ -12,7 +12,7 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
             builder.HasAlternateKey(p => p.Text);
 
             builder.Property(p => p.CreatedAt).ValueGeneratedOnAdd();
-            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate();
+            builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);
 
             builder.Property(p => p.Text).HasMaxLength(255);
 

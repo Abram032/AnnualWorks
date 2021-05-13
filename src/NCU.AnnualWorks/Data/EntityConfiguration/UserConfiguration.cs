@@ -14,8 +14,10 @@ namespace NCU.AnnualWorks.Data.EntityConfiguration
             builder.Property(p => p.UsosId).IsRequired().HasMaxLength(20);
             builder.Property(p => p.AccessType).IsRequired();
 
-            builder.Property(p => p.FirstLoginAt);
-            builder.Property(p => p.LastLoginAt);
+            builder.Property(p => p.FirstLoginAt).IsRequired(false);
+            builder.Property(p => p.LastLoginAt).IsRequired(false);
+
+            builder.Property(p => p.CustomAccess).IsRequired();
         }
     }
 }

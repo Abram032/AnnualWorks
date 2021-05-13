@@ -9,8 +9,8 @@ using NCU.AnnualWorks.Data;
 namespace NCU.AnnualWorks.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20210511224017_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210512220859_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     b.Property<long>("CreatedById")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -77,9 +77,10 @@ namespace NCU.AnnualWorks.Data.Migrations
                         .HasMaxLength(255);
 
                     b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -113,7 +114,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     b.Property<long>("CreatedById")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -152,7 +153,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -199,9 +200,10 @@ namespace NCU.AnnualWorks.Data.Migrations
                         .HasMaxLength(3);
 
                     b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -259,7 +261,7 @@ namespace NCU.AnnualWorks.Data.Migrations
                         .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
                         .HasMaxLength(100);
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -299,12 +301,13 @@ namespace NCU.AnnualWorks.Data.Migrations
                         .HasMaxLength(3);
 
                     b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<bool>("Hidden")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime(6)");
 
@@ -428,10 +431,13 @@ namespace NCU.AnnualWorks.Data.Migrations
                     b.Property<int>("AccessType")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FirstLoginAt")
+                    b.Property<bool>("CustomAccess")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("FirstLoginAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("LastLoginAt")
+                    b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UsosId")
