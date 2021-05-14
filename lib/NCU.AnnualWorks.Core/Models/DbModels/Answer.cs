@@ -1,13 +1,13 @@
-﻿using System;
+﻿using NCU.AnnualWorks.Core.Models.DbModels.Base;
+using System;
 
 namespace NCU.AnnualWorks.Core.Models.DbModels
 {
-    public class Answer
+    public class Answer : Entity
     {
-        public long Id { get; set; }
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public User CreatedBy { get; set; }
         public User ModifiedBy { get; set; }
 

@@ -1,17 +1,17 @@
-﻿using System;
+﻿using NCU.AnnualWorks.Core.Models.DbModels.Base;
+using System;
 using System.Collections.Generic;
 
 namespace NCU.AnnualWorks.Core.Models.DbModels
 {
-    public class File
+    public class File : Entity
     {
-        public long Id { get; set; }
         public Guid Guid { get; set; }
         public string FileName { get; set; }
         public long Size { get; set; }
         public string Extension { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public User CreatedBy { get; set; }
         public User ModifiedBy { get; set; }
 

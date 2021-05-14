@@ -1,16 +1,17 @@
 ﻿using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
+using NCU.AnnualWorks.Core.Models.DbModels.Base;
 using System;
 using System.Collections.Generic;
 
 namespace NCU.AnnualWorks.Core.Models.DbModels
 {
-    public class User
+    public class User : Entity
     {
-        public long Id { get; set; }
         public string UsosId { get; set; }
-        public DateTime FirstLoginAt { get; set; }
-        public DateTime LastLoginAt { get; set; }
+        public DateTime? FirstLoginAt { get; set; }
+        public DateTime? LastLoginAt { get; set; }
         public AccessType AccessType { get; set; }
+        public bool CustomAccess { get; set; }
 
 
         public ICollection<ThesisAuthor> ThesisAuthors { get; set; }

@@ -13,11 +13,18 @@ namespace NCU.AnnualWorks.Core.Extensions
         public static string GetBaseAddressWithPath(this HttpContext context)
             => $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}";
 
-        public static OAuthRequest BuildOAuthRequest(this HttpContext context)
+        public static string GetBaseAddressWithPath(this HttpContext context, string path)
+            => $"{context.Request.Scheme}://{context.Request.Host}{path}";
+
+        public static OAuthRequest BuildOAuthRequest(this HttpContext context,
+            string token = default, string tokenSecret = default,
+            string verifier = default, string callback = default)
             => new OAuthRequest
             {
-                OAuthToken = context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Token))?.Value,
-                OAuthTokenSecret = context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.TokenSecret))?.Value
+                OAuthToken = token ?? context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Token))?.Value,
+                OAuthTokenSecret = tokenSecret ?? context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.TokenSecret))?.Value,
+                OAuthVerifier = verifier,
+                OAuthCallback = callback
             };
     }
 }

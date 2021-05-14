@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
+﻿using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -12,10 +11,11 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core
         Uri GetBaseAddress();
         Uri GetRedirectAddress(string token);
         Uri GetLogoutAddress();
-        Task<OAuthResponse> GetRequestTokenAsync(HttpContext context);
+        Task<OAuthResponse> GetRequestTokenAsync(OAuthRequest oauthRequest);
         Task<OAuthResponse> GetAccessTokenAsync(OAuthRequest oauthRequest);
         Task RevokeAccessTokenAsync(OAuthRequest oauthRequest);
         Task<UsosUser> GetCurrentUser(OAuthRequest oauthRequest);
+        Task<UsosUser> GetUser(OAuthRequest oauthRequest, string userId);
         Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, List<string> userIds);
         Task<UsosTerm> GetCurrentTerm(OAuthRequest oauthRequest);
         Task<UsosTerm> GetTerm(OAuthRequest oauthRequest, string termId);

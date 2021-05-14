@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import { AccessTypes } from '../../shared/models/AccessType';
+import { AccessTypes } from '../../shared/models/Auth/AccessType';
 import HomeSignIn from "./homeSignIn";
 import HomeSignUp from "./homeSignUp";
 import Home from "./home";
@@ -15,7 +15,7 @@ export const HomeContainer: React.FC = () => {
   else if(!authContext.isAuthenticated) {
     return <HomeSignIn />
   }
-  else if(authContext.isAuthenticated && authContext.user?.accessType === AccessTypes.Unknown) {
+  else if(authContext.isAuthenticated && authContext.currentUser?.accessType === AccessTypes.Unknown) {
     return <HomeSignUp />
   }
   else {

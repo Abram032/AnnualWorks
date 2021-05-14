@@ -1,14 +1,13 @@
 import { IBasePickerSuggestionsProps, IPersonaProps, NormalPeoplePicker } from '@fluentui/react';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface PeoplePickerProps {
-  peopleList: IPersonaProps[],
-  peopleLimit?: number
+  people: IPersonaProps[],
+  peopleLimit?: number,
+  maxSuggestions?: number
 };
 
 export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
-  const [people] = useState<IPersonaProps[]>(props.peopleList);
-
   const suggestionProps: IBasePickerSuggestionsProps = {
     suggestionsHeaderText: 'Suggested People',
     mostRecentlyUsedHeaderText: 'Suggested Contacts',
@@ -24,17 +23,21 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
     selectedItems?: IPersonaProps[]
   ): IPersonaProps[] | Promise<IPersonaProps[]> => {
     
-    return people.filter(p => (
+    return props.people.filter(p => (
       p.text?.toLowerCase().startsWith(filter.toLowerCase()) || 
       p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
-    ) && !selectedItems?.includes(p) );
+    ) && !selectedItems?.includes(p))
+    .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
+    .slice(0, props.maxSuggestions);
   };
 
   const onEmptyFilter = (
     selectedItems?: IPersonaProps[]
   ): IPersonaProps[] | Promise<IPersonaProps[]> => {
 
-    return people.filter(p => !selectedItems?.includes(p));
+    return props.people.filter(p => !selectedItems?.includes(p))
+      .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
+      .slice(0, props.maxSuggestions);
   }
 
   return (

@@ -10,17 +10,15 @@ import ThesisForm from '../pages/thesisForm/thesisForm';
 import Review from '../pages/thesisReview/thesisReview';
 
 export const Routes: React.FC = () => (
-  <BrowserRouter>
-    <Switch>
-      <Route exact path={RouteNames.root} component={HomeContainer} />
-      <Route exact path={RouteNames.signIn} component={SignIn} />
-      <Route exact path={RouteNames.signOut} component={SignOut} />
-      <Route path={RouteNames.authorize} component={Authorize} />
-      <Route path={RouteNames.details} component={ThesisDetails} />
-      <Route path={RouteNames.addthesis} component={ThesisForm} />
-      <Route path={RouteNames.review} component={Review} />
-    </Switch>
-  </BrowserRouter>
+  <Switch>
+    <Route exact path={RouteNames.root} component={HomeContainer} />
+    <Route exact path={RouteNames.signIn} component={SignIn} />
+    <Route exact path={RouteNames.signOut} component={SignOut} />
+    <Route path={RouteNames.authorize} component={Authorize} />
+    <Route path={RouteNames.details} component={ThesisDetails} />
+    <Route path={RouteNames.addthesis} component={ThesisForm} />
+    <Route path={RouteNames.review} component={Review} />
+  </Switch>
 );
 
 export default Routes;

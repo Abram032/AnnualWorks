@@ -11,10 +11,12 @@ using Microsoft.Extensions.Hosting;
 using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
-using NCU.AnnualWorks.Data;
+using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Repositories;
+using NCU.AnnualWorks.Infrastructure.Data;
+using NCU.AnnualWorks.Infrastructure.Data.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace NCU.AnnualWorks
 {
@@ -53,6 +55,7 @@ namespace NCU.AnnualWorks
 
             services.AddUsosService(Configuration);
 
+            //TODO: Move mapper to Core
             var mapperConfiguration = new MapperConfiguration(config =>
             {
                 config.AddProfile(new MappingProfile());
@@ -62,8 +65,22 @@ namespace NCU.AnnualWorks
 
             services.AddDbContext<ApiDbContext>(options =>
             {
+                //TODO: Use options instead of IConfiguration
                 options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
             });
+
+            //TODO: Figure out a way to move repositories to external assembly
+            services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();
+            services.AddTransient<IAsyncRepository<File>, AsyncRepository<File>>();
+            services.AddTransient<IAsyncRepository<Keyword>, AsyncRepository<Keyword>>();
+            services.AddTransient<IAsyncRepository<Question>, AsyncRepository<Question>>();
+            services.AddTransient<IAsyncRepository<Review>, AsyncRepository<Review>>();
+            services.AddTransient<IAsyncRepository<Settings>, AsyncRepository<Settings>>();
+            services.AddTransient<IAsyncRepository<Thesis>, AsyncRepository<Thesis>>();
+            services.AddTransient<IAsyncRepository<ThesisLog>, AsyncRepository<ThesisLog>>();
+            services.AddTransient<IAsyncRepository<User>, AsyncRepository<User>>();
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +89,12 @@ namespace NCU.AnnualWorks
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
             }
             else
             {
@@ -88,6 +111,7 @@ namespace NCU.AnnualWorks
 
             app.UseStaticFiles(new StaticFileOptions
             {
+                //TODO: Test if this works and reduces cache time
                 OnPrepareResponse = context =>
                 {
                     context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
@@ -98,17 +122,14 @@ namespace NCU.AnnualWorks
 
             app.Use(next => context =>
             {
-                if (context.Request.Path == "/")
+                var tokens = antiforgery.GetAndStoreTokens(context);
+                var cookieOptions = new CookieOptions
                 {
-                    var tokens = antiforgery.GetAndStoreTokens(context);
-                    var cookieOptions = new CookieOptions
-                    {
-                        HttpOnly = false,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                    };
-                    context.Response.Cookies.Append(AntiforgeryConsts.FormCookieName, tokens.RequestToken, cookieOptions);
-                }
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                };
+                context.Response.Cookies.Append(AntiforgeryConsts.FormCookieName, tokens.RequestToken, cookieOptions);
                 return next(context);
             });
 

@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import User from '../models/User';
-import UserData from '../models/UserData';
+import CurrentUser from '../models/Auth/CurrentUser';
+import UserClaims from '../models/Auth/UserClaims';
 import { CookieNames } from '../consts/CookieNames';
 import { useCookies } from 'react-cookie';
 import jwtDecode from 'jwt-decode';
 
 interface IAuthenticationContext {
-  user: User | null,
+  currentUser: CurrentUser | null,
   isAuthenticated: boolean,
   isFetching: boolean
 }
 
 export const AuthenticationContext = React.createContext<IAuthenticationContext>({
-  user: null,
+  currentUser: null,
   isAuthenticated: false,
   isFetching: true
 });
 
 export const AuthenticationProvider: React.FC = (props) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [cookies] = useCookies([CookieNames.user]);
@@ -27,13 +27,13 @@ export const AuthenticationProvider: React.FC = (props) => {
     const userToken = cookies[CookieNames.user];
     try
     {
-      const userData = jwtDecode<UserData>(userToken);
-      setUser({
-        id: userData.Id,
-        name: userData.Name,
-        avatarUrl: userData.AvatarUrl,
-        accessType: userData.AccessType,
-        email: userData.Email
+      const userClaims = jwtDecode<UserClaims>(userToken);
+      setCurrentUser({
+        id: userClaims.Id,
+        name: userClaims.Name,
+        avatarUrl: userClaims.AvatarUrl,
+        accessType: userClaims.AccessType,
+        email: userClaims.Email
       });
       setIsAuthenticated(true);
       setIsFetching(false);
@@ -42,14 +42,14 @@ export const AuthenticationProvider: React.FC = (props) => {
     {
       setIsAuthenticated(false);
       setIsFetching(false);
-      setUser(null);
+      setCurrentUser(null);
     }
   }, [cookies])
 
   return (
     <AuthenticationContext.Provider
       value={{
-        user: user,
+        currentUser: currentUser,
         isAuthenticated: isAuthenticated,
         isFetching: isFetching
       }}
