@@ -9,7 +9,19 @@ export namespace AppSettings {
       Authenticate: process.env.REACT_APP_API_AUTH_AUTHENTICATE!,
       Authorize: process.env.REACT_APP_API_AUTH_AUTHORIZE!,
       SignOut: process.env.REACT_APP_API_AUTH_SIGN_OUT!
-    }
+    },
+    Keywords: {
+      Base: process.env.REACT_APP_API_KEYWORDS!
+    },
+    Terms: {
+      Base: process.env.REACT_APP_API_TERMS!,
+      Current: process.env.REACT_APP_API_TERMS_CURRENT!
+    },
+    Users: {
+      Students: process.env.REACT_APP_API_USERS_STUDENTS!,
+      Employees: process.env.REACT_APP_API_USERS_EMPLOYEES!,
+      Admins: process.env.REACT_APP_API_USERS_ADMINS!,
+    },
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;
 }

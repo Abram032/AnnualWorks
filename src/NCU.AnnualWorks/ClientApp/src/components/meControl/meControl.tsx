@@ -11,14 +11,14 @@ import {
 } from "@fluentui/react";
 import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
-import User from "../../shared/models/User";
+import CurrentUser from "../../shared/models/Auth/CurrentUser";
 import ThemePicker from '../themePicker/themePicker';
 import LanguagePicker from '../languagePicker/languagePicker';
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
 
 interface MeControlProps {
-  user: User;
+  user: CurrentUser;
 }
 
 export const MeControl: React.FC<MeControlProps> = (props) => {

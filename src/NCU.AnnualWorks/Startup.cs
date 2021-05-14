@@ -122,17 +122,14 @@ namespace NCU.AnnualWorks
 
             app.Use(next => context =>
             {
-                if (context.Request.Path == "/")
+                var tokens = antiforgery.GetAndStoreTokens(context);
+                var cookieOptions = new CookieOptions
                 {
-                    var tokens = antiforgery.GetAndStoreTokens(context);
-                    var cookieOptions = new CookieOptions
-                    {
-                        HttpOnly = false,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                    };
-                    context.Response.Cookies.Append(AntiforgeryConsts.FormCookieName, tokens.RequestToken, cookieOptions);
-                }
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                };
+                context.Response.Cookies.Append(AntiforgeryConsts.FormCookieName, tokens.RequestToken, cookieOptions);
                 return next(context);
             });
 

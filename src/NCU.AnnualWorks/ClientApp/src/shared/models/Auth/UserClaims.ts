@@ -1,6 +1,6 @@
 import { AccessType } from './AccessType';
 
-export type UserData = {
+export type UserClaims = {
   Id: string;
   Name: string;
   Email: string;
@@ -12,4 +12,4 @@ export type UserData = {
   iat: number;
 };
 
-export default UserData;
+export default UserClaims;

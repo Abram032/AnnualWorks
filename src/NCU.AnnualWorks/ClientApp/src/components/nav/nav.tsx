@@ -10,19 +10,19 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import NavLinks from "./navLinks";
 
 //TODO: Clean up, move to env addresses
-
+//TODO: Fix links and routes with useHistory()
 export const Nav: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
 
   const actions =
-    !authContext.isAuthenticated || !authContext.user ? (
+    !authContext.isAuthenticated || !authContext.currentUser ? (
       <NavLink label="Zaloguj się" href={RouteNames.signIn} />
     ) : (
-      <MeControl user={authContext.user} />
+      <MeControl user={authContext.currentUser} />
     );
 
   const links =
-    !authContext.isAuthenticated || !authContext.user ? null : (
+    !authContext.isAuthenticated || !authContext.currentUser ? null : (
       <>
         <NavLink label="Wyszukiwanie prac" href="#" />
         <NavLink label="Dodaj pracę" href="/add-thesis" />
