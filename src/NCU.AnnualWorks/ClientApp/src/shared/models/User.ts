@@ -1,11 +1,9 @@
-import { AccessType } from './AccessType';
-
 export type User = {
-  id: string;
-  name: string;
-  email: string;
-  accessType: AccessType;
-  avatarUrl: string;
+  usosId: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  photoUrl: string,
 };
 
 export default User;

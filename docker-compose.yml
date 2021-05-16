@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   app:
-    image: ncu-annual-works
+    image: maissae/ncu-annual-works
     ports:
       # Host:Container
       - 80:80

@@ -1,23 +1,24 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/loader/loader';
 import { AppSettings } from '../../AppSettings';
+import Api from '../../shared/api/Api';
+import { useHistory } from "react-router-dom";
 
 export const Authorize: React.FC = () =>
 {
+    const history = useHistory();
     //TODO: Move to api
     useEffect(() => {
         const query = window.location.search.substring(1);
         const params = query.split('&');
         const token = params[0].split('=')[1];
         const verifier = params[1].split('=')[1];
-        axios.post(AppSettings.API.Auth.Authorize, {
+
+        Api.post(AppSettings.API.Auth.Authorize, {
             OAuthToken: token,
             OAuthVerifier: verifier
-        })
-        .then(response => {
-            window.location.search='';
-            window.location.pathname='/';
+        }).then(response => {
+            history.push('/');
         })
         .catch(error => console.log(error));
     }, [])

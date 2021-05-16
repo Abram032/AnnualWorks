@@ -24,7 +24,7 @@ export const PersonalizationContext = React.createContext<IPersonalizationContex
 export const PersonalizationProvider: React.FC = (props) => {
   const [cookies, setCookie] = useCookies([CookieNames.theme, CookieNames.language]);
   const defaultCookieOptions = {
-    expires: new Date((new Date).getTime() + (1000 * 60 * 60 * 24 * 365 * 10)), //10 years
+    expires: new Date((new Date()).getTime() + (1000 * 60 * 60 * 24 * 365 * 10)), //10 years
     httpOnly: false,
     secure: true,
     sameSite: true,
@@ -69,7 +69,7 @@ export const PersonalizationProvider: React.FC = (props) => {
 
   useEffect(() => {
     i18n.changeLanguage(language);
-  }, [language]);
+  }, [i18n, language]);
 
   return (
     <ThemeProvider theme={AvailableThemes[theme]}>

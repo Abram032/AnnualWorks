@@ -1,5 +1,6 @@
 ﻿namespace NCU.AnnualWorks.Constants
 {
+    //TODO: Move to Core
     public static class AntiforgeryConsts
     {
         public const string FormFieldName = "__RequestAntiforgeryToken";

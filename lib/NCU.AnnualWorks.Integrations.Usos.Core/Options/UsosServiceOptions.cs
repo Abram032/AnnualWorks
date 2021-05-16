@@ -16,7 +16,7 @@
         //Application properties
         public string CallbackEndpoint { get; set; }
         public string CourseCode { get; set; }
-        public string DefaultAdministratorEmail { get; set; }
+        public string CourseUrl { get; set; }
 
         //Technical
         public string DateFormatPattern { get; set; }
@@ -33,6 +33,7 @@
         public string Authorize { get; set; }
         public string AccessToken { get; set; }
         public string RevokeToken { get; set; }
+        public string TermsTerm { get; set; }
         public string TermsSearch { get; set; }
         public string UsersUser { get; set; }
         public string UsersUsers { get; set; }
