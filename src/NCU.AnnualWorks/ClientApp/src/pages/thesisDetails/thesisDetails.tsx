@@ -1,18 +1,43 @@
-import { CommandBar, DefaultButton, DetailsRow, FontSizes, IColumn, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import React from 'react';
-import { addReviewAction, downloadAction, editAction, printAction, viewAction } from '../../components/thesisActions/thesisActions';
+import { CommandBar, DefaultButton, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router';
+import Loader from '../../components/loader/loader';
+import { addReviewAction, downloadAction, editAction, printAction, viewAction, editReviewAction } from '../../components/thesisActions/thesisActions';
 import Tile from '../../components/tile/tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
+import { useThesis } from '../../shared/hooks/ThesisHooks';
 
-export const ThesisDetails: React.FC = (props) => {
-  const actionItems = [
-    viewAction({iconOnly: false, disabled: true}),
-    downloadAction({iconOnly: false, disabled: true}),
-    editAction({iconOnly: false, href: RouteNames.addthesis}),
-    printAction({iconOnly: false, disabled: true}),
-    addReviewAction({iconOnly: false, href: RouteNames.review}),
-    //editReviewAction({iconOnly: false}),
-  ];
+interface ThesisDetailsProps {
+  guid: string
+}
+
+export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
+  const history = useHistory();
+  const [thesis, isFetching] = useThesis(props.guid);
+
+  if(isFetching) {
+    return <Loader size='medium' label={"Ładowanie..."} />
+  }
+
+  if(!isFetching && !thesis) {
+    //TODO: Error page
+    return (<> </>)
+  }
+  
+  //Adding available actions
+  const actionItems: ICommandBarItemProps[] = [];
+  if(thesis?.actions.canView) 
+    actionItems.push(viewAction({iconOnly: false, disabled: true}));
+  if(thesis?.actions.canDownload) 
+    actionItems.push(downloadAction({iconOnly: false, disabled: true}));
+  if(thesis?.actions.canEdit) 
+    actionItems.push(editAction({iconOnly: false, href: RouteNames.addthesis, onClick: () => history.push(RouteNames.addthesis)}));
+  if(thesis?.actions.canPrint) 
+    actionItems.push(printAction({iconOnly: false, disabled: true}));
+  if(thesis?.actions.canAddReview) 
+    actionItems.push(addReviewAction({iconOnly: false, href: RouteNames.review, onClick: () => history.push(RouteNames.review)}));
+  if(thesis?.actions.canEditReview) 
+    actionItems.push(editReviewAction({iconOnly: false, href: RouteNames.review, onClick: () => history.push(RouteNames.review)}));
 
   const columns: IColumn[] = [
     { key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
@@ -41,7 +66,11 @@ export const ThesisDetails: React.FC = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'action':
-        return <IconButton iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} href={RouteNames.review} />
+        return <IconButton 
+          iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} 
+          href={RouteNames.review} 
+          onClick={() => history.push(RouteNames.review)} 
+        />
       case 'name':
         return <Label>{item.name}</Label>
       case 'grade':
@@ -60,7 +89,7 @@ export const ThesisDetails: React.FC = (props) => {
 
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
-      <Tile title='Tytuł pracy'>
+      <Tile title={thesis?.title}>
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar
@@ -69,15 +98,16 @@ export const ThesisDetails: React.FC = (props) => {
           />
         </Stack>
         <Stack tokens={stackTokens}>
-          <Label>Dodana: 06.05.2021</Label>
-          <Label>Termin: 07.05.2021</Label>
-          <Label>Autor: Jan Kowalski</Label>
+          <Label>Dodana: {new Date(thesis?.createdAt!).toLocaleDateString()}</Label>
+          <Label>
+            {thesis?.thesisAuthors.length === 1 ? "Autor" : "Autorzy"}: {thesis?.thesisAuthors.map(p => `${p.firstName} ${p.lastName}`).join(', ')}
+          </Label>
         </Stack>
         <Stack tokens={stackTokens}>
           <Label style={{fontSize: FontSizes.size20}}>Abstrakt:</Label>
-          <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+          <p>{thesis?.abstract}</p>
           <Label style={{fontSize: FontSizes.size20}}>Słowa kluczowe:</Label>
-          <p>Słowo1, Słowo2, Słowo3, Słowo4, Słowo5, Słowo6</p>
+          <p>{thesis?.thesisKeywords.map(k => k.text).join(', ')}</p>
           <Label style={{fontSize: FontSizes.size20}}>Recenzja promotora:</Label>
           <DetailsRow 
             selectionMode={SelectionMode.none}
@@ -98,7 +128,7 @@ export const ThesisDetails: React.FC = (props) => {
       </Tile>
       <Stack horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton href={RouteNames.root}>Powrót do listy prac</PrimaryButton>
+          <PrimaryButton href={RouteNames.root} onClick={() => history.push(RouteNames.root)}>Powrót do listy prac</PrimaryButton>
         </StackItem>
       </Stack>
     </Stack>

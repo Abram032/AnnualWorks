@@ -5,6 +5,7 @@ interface ActionProps {
   onClick?: () => void;
   href?: string;
   disabled?: boolean;
+  visible?: boolean;
 };
 
 const iconStyles = mergeStyles({
@@ -24,6 +25,7 @@ export const viewAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };
 
@@ -40,6 +42,7 @@ export const addReviewAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };
 
@@ -56,6 +59,7 @@ export const editReviewAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };
 
@@ -72,6 +76,7 @@ export const editAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };
 
@@ -88,6 +93,7 @@ export const downloadAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };
 
@@ -104,5 +110,6 @@ export const printAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
   }
 };

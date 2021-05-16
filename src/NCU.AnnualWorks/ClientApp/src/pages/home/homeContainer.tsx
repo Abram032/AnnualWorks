@@ -10,7 +10,7 @@ export const HomeContainer: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
 
   if(authContext.isFetching) {
-    return <Loader size='medium' />
+    return <Loader label={'Ładowanie...'} size='medium' />
   } 
   else if(!authContext.isAuthenticated) {
     return <HomeSignIn />

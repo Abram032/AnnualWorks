@@ -16,10 +16,12 @@ using NCU.AnnualWorks.Constants;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
+using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Infrastructure.Data.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
+using NCU.AnnualWorks.Services;
 
 namespace NCU.AnnualWorks
 {
@@ -89,6 +91,8 @@ namespace NCU.AnnualWorks
                 options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
             });
 
+            services.AddSingleton<IFileService, FileService>();
+
             //TODO: Figure out a way to move repositories to external assembly
             services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();
             services.AddTransient<IAsyncRepository<File>, AsyncRepository<File>>();
@@ -142,6 +146,12 @@ namespace NCU.AnnualWorks
                 }
             });
             app.UseSpaStaticFiles();
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //        Path.Combine(Directory.GetCurrentDirectory(), "files")),
+            //    RequestPath = "/files",
+            //});
 
             app.Use(next => context =>
             {

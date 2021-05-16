@@ -7,5 +7,6 @@
         public long MaxFileSize { get; set; }
         public string DefaultAdministratorUsosId { get; set; }
         public long MaxAuthorCount { get; set; }
+        public string FileStoragePath { get; set; }
     }
 }

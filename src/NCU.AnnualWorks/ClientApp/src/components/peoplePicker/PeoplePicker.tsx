@@ -1,12 +1,17 @@
-import { IBasePickerSuggestionsProps, IPersonaProps, NormalPeoplePicker } from '@fluentui/react';
+import { FontSizes, IBasePickerSuggestionsProps, IPersonaProps, Label, mergeStyles, NormalPeoplePicker, useTheme } from '@fluentui/react';
 import React from 'react';
 
-interface PeoplePickerProps {
+export interface PeoplePickerProps {
+  name: string,
+  label: string,
   people: IPersonaProps[],
   selectedPeople: IPersonaProps[],
   onChange: (people?: IPersonaProps[]) => void, 
+  onBlur?: () => void,
   peopleLimit?: number,
-  maxSuggestions?: number
+  maxSuggestions?: number,
+  required?: boolean,
+  errorMessage?: string | JSX.Element,
 };
 
 export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
@@ -42,15 +47,28 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
       .slice(0, props.maxSuggestions);
   }
 
+  const theme = useTheme();
+  const validationErrorStyles = mergeStyles({
+    color: theme.semanticColors.errorText,
+    fontSize: FontSizes.size12,
+    marginTop: '5px'
+  });
+
   return (
-    <NormalPeoplePicker
-      className='people-picker'
-      onEmptyResolveSuggestions={onEmptyFilter}
-      onResolveSuggestions={onFilterChanged}
-      pickerSuggestionsProps={suggestionProps}
-      itemLimit={props.peopleLimit}
-      onChange={props.onChange}
-    />
+    <>
+      <Label required={props.required}>{props.label}</Label>
+      <NormalPeoplePicker
+        key={props.name}
+        className='people-picker'
+        onEmptyResolveSuggestions={onEmptyFilter}
+        onResolveSuggestions={onFilterChanged}
+        pickerSuggestionsProps={suggestionProps}
+        itemLimit={props.peopleLimit}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+      />
+      {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
+    </>
   );
 }
 

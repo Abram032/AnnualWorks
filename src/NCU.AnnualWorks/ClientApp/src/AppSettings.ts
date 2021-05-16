@@ -22,6 +22,12 @@ export namespace AppSettings {
       Employees: process.env.REACT_APP_API_USERS_EMPLOYEES!,
       Admins: process.env.REACT_APP_API_USERS_ADMINS!,
     },
+    Theses: {
+      Base: process.env.REACT_APP_API_THESES!,
+      Promoted: process.env.REACT_APP_API_THESES_PROMOTED!,
+      Reviewed: process.env.REACT_APP_API_THESES_REVIEWED!,
+      Authored: process.env.REACT_APP_API_THESES_AUTHORED!,
+    }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;
 }

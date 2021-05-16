@@ -13,6 +13,7 @@ using NCU.AnnualWorks.Core.Models.Dto.Users;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
+using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
@@ -21,8 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Theses
@@ -35,12 +34,16 @@ namespace NCU.AnnualWorks.Api.Theses
         private readonly UsosServiceOptions _usosOptions;
         private readonly ApplicationOptions _appOptions;
         private readonly IAsyncRepository<Keyword> _keywordRepository;
+        private readonly IAsyncRepository<Review> _reviewRepository;
 
         private readonly IThesisRepository _thesisRepository;
         private readonly IUserRepository _userRepository;
+
+        private readonly IFileService _fileService;
         public ThesesController(IUsosService usosService, IMapper mapper, IOptions<UsosServiceOptions> usosOptions,
             IOptions<ApplicationOptions> appOptions, IUserRepository userRepository,
-            IThesisRepository thesisRepository, IAsyncRepository<Keyword> keywordRepository)
+            IThesisRepository thesisRepository, IAsyncRepository<Review> reviewRepository,
+            IAsyncRepository<Keyword> keywordRepository, IFileService fileService)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -49,22 +52,117 @@ namespace NCU.AnnualWorks.Api.Theses
             _userRepository = userRepository;
             _thesisRepository = thesisRepository;
             _keywordRepository = keywordRepository;
+            _reviewRepository = reviewRepository;
+            _fileService = fileService;
         }
 
-        private string GetFileChecksum(Stream file)
+        [HttpGet("promoted")]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        public async Task<IActionResult> GetPromotedTheses()
         {
-            string checksum = null;
-            using (var sha256Hash = SHA256.Create())
-            {
-                byte[] data = sha256Hash.ComputeHash(file);
-                var sb = new StringBuilder();
-                for (int i = 0; i < data.Length; i++)
+            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
+            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+
+            var theses = _thesisRepository.GetAll()
+                .Where(p => p.Promoter == currentUser && p.TermId == currentTerm.Id)
+                .Select(p => new ThesisBasicDTO
                 {
-                    sb.Append(data[i].ToString("x2"));
-                }
-                checksum = sb.ToString();
-            }
-            return checksum;
+                    Guid = p.Guid,
+                    Title = p.Title,
+                    Actions = new ThesisActionsDTO
+                    {
+                        CanView = true,
+                        CanEdit = true,
+                        CanPrint = true,
+                        CanDownload = true,
+                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser)
+                    }
+                }).ToList();
+
+            return new OkObjectResult(theses);
+        }
+
+        [HttpGet("reviewed")]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        public async Task<IActionResult> GetReviewedTheses()
+        {
+            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
+            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+
+            var theses = _thesisRepository.GetAll()
+                .Where(p => p.Reviewer == currentUser && p.TermId == currentTerm.Id)
+                .Select(p => new ThesisBasicDTO
+                {
+                    Guid = p.Guid,
+                    Title = p.Title,
+                    Actions = new ThesisActionsDTO
+                    {
+                        CanView = true,
+                        CanEdit = false,
+                        CanPrint = true,
+                        CanDownload = true,
+                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser)
+                    }
+                }).ToList();
+
+            return new OkObjectResult(theses);
+        }
+
+        [HttpGet("authored")]
+        public async Task<IActionResult> GetAuthoredTheses()
+        {
+            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
+            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+
+            var theses = _thesisRepository.GetAll()
+                .Where(p => p.ThesisAuthors.Select(p => p.Author).Contains(currentUser) && p.TermId == currentTerm.Id)
+                .Select(p => new ThesisBasicDTO
+                {
+                    Guid = p.Guid,
+                    Title = p.Title,
+                    Actions = new ThesisActionsDTO
+                    {
+                        CanView = true,
+                        CanPrint = true,
+                        CanDownload = true,
+                    }
+                }).ToList();
+
+            var thesesDto = _mapper.Map<List<ThesisBasicDTO>>(theses);
+
+            return new OkObjectResult(thesesDto);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTheses()
+        {
+            var currentUserAccessType = HttpContext.CurrentUserAccessType();
+            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
+            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var isAdminOrEmployee = currentUserAccessType == AccessType.Admin || currentUserAccessType == AccessType.Employee;
+
+            var theses = _thesisRepository.GetAll()
+                .Where(p => p.TermId == currentTerm.Id)
+                .Select(p => new ThesisBasicDTO
+                {
+                    Guid = p.Guid,
+                    Title = p.Title,
+                    Actions = new ThesisActionsDTO
+                    {
+                        CanView = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanPrint = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanDownload = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanEdit = p.Promoter == currentUser,
+                        CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
+                            !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                        CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
+                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                    }
+                }).ToList();
+
+            return new OkObjectResult(theses);
         }
 
         [HttpGet("{id:guid}")]
@@ -171,22 +269,15 @@ namespace NCU.AnnualWorks.Api.Theses
             var authors = _userRepository.GetAll().Where(p => requestData.AuthorUsosIds.Contains(p.UsosId)).ToList();
             if (authors.Count != requestData.AuthorUsosIds.Count)
             {
-                foreach (var authorId in requestData.AuthorUsosIds)
+                var newUsers = requestData.AuthorUsosIds.Where(p => !authors.Select(a => a.UsosId).Contains(p));
+                var newUsosUsers = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), newUsers);
+                if (newUsosUsers.Any(p => p == null))
                 {
-                    var author = await _userRepository.GetAsync(authorId);
-                    if (author == null)
-                    {
-                        var usosUser = await _usosService.GetUser(oauthRequest, authorId);
-                        if (usosUser == null)
-                        {
-                            return new BadRequestObjectResult("User does not exist.");
-                        }
-
-                        author = _mapper.Map<UsosUser, User>(usosUser);
-                    }
-
-                    authors.Add(author);
+                    return new BadRequestObjectResult("User does not exist.");
                 }
+                var newAuthors = _mapper.Map<List<User>>(newUsosUsers);
+                await _userRepository.AddRangeAsync(newAuthors);
+                authors.AddRange(newAuthors);
             }
 
             //Getting/Creating keywords
@@ -235,28 +326,29 @@ namespace NCU.AnnualWorks.Api.Theses
                 ContentType = request.ThesisFile.ContentType,
                 CreatedBy = currentUser,
                 Size = request.ThesisFile.Length,
-                Checksum = GetFileChecksum(request.ThesisFile.OpenReadStream()),
+                Checksum = _fileService.GenerateChecksum(request.ThesisFile.OpenReadStream())
             };
+            await _fileService.SaveFile(request.ThesisFile.OpenReadStream(), thesisGuid.ToString(), fileGuid.ToString());
 
-            var additionalFiles = new List<ThesisAdditionalFile>();
-            foreach (var additonalFile in request.AdditionalThesisFiles)
-            {
-                var additionalFileGuid = Guid.NewGuid();
-                additionalFiles.Add(new ThesisAdditionalFile()
-                {
-                    File = new Core.Models.DbModels.File
-                    {
-                        Guid = additionalFileGuid,
-                        FileName = additonalFile.FileName,
-                        Extension = Path.GetExtension(additonalFile.FileName),
-                        Path = Path.Combine(thesisGuid.ToString(), additionalFileGuid.ToString()),
-                        ContentType = additonalFile.ContentType,
-                        CreatedBy = currentUser,
-                        Size = additonalFile.Length,
-                        Checksum = GetFileChecksum(additonalFile.OpenReadStream())
-                    }
-                });
-            }
+            //var additionalFiles = new List<ThesisAdditionalFile>();
+            //foreach (var additonalFile in request.AdditionalThesisFiles)
+            //{
+            //    var additionalFileGuid = Guid.NewGuid();
+            //    additionalFiles.Add(new ThesisAdditionalFile()
+            //    {
+            //        File = new Core.Models.DbModels.File
+            //        {
+            //            Guid = additionalFileGuid,
+            //            FileName = additonalFile.FileName,
+            //            Extension = Path.GetExtension(additonalFile.FileName),
+            //            Path = Path.Combine(thesisGuid.ToString(), additionalFileGuid.ToString()),
+            //            ContentType = additonalFile.ContentType,
+            //            CreatedBy = currentUser,
+            //            Size = additonalFile.Length,
+            //            Checksum = GetFileChecksum(additonalFile.OpenReadStream())
+            //        }
+            //    });
+            //}
 
             var thesis = new Thesis()
             {
@@ -270,13 +362,13 @@ namespace NCU.AnnualWorks.Api.Theses
                 ThesisKeywords = thesisKeywords,
                 ThesisLogs = thesisLogs,
                 File = thesisFile,
-                ThesisAdditionalFiles = additionalFiles,
+                //ThesisAdditionalFiles = additionalFiles,
                 CreatedBy = currentUser,
             };
 
             await _thesisRepository.AddAsync(thesis);
 
-            return new OkResult();
+            return new OkObjectResult(thesisGuid);
         }
 
         [HttpPut("{id:guid}")]
@@ -384,7 +476,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 thesis.Reviewer = reviewer;
             }
 
-            var fileChecksum = GetFileChecksum(request.ThesisFile.OpenReadStream());
+            var fileChecksum = _fileService.GenerateChecksum(request.ThesisFile.OpenReadStream());
             if (thesis.File.Checksum != fileChecksum)
             {
                 thesis.LogChange(currentUser, ModificationType.FileChanged);
@@ -396,7 +488,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 thesis.File.Size = request.ThesisFile.Length;
                 thesis.File.Checksum = fileChecksum;
 
-                //TODO: Save file locally
+                await _fileService.SaveFile(request.ThesisFile.OpenReadStream(), thesis.Guid.ToString(), thesis.File.Guid.ToString());
             }
 
             thesis.ModifiedBy = currentUser;
