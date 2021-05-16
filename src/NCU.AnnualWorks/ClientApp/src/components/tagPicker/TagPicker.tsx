@@ -3,6 +3,8 @@ import { ITag, TagPicker as FluentTagPicker } from '@fluentui/react';
 
 interface TagPickerProps {
   tags: ITag[];
+  selectedTags: ITag[];
+  onChange: (tags?: ITag[]) => void;
   separator?: string;
 }
 
@@ -34,6 +36,7 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
     <FluentTagPicker 
       onEmptyResolveSuggestions={onEmptyFilter}
       onResolveSuggestions={onFilterChanged}
+      onChange={props.onChange}
     />
   )
 }

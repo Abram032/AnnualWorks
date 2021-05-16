@@ -8,27 +8,25 @@ using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto.Users;
+using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
-using NCU.AnnualWorks.Integrations.Usos.Core.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Users
 {
-    //TODO: Enable anti forgery token
-    //[AutoValidateAntiforgeryToken]
     [Authorize(AuthorizationPolicies.AtLeastEmployee)]
     public class UsersController : ApiControllerBase
     {
         private readonly IUsosService _usosService;
         private readonly IMapper _mapper;
         private readonly IAsyncRepository<User> _userRepository;
-        private readonly UsosServiceOptions _options;
+        private readonly ApplicationOptions _options;
         public UsersController(IUsosService usosService, IMapper mapper,
-            IAsyncRepository<User> userRepository, IOptions<UsosServiceOptions> options)
+            IAsyncRepository<User> userRepository, IOptions<ApplicationOptions> options)
         {
             _usosService = usosService;
             _mapper = mapper;

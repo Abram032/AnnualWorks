@@ -10,19 +10,19 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
 {
     public class AsyncRepository<T> : IAsyncRepository<T> where T : Entity
     {
-        private readonly ApiDbContext _context;
-        private readonly DbSet<T> _entities;
+        protected readonly ApiDbContext _context;
+        protected readonly DbSet<T> _entities;
         public AsyncRepository(ApiDbContext context)
         {
             _context = context;
             _entities = context.Set<T>();
         }
 
-        public IQueryable<T> GetAll() => _entities;
+        public virtual IQueryable<T> GetAll() => _entities;
 
-        public Task<T> GetAsync(long id) => _entities.SingleOrDefaultAsync(e => e.Id == id);
+        public virtual Task<T> GetAsync(long id) => _entities.SingleOrDefaultAsync(e => e.Id == id);
 
-        public async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity)
         {
             if (entity == null)
             {
@@ -33,7 +33,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeAsync(IEnumerable<T> entities)
+        public virtual async Task AddRangeAsync(IEnumerable<T> entities)
         {
             if (entities == null || entities.Any(e => e == null))
             {
@@ -44,7 +44,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task RemoveAsync(T entity)
+        public virtual Task RemoveAsync(T entity)
         {
             if (entity == null)
             {
@@ -55,7 +55,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task RemoveRangeAsync(IEnumerable<T> entities)
+        public virtual Task RemoveRangeAsync(IEnumerable<T> entities)
         {
             if (entities == null || entities.Any(e => e == null))
             {
@@ -66,7 +66,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(T entity)
+        public virtual Task UpdateAsync(T entity)
         {
             if (entity == null)
             {
@@ -77,7 +77,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task UpdateRangeAsync(IEnumerable<T> entities)
+        public virtual Task UpdateRangeAsync(IEnumerable<T> entities)
         {
             if (entities == null || entities.Any(e => e == null))
             {

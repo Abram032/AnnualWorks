@@ -3,5 +3,19 @@
     public enum ModificationType
     {
         Unknown,
+        Created,
+        TitleChanged,
+        AbstractChanged,
+        AuthorsChanged,
+        ReviewerChanged,
+        KeywordsChanged,
+        Hidden,
+        Visible,
+        FileChanged,
+        AddtionalFilesAdded,
+        AdditionalFilesRemoved,
+        ReviewAdded,
+        ReviewChanged,
+        ReveiewQuestionsUpdated
     }
 }

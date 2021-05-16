@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Terms
 {
-    [AutoValidateAntiforgeryToken]
     [Authorize(AuthorizationPolicies.AtLeastDefault)]
     public class TermsController : ApiControllerBase
     {

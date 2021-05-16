@@ -1,4 +1,6 @@
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +14,7 @@ using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
 using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Infrastructure.Data.Repositories;
@@ -32,7 +35,24 @@ namespace NCU.AnnualWorks
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.Configure<ApplicationOptions>(options => Configuration.GetSection(nameof(ApplicationOptions)).Bind(options));
+
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson()
+                .AddFluentValidation(options =>
+                {
+                    options.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    options.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+                    options.ValidatorOptions.DisplayNameResolver = (type, member, lambda) =>
+                    {
+                        if (member != null)
+                        {
+                            return member.Name;
+                        }
+                        return null;
+                    };
+                    options.ValidatorOptions.CascadeMode = CascadeMode.Stop;
+                });
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -79,6 +99,9 @@ namespace NCU.AnnualWorks
             services.AddTransient<IAsyncRepository<Thesis>, AsyncRepository<Thesis>>();
             services.AddTransient<IAsyncRepository<ThesisLog>, AsyncRepository<ThesisLog>>();
             services.AddTransient<IAsyncRepository<User>, AsyncRepository<User>>();
+
+            services.AddTransient<IThesisRepository, ThesisRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddSwaggerGen();
         }

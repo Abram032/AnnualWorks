@@ -1,4 +1,5 @@
 ﻿using NCU.AnnualWorks.Core.Models.DbModels.Base;
+using NCU.AnnualWorks.Core.Models.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -26,5 +27,19 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public ICollection<ThesisAuthor> ThesisAuthors { get; set; }
         public ICollection<ThesisLog> ThesisLogs { get; set; }
         public ICollection<ThesisAdditionalFile> ThesisAdditionalFiles { get; set; }
+
+        public void LogChange(User user, ModificationType modificationType)
+        {
+            if (ThesisLogs == null)
+            {
+                ThesisLogs = new List<ThesisLog>();
+            }
+
+            ThesisLogs.Add(new ThesisLog
+            {
+                User = user,
+                ModificationType = modificationType
+            });
+        }
     }
 }

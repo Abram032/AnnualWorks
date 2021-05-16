@@ -16,7 +16,10 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
             builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);
 
             builder.Property(p => p.FileName).IsRequired().HasMaxLength(255);
+            builder.Property(p => p.Path).IsRequired().HasMaxLength(255);
             builder.Property(p => p.Extension).IsRequired().HasMaxLength(255);
+            builder.Property(p => p.ContentType).IsRequired().HasMaxLength(255);
+            builder.Property(p => p.Checksum).IsRequired().HasMaxLength(64);
             builder.Property(p => p.Size).IsRequired();
 
             builder.HasOne(p => p.CreatedBy).WithMany(p => p.CreatedFiles).IsRequired();

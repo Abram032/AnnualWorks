@@ -64,13 +64,16 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Guid = table.Column<Guid>(nullable: false),
                     FileName = table.Column<string>(maxLength: 255, nullable: false),
+                    Path = table.Column<string>(maxLength: 255, nullable: false),
                     Size = table.Column<long>(nullable: false),
                     Extension = table.Column<string>(maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     CreatedById = table.Column<long>(nullable: false),
-                    ModifiedById = table.Column<long>(nullable: true)
+                    ModifiedById = table.Column<long>(nullable: true),
+                    Checksum = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {

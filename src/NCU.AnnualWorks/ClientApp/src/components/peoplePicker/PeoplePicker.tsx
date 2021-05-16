@@ -3,6 +3,8 @@ import React from 'react';
 
 interface PeoplePickerProps {
   people: IPersonaProps[],
+  selectedPeople: IPersonaProps[],
+  onChange: (people?: IPersonaProps[]) => void, 
   peopleLimit?: number,
   maxSuggestions?: number
 };
@@ -47,6 +49,7 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
       onResolveSuggestions={onFilterChanged}
       pickerSuggestionsProps={suggestionProps}
       itemLimit={props.peopleLimit}
+      onChange={props.onChange}
     />
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "./layout/layout";
-import Routes from './routes/routes';
+import Routes from './routes/Routes';
 import { CookiesProvider } from "react-cookie";
 import AuthenticationProvider from "./shared/providers/AuthenticationProvider";
 import PersonalizationProvider from "./shared/providers/PersonalizationProvider";
