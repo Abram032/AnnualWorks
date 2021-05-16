@@ -57,6 +57,16 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Checksum")
+                        .IsRequired()
+                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
+                        .HasMaxLength(64);
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
+                        .HasMaxLength(255);
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)");
@@ -84,6 +94,11 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 
                     b.Property<long?>("ModifiedById")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
+                        .HasMaxLength(255);
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");

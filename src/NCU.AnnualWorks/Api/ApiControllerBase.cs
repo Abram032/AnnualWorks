@@ -2,7 +2,6 @@
 
 namespace NCU.AnnualWorks.Api
 {
-    //[Authorize(AuthenticationSchemes = AuthenticationSchemes.JWTAuthenticationScheme, Policy = AuthorizationPolicies.AtLeastDefault)]
     [AutoValidateAntiforgeryToken]
     [Route("api/[controller]")]
     [ApiController]

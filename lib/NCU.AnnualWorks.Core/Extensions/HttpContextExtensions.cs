@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
+using System;
 using System.Linq;
 
 namespace NCU.AnnualWorks.Core.Extensions
@@ -26,5 +28,11 @@ namespace NCU.AnnualWorks.Core.Extensions
                 OAuthVerifier = verifier,
                 OAuthCallback = callback
             };
+
+        public static string CurrentUserUsosId(this HttpContext context)
+            => context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Id))?.Value;
+
+        public static AccessType CurrentUserAccessType(this HttpContext context)
+            => (AccessType)Enum.Parse(typeof(AccessType), context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.AccessType))?.Value);
     }
 }

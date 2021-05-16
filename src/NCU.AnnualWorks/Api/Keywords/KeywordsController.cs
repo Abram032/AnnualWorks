@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Keywords
 {
-    [AutoValidateAntiforgeryToken]
     [Authorize(AuthorizationPolicies.AtLeastEmployee)]
     public class KeywordsController : ApiControllerBase
     {

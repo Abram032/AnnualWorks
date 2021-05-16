@@ -16,7 +16,7 @@
         //Application properties
         public string CallbackEndpoint { get; set; }
         public string CourseCode { get; set; }
-        public string DefaultAdministratorUsosId { get; set; }
+        public string CourseUrl { get; set; }
 
         //Technical
         public string DateFormatPattern { get; set; }

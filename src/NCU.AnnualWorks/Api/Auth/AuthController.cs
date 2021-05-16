@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Auth.Models;
@@ -8,8 +9,10 @@ using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.Core;
+using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
 using System;
 using System.Linq;
@@ -23,21 +26,26 @@ namespace NCU.AnnualWorks.Api.Auth
         private readonly IUsosService _usosService;
         private readonly IJWTAuthenticationService _jwtService;
         private readonly IAsyncRepository<User> _userRepository;
-        private readonly UsosServiceOptions _options;
+        private readonly UsosServiceOptions _usosOptions;
+        private readonly ApplicationOptions _appOptions;
+        private readonly IMapper _mapper;
         public AuthController(IUsosService usosService, IJWTAuthenticationService jwtService,
-            IAsyncRepository<User> userRepository, IOptions<UsosServiceOptions> options)
+            IAsyncRepository<User> userRepository, IOptions<UsosServiceOptions> usosOptions,
+            IOptions<ApplicationOptions> appOptions, IMapper mapper)
         {
             _usosService = usosService;
             _jwtService = jwtService;
             _userRepository = userRepository;
-            _options = options.Value;
+            _usosOptions = usosOptions.Value;
+            _appOptions = appOptions.Value;
+            _mapper = mapper;
         }
 
         [HttpPost("Authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate()
         {
-            var callbackUrl = HttpContext.GetBaseAddressWithPath(_options.CallbackEndpoint);
+            var callbackUrl = HttpContext.GetBaseAddressWithPath(_usosOptions.CallbackEndpoint);
             var oauthRequest = HttpContext.BuildOAuthRequest(null, null, callback: callbackUrl);
             var response = await _usosService.GetRequestTokenAsync(oauthRequest);
 
@@ -84,24 +92,22 @@ namespace NCU.AnnualWorks.Api.Auth
                 accessType = AccessType.Default;
             }
 
-            if (usosUser.Id == _options.DefaultAdministratorUsosId)
+            if (usosUser.Id == _appOptions.DefaultAdministratorUsosId)
             {
                 accessType = AccessType.Admin;
             }
 
             if (user == null)
             {
-                await _userRepository.AddAsync(new User()
-                {
-                    UsosId = usosUser.Id,
-                    FirstLoginAt = DateTime.Now,
-                    LastLoginAt = DateTime.Now,
-                    AccessType = accessType
-                });
+                user = _mapper.Map<UsosUser, User>(usosUser);
+                user.FirstLoginAt = DateTime.Now;
+                user.LastLoginAt = DateTime.Now;
+                user.AccessType = accessType;
+                await _userRepository.AddAsync(user);
             }
             else
             {
-                if (usosUser.Id == _options.DefaultAdministratorUsosId || user.AccessType == AccessType.Admin)
+                if (usosUser.Id == _appOptions.DefaultAdministratorUsosId || user.AccessType == AccessType.Admin)
                 {
                     accessType = AccessType.Admin;
                 }

@@ -210,7 +210,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             return user;
         }
 
-        public async Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, List<string> userIds)
+        public async Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, IEnumerable<string> userIds)
         {
             var fields = _options.UsosFields.Users.ToFields();
             var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUsers}?user_ids={userIds.ToFields()}&fields={fields}");
