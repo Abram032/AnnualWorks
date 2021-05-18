@@ -6,12 +6,12 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses } from "../../shared/hooks/ThesisHooks";
 import Loader from "../../components/loader/loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import { AccessTypes } from "../../shared/models/Auth/AccessType";
 import { useHistory } from "react-router";
 
 export const Home: React.FC = () => {
   const history = useHistory();
   const authContext =  useContext(AuthenticationContext);
+  const currentUser = authContext.currentUser;
   const [currentTheses, curentThesesFetching] = useCurrentTheses();
   const [authoredTheses, authoredThesesFetching] = useAuthoredTheses();
   const [promotedTheses, promotedThesesFetching] = usePromotedTheses();
@@ -24,21 +24,21 @@ export const Home: React.FC = () => {
   const stackTokens: IStackTokens = { childrenGap: 25 }
 
   const authoredList = (): React.ReactNode => {
-    if(authContext.currentUser?.accessType !== AccessTypes.Default) {
+    if(!currentUser?.isParticipant) {
       return null;
     }
     return <ThesisList title='Moje prace' items={authoredTheses} isCollapsed={false}/>
   };
 
   const promotedList = (): React.ReactNode => {
-    if(authContext.currentUser?.accessType === AccessTypes.Default) {
+    if(!currentUser?.isLecturer) {
       return null;
     }
     return <ThesisList title='Promowane prace' items={promotedTheses} isCollapsed={false}/>
   };
 
   const reviewedList = (): React.ReactNode => {
-    if(authContext.currentUser?.accessType === AccessTypes.Default) {
+    if(!currentUser?.isLecturer || !currentUser?.isCustom || !currentUser?.isAdmin) {
       return null;
     }
     return <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/>
@@ -47,7 +47,7 @@ export const Home: React.FC = () => {
   return (
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
-        <PrimaryButton href={RouteNames.addthesis} onClick={() => history.push(RouteNames.addthesis)}>Dodaj pracę</PrimaryButton>
+        <PrimaryButton href={RouteNames.addThesis} onClick={() => history.push(RouteNames.addThesis)}>Dodaj pracę</PrimaryButton>
         <Label>Termin końcowy: 07.05.2021</Label>
       </Stack>
       {authoredList()}

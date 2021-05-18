@@ -31,7 +31,11 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   if(thesis?.actions.canDownload) 
     actionItems.push(downloadAction({iconOnly: false, disabled: true}));
   if(thesis?.actions.canEdit) 
-    actionItems.push(editAction({iconOnly: false, href: RouteNames.addthesis, onClick: () => history.push(RouteNames.addthesis)}));
+    actionItems.push(editAction({
+      iconOnly: false, 
+      href: RouteNames.editThesisPath(thesis?.guid), 
+      onClick: () => history.push(RouteNames.editThesisPath(thesis?.guid))
+    }));
   if(thesis?.actions.canPrint) 
     actionItems.push(printAction({iconOnly: false, disabled: true}));
   if(thesis?.actions.canAddReview) 

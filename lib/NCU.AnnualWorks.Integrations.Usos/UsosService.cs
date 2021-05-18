@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Constants;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
+using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Exceptions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Extensions;
@@ -26,14 +28,16 @@ namespace NCU.AnnualWorks.Integrations.Usos
         private readonly UsosServiceOptions _options;
         private readonly IOAuthService _oauthService;
         private readonly ILogger _logger;
+        private readonly IAsyncRepository<Settings> _settingsRepository;
 
         public UsosService(IOptions<UsosServiceOptions> options, IOAuthService oauthService,
-            HttpClient client, ILogger<UsosService> logger)
+            HttpClient client, ILogger<UsosService> logger, IAsyncRepository<Settings> settingsRepository)
         {
             _logger = logger;
             _options = options.Value;
             _client = client;
             _oauthService = oauthService;
+            _settingsRepository = settingsRepository;
 
             _client.BaseAddress = new Uri(_options.BaseApiAddress);
             _client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
@@ -46,6 +50,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public Uri GetRedirectAddress(string token) =>
             new Uri(_client.BaseAddress, $"{_options.UsosEndpoints.Authorize}?{OAuthFields.OAuthToken}={token}");
         public Uri GetLogoutAddress() => new Uri(_options.LogoutAddress);
+        public string GetCourseCode() => _settingsRepository.GetAll().FirstOrDefault()?.CourseCode;
 
         private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
         {
@@ -283,7 +288,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsParticipant}?course_id={_options.CourseCode}&term_id={termId}");
+            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsParticipant}?course_id={GetCourseCode()}&term_id={termId}");
 
             var oauth = GetBaseOAuthRequestFields();
             oauth.OAuthToken = oauthRequest.OAuthToken;
@@ -298,7 +303,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsLecturer}?course_id={_options.CourseCode}&term_id={termId}");
+            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsLecturer}?course_id={GetCourseCode()}&term_id={termId}");
 
             var oauth = GetBaseOAuthRequestFields();
             oauth.OAuthToken = oauthRequest.OAuthToken;
@@ -313,7 +318,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsCoordinator}?course_id={_options.CourseCode}&term_id={termId}");
+            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsCoordinator}?course_id={GetCourseCode()}&term_id={termId}");
 
             var oauth = GetBaseOAuthRequestFields();
             oauth.OAuthToken = oauthRequest.OAuthToken;
@@ -328,7 +333,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         private async Task<List<UsosUser>> GetCourseEditionUsers(OAuthRequest oauthRequest, string termId, string field)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={_options.CourseCode}&term_id={termId}&fields={field}");
+            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={GetCourseCode()}&term_id={termId}&fields={field}");
 
             var oauth = GetBaseOAuthRequestFields();
             oauth.OAuthToken = oauthRequest.OAuthToken;

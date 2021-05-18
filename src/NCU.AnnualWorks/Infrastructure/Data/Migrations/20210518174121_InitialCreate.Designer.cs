@@ -9,7 +9,7 @@ using NCU.AnnualWorks.Infrastructure.Data;
 namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20210516012522_InitialCreate")]
+    [Migration("20210518174121_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,6 +276,11 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
                         .HasMaxLength(100);
 
+                    b.Property<string>("CourseUrl")
+                        .IsRequired()
+                        .HasColumnType("varchar(500) CHARACTER SET utf8mb4")
+                        .HasMaxLength(500);
+
                     b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime(6)");
@@ -443,11 +448,15 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<int>("AccessType")
-                        .HasColumnType("int");
+                    b.Property<bool>("AdminAccess")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("CustomAccess")
-                        .HasColumnType("tinyint(1)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FirstLoginAt")
                         .HasColumnType("datetime(6)");

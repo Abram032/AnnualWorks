@@ -36,15 +36,15 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
       case 'title':
         return <Link 
           style={{fontSize: FontSizes.size16}} 
-          href={`/details/${item.guid}`} 
-          onClick={() => history.push(`/details/${item.guid}`)}>
+          href={RouteNames.detailsPath(item.guid)} 
+          onClick={() => history.push(RouteNames.detailsPath(item.guid))}>
             {item.title}
           </Link>;
       case 'actions':
         const actionItems = [];
         if(item.actions.canAddReview) actionItems.push(addReviewAction({href: RouteNames.review}));
         if(item.actions.canEditReview) actionItems.push(editReviewAction({href: RouteNames.review}));
-        if(item.actions.canEdit) actionItems.push(editAction({href: RouteNames.addthesis}));
+        if(item.actions.canEdit) actionItems.push(editAction({href: RouteNames.editThesisPath(item.guid)}));
         if(item.actions.canDownload) actionItems.push(downloadAction({disabled: true}));
         if(item.actions.canPrint) actionItems.push(printAction({disabled: true}));
         return (
@@ -67,6 +67,9 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
       selectionMode={SelectionMode.none}
       onRenderItemColumn={onRenderItemColumn}
       onRenderDetailsHeader={() => null}
+      groupProps={{
+        showEmptyGroups: true
+      }}
     />
   );
 }

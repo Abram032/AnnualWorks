@@ -6,6 +6,9 @@ export namespace RouteNames {
   export const signIn = '/sign-in';
   export const authorize = '/authorize';
   export const details = '/details/:guid';
-  export const addthesis = '/add-thesis';
+  export const detailsPath = (guid: string) => details.replace(':guid', guid);
+  export const addThesis = '/add-thesis';
+  export const editThesis = '/edit-thesis/:guid';
+  export const editThesisPath = (guid: string) => editThesis.replace(':guid', guid);
   export const review = '/review';
-}
+};

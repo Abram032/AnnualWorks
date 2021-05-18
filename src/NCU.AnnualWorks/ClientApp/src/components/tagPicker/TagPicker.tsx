@@ -12,6 +12,7 @@ export interface TagPickerProps {
   separator?: string;
   required?: boolean;
   errorMessage?: string | JSX.Element;
+  defaultValue?: ITag[],
 }
 
 export const TagPicker: React.FC<TagPickerProps> = (props) => {
@@ -55,6 +56,7 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
         onResolveSuggestions={onFilterChanged}
         onChange={props.onChange}
         onBlur={props.onBlur}
+        defaultSelectedItems={props.defaultValue}
       />
       {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
     </>

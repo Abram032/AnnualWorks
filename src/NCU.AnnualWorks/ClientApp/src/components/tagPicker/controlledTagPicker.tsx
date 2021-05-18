@@ -22,6 +22,7 @@ export const ControlledTagPicker: React.FC<HookFormProps<ITag[]> & TagPickerProp
           onBlur={onBlur}
           selectedTags={value}
           errorMessage={error && error.message}
+          defaultValue={props.defaultValue}
         />
       )}
     />

@@ -17,8 +17,8 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     UsosId = table.Column<string>(maxLength: 20, nullable: false),
                     FirstLoginAt = table.Column<DateTime>(nullable: true),
                     LastLoginAt = table.Column<DateTime>(nullable: true),
-                    AccessType = table.Column<int>(nullable: false),
-                    CustomAccess = table.Column<bool>(nullable: false)
+                    AdminAccess = table.Column<bool>(nullable: false, defaultValue: false),
+                    CustomAccess = table.Column<bool>(nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -163,6 +163,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CourseCode = table.Column<string>(maxLength: 100, nullable: false),
+                    CourseUrl = table.Column<string>(maxLength: 500, nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     ModifiedById = table.Column<long>(nullable: true)
                 },

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Theses.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
-using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
@@ -26,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Theses
 {
-    [Authorize(AuthorizationPolicies.AtLeastDefault)]
+    [Authorize(AuthorizationPolicies.AuthenticatedOnly)]
     public class ThesesController : ApiControllerBase
     {
         private readonly IUsosService _usosService;
@@ -57,7 +56,7 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         [HttpGet("promoted")]
-        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> GetPromotedTheses()
         {
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
@@ -111,6 +110,7 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         [HttpGet("authored")]
+        [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetAuthoredTheses()
         {
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
@@ -136,12 +136,12 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         [HttpGet]
+        [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetTheses()
         {
-            var currentUserAccessType = HttpContext.CurrentUserAccessType();
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
-            var isAdminOrEmployee = currentUserAccessType == AccessType.Admin || currentUserAccessType == AccessType.Employee;
+            var isEmployee = HttpContext.IsCurrentUserEmployee();
 
             var theses = _thesisRepository.GetAll()
                 .Where(p => p.TermId == currentTerm.Id)
@@ -151,21 +151,22 @@ namespace NCU.AnnualWorks.Api.Theses
                     Title = p.Title,
                     Actions = new ThesisActionsDTO
                     {
-                        CanView = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanPrint = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanDownload = isAdminOrEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanPrint = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
+                        CanDownload = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanEdit = p.Promoter == currentUser,
                         CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
                             !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
                         CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
                             p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
                     }
-                }).ToList();
+                });
 
             return new OkObjectResult(theses);
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetThesis(Guid id)
         {
             var thesis = await _thesisRepository.GetAsync(id);
@@ -175,14 +176,14 @@ namespace NCU.AnnualWorks.Api.Theses
                 return new NotFoundResult();
             }
 
-            var currentUserAccessType = HttpContext.CurrentUserAccessType();
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
+            var isEmployee = HttpContext.IsCurrentUserEmployee();
 
             var isAuthor = thesis.ThesisAuthors.Select(p => p.AuthorId).Contains(currentUser.Id);
             var isReviewer = thesis.Reviewer.Id == currentUser.Id;
             var isPromoter = thesis.Promoter.Id == currentUser.Id;
 
-            if (currentUserAccessType == AccessType.Default && !isAuthor && !isReviewer && !isPromoter)
+            if (!isEmployee && !isAuthor && !isReviewer && !isPromoter)
             {
                 return new ForbidResult();
             }
@@ -218,7 +219,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 };
             };
 
-            if (currentUser.AccessType != AccessType.Default)
+            if (HttpContext.IsCurrentUserEmployee())
             {
                 var usosUsersFromLogs = await _usosService.GetUsers(oauthRequest, thesis.ThesisLogs.Select(p => p.User.UsosId));
                 var usersFromLogs = _mapper.Map<List<UsosUser>, List<UserDTO>>(usosUsersFromLogs);
@@ -235,7 +236,7 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         [HttpPost]
-        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> CreateThesis([FromForm] ThesisRequest request)
         {
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
@@ -330,26 +331,6 @@ namespace NCU.AnnualWorks.Api.Theses
             };
             await _fileService.SaveFile(request.ThesisFile.OpenReadStream(), thesisGuid.ToString(), fileGuid.ToString());
 
-            //var additionalFiles = new List<ThesisAdditionalFile>();
-            //foreach (var additonalFile in request.AdditionalThesisFiles)
-            //{
-            //    var additionalFileGuid = Guid.NewGuid();
-            //    additionalFiles.Add(new ThesisAdditionalFile()
-            //    {
-            //        File = new Core.Models.DbModels.File
-            //        {
-            //            Guid = additionalFileGuid,
-            //            FileName = additonalFile.FileName,
-            //            Extension = Path.GetExtension(additonalFile.FileName),
-            //            Path = Path.Combine(thesisGuid.ToString(), additionalFileGuid.ToString()),
-            //            ContentType = additonalFile.ContentType,
-            //            CreatedBy = currentUser,
-            //            Size = additonalFile.Length,
-            //            Checksum = GetFileChecksum(additonalFile.OpenReadStream())
-            //        }
-            //    });
-            //}
-
             var thesis = new Thesis()
             {
                 Guid = thesisGuid,
@@ -362,7 +343,6 @@ namespace NCU.AnnualWorks.Api.Theses
                 ThesisKeywords = thesisKeywords,
                 ThesisLogs = thesisLogs,
                 File = thesisFile,
-                //ThesisAdditionalFiles = additionalFiles,
                 CreatedBy = currentUser,
             };
 
@@ -372,7 +352,7 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> EditThesis(Guid id, [FromForm] ThesisRequest request)
         {
             var thesis = await _thesisRepository.GetAsync(id);
@@ -485,6 +465,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 thesis.File.Extension = Path.GetExtension(request.ThesisFile.FileName);
                 thesis.File.ContentType = request.ThesisFile.ContentType;
                 thesis.File.ModifiedBy = currentUser;
+                thesis.File.ModifiedAt = DateTime.Now;
                 thesis.File.Size = request.ThesisFile.Length;
                 thesis.File.Checksum = fileChecksum;
 
@@ -493,16 +474,6 @@ namespace NCU.AnnualWorks.Api.Theses
 
             thesis.ModifiedBy = currentUser;
             thesis.ModifiedAt = DateTime.Now;
-
-            //foreach (var additonalFile in request.AdditionalThesisFiles)
-            //{
-            //    if (!Guid.TryParse(additonalFile.Headers["guid"], out var additonalFileGuid))
-            //    {
-            //        return new BadRequestObjectResult("Could not parse file guid");
-            //    }
-
-            //    thesis.ThesisAdditionalFiles.Fi
-            //}
 
             await _thesisRepository.UpdateAsync(thesis);
 

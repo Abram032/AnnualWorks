@@ -12,6 +12,7 @@ export interface PeoplePickerProps {
   maxSuggestions?: number,
   required?: boolean,
   errorMessage?: string | JSX.Element,
+  defaultValue?: IPersonaProps[],
 };
 
 export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
@@ -66,6 +67,7 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
         itemLimit={props.peopleLimit}
         onChange={props.onChange}
         onBlur={props.onBlur}
+        defaultSelectedItems={props.defaultValue}
       />
       {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
     </>

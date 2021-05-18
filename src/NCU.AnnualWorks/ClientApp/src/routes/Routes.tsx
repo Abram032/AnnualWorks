@@ -6,7 +6,8 @@ import SignIn from '../pages/auth/SignIn';
 import SignOut from '../pages/auth/SignOut';
 import Authorize from '../pages/auth/Authorize';
 import ThesisDetails from '../pages/thesisDetails/thesisDetails';
-import ThesisForm from '../pages/thesisForm/thesisForm';
+import ThesisCreateForm from '../pages/thesisCreateForm/thesisCreateForm';
+import ThesisEditForm from '../pages/thesisEditForm/thesisEditForm';
 import ThesisReviewForm from '../pages/thesisReviewForm/thesisReviewForm';
 
 export const Routes: React.FC = () => (
@@ -16,7 +17,8 @@ export const Routes: React.FC = () => (
     <Route exact path={RouteNames.signOut} component={SignOut} />
     <Route path={RouteNames.authorize} component={Authorize} />
     <Route exact path={RouteNames.details} render={props => <ThesisDetails guid={props.match.params.guid} />} />
-    <Route path={RouteNames.addthesis} component={ThesisForm} />
+    <Route path={RouteNames.addThesis} component={ThesisCreateForm} />
+    <Route exact path={RouteNames.editThesis} render={props => <ThesisEditForm guid={props.match.params.guid} />} />
     <Route path={RouteNames.review} component={ThesisReviewForm} />
   </Switch>
 );
