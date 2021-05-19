@@ -27,6 +27,10 @@ export namespace AppSettings {
       Promoted: process.env.REACT_APP_API_THESES_PROMOTED!,
       Reviewed: process.env.REACT_APP_API_THESES_REVIEWED!,
       Authored: process.env.REACT_APP_API_THESES_AUTHORED!,
+    },
+    Questions: {
+      Base: process.env.REACT_APP_API_QUESTIONS!,
+      Active: process.env.REACT_APP_API_QUESTIONS_ACTIVE!,
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;

@@ -3,8 +3,16 @@ import React from 'react';
 import Tile from '../../components/tile/tile';
 import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
+import { Review, Question } from '../../shared/models/Review';
+import { AxiosResponse } from 'axios';
 
-export const ThesisReviewForm: React.FC = () => {
+interface ThesisReviewFormProps {
+  questions: Question[],
+  onSave: () => Promise<AxiosResponse<any>>;
+  review?: Review,
+};
+
+export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const actionItems = [
     viewAction({iconOnly: false, disabled: true}),
     downloadAction({iconOnly: false, disabled: true}),
@@ -36,57 +44,23 @@ export const ThesisReviewForm: React.FC = () => {
       key: 5,
       text: '5'
     },
-  ]
+  ];
 
   const stackTokens: IStackTokens = { childrenGap: 15 };
 
-  const reviewQuestions: any[] = [
-    {
-      key: 1,
-      text: 'Czy treść pracy odpowiada tematowi określonemu w tytule?',
-    },
-    {
-      key: 2,
-      text: 'Ocena układu pracy, podziału treści, kolejności rozdziałów, kompletności tez itp.'
-    },
-    {
-      key: 3,
-      text: 'Merytoryczna ocena'
-    },
-    {
-      key: 4,
-      text: 'Czy i w jakim zakresie praca stanowi nowe ujęcie'
-    },
-    {
-      key: 5,
-      text: 'Charakterystyka doboru i wykorzystania źródeł'
-    },
-    {
-      key: 6,
-      text: 'Ocena formalnej strony pracy (poprawność języka, opanowanie techniki pisania pracy, spis rzeczy, odsyłacze)'
-    },
-    {
-      key: 7,
-      text: 'Sposób wykorzystania pracy (publikacja, udostępnienie instytucjom, materiał źródłowy)'
-    },
-    {
-      key: 8,
-      text: 'Inne uwagi'
-    }
-  ];
-
-  const buildFormQuestion = (key: number, question: string): React.ReactNode => {
+  const buildFormQuestion = (index: number, question: string, answer?: string): React.ReactNode => {
     return (
       <StackItem tokens={stackTokens}>
-        <Label>{key}. {question}</Label>
-        <TextField multiline></TextField>
+        <Label>{index + 1}. {question}</Label>
+        <TextField multiline value={answer ?? ""}></TextField>
       </StackItem>
     )
   }
 
   const buildForm = (): React.ReactNode => {
     const fields: React.ReactNode[] = [];
-    reviewQuestions.forEach(q => fields.push(buildFormQuestion(q.key, q.text)));
+    props.questions.forEach((question, index) => 
+      fields.push(buildFormQuestion(index, question.text)));
     return (
       <Stack tokens={stackTokens}>
         {fields}

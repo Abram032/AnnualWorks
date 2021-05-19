@@ -10,5 +10,5 @@ export namespace RouteNames {
   export const addThesis = '/add-thesis';
   export const editThesis = '/edit-thesis/:guid';
   export const editThesisPath = (guid: string) => editThesis.replace(':guid', guid);
-  export const review = '/review';
+  export const review = '/review/create';
 };

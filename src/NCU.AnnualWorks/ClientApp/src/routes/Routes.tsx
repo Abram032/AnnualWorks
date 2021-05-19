@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { RouteNames } from '../shared/consts/RouteNames';
 import HomeContainer from '../pages/home/homeContainer';
 import SignIn from '../pages/auth/SignIn';
@@ -8,7 +8,7 @@ import Authorize from '../pages/auth/Authorize';
 import ThesisDetails from '../pages/thesisDetails/thesisDetails';
 import ThesisCreateForm from '../pages/thesisCreateForm/thesisCreateForm';
 import ThesisEditForm from '../pages/thesisEditForm/thesisEditForm';
-import ThesisReviewForm from '../pages/thesisReviewForm/thesisReviewForm';
+import ThesisCreateReviewForm from '../pages/thesisCreateReviewForm/thesisCreateReviewForm';
 
 export const Routes: React.FC = () => (
   <Switch>
@@ -19,7 +19,7 @@ export const Routes: React.FC = () => (
     <Route exact path={RouteNames.details} render={props => <ThesisDetails guid={props.match.params.guid} />} />
     <Route path={RouteNames.addThesis} component={ThesisCreateForm} />
     <Route exact path={RouteNames.editThesis} render={props => <ThesisEditForm guid={props.match.params.guid} />} />
-    <Route path={RouteNames.review} component={ThesisReviewForm} />
+    <Route path={RouteNames.review} component={ThesisCreateReviewForm} />
   </Switch>
 );
 
