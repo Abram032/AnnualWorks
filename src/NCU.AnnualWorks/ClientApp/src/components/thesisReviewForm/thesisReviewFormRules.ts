@@ -8,3 +8,7 @@ export const answerRules: RegisterOptions = {
     }
   }
 };
+
+export const gradeRules: RegisterOptions = {
+  required: "Ocena jest wymagana."
+};
