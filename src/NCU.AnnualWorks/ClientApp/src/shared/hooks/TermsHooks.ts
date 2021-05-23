@@ -1,13 +1,14 @@
 import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import Api from '../api/Api';
+import { useApi } from '../api/Api';
 import Keyword from '../models/Keyword';
 import { AppSettings } from '../../AppSettings';
 
 export const useCurrentTerm = (): Keyword[] => {
+  const api = useApi();
   const [keywords, setKeywords] = useState<Keyword[]>([]);
 
   useEffect(() => {
-    Api.get<Keyword[]>(AppSettings.API.Keywords.Base)
+    api.get<Keyword[]>(AppSettings.API.Keywords.Base)
       .then(response => {
         setKeywords(response.data);
       })

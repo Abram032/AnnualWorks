@@ -5,7 +5,7 @@ import { useThesis } from '../../shared/hooks/ThesisHooks';
 import { useKeywords } from '../../shared/hooks/KeywordHooks';
 import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import Api from '../../shared/api/Api';
+import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Loader } from '../../components/loader/loader';
 
@@ -15,6 +15,7 @@ interface ThesisEditFormProps {
 
 export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
   const authContext = useContext(AuthenticationContext);
+  const api = useApi();
 
   const [thesis, isFetching] = useThesis(props.guid);
   const keywords = useKeywords();
@@ -28,7 +29,7 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
   };
   
   const onSave = (formData: FormData) => 
-    Api.put(`${AppSettings.API.Theses.Base}/${props.guid}`, formData, {
+    api.put(`${AppSettings.API.Theses.Base}/${props.guid}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

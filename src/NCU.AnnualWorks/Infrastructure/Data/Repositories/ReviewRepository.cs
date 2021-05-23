@@ -18,7 +18,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             => reviews.Include(r => r.Thesis)
             .Include(r => r.CreatedBy)
             .Include(r => r.ModifiedBy)
-            .Include(r => r.File)
             .Include(r => r.ReviewQnAs)
             .ThenInclude(r => r.Question)
             .Include(r => r.ReviewQnAs)

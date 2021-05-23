@@ -33,8 +33,8 @@ namespace NCU.AnnualWorks.Infrastructure.Validators
 
         private bool HaveAllowedExtension(string extension)
         {
-            var parsedExtension = extension.Replace(".", "");
-            var allowedExtensions = _options.AllowedThesisFileExtensions.Select(e => e.Replace(".", "")).ToList();
+            var parsedExtension = extension.Replace(".", "").ToLower();
+            var allowedExtensions = _options.AllowedThesisFileExtensions.Select(e => e.Replace(".", "").ToLower()).ToList();
 
             return allowedExtensions.Contains(parsedExtension);
         }

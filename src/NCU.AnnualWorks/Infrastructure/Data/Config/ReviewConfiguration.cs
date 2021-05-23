@@ -18,8 +18,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
 
             builder.HasOne(p => p.CreatedBy).WithMany(p => p.CreatedReviews).IsRequired();
             builder.HasOne(p => p.ModifiedBy).WithMany(p => p.ModifiedReviews);
-
-            builder.HasOne(p => p.File).WithOne(p => p.Review).HasForeignKey<Review>(p => p.FileId);
         }
     }
 }

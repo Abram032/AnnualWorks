@@ -6,7 +6,7 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses } from "../../shared/hooks/ThesisHooks";
 import Loader from "../../components/loader/loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import { useHistory } from "react-router";
+import { Redirect, useHistory } from "react-router";
 
 export const Home: React.FC = () => {
   const history = useHistory();
@@ -19,6 +19,10 @@ export const Home: React.FC = () => {
 
   if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching) {
     return <Loader size='medium' label='Ładowanie...' />
+  } else {
+    if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
+      return <Redirect to={RouteNames.error} />
+    }
   }
 
   const stackTokens: IStackTokens = { childrenGap: 25 }
@@ -44,10 +48,17 @@ export const Home: React.FC = () => {
     return <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/>
   };
 
+  const addThesis = (): React.ReactNode => {
+    if(!currentUser?.isLecturer) {
+      return null;
+    }
+    return <PrimaryButton href={RouteNames.addThesis} onClick={() => history.push(RouteNames.addThesis)}>Dodaj pracę</PrimaryButton>
+  }
+
   return (
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
-        <PrimaryButton href={RouteNames.addThesis} onClick={() => history.push(RouteNames.addThesis)}>Dodaj pracę</PrimaryButton>
+        {addThesis()}
         <Label>Termin końcowy: 07.05.2021</Label>
       </Stack>
       {authoredList()}

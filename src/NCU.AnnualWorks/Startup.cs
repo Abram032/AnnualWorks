@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
+using NCU.AnnualWorks.Core.Middleware;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
@@ -134,8 +135,12 @@ namespace NCU.AnnualWorks
             app.UseHttpsRedirection();
             app.UseRouting();
 
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //app.UseMiddleware<ErrorResultHandlerMiddleware>();
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseStaticFiles(new StaticFileOptions
             {

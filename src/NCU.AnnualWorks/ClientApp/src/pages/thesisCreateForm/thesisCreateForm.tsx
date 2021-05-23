@@ -4,11 +4,12 @@ import { ThesisForm } from '../../components/thesisForm/thesisForm';
 import { useKeywords } from '../../shared/hooks/KeywordHooks';
 import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import Api from '../../shared/api/Api';
+import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 
 export const ThesisCreateForm: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
+  const api = useApi();
   
   const keywords = useKeywords();
   const students = useStudents();
@@ -21,7 +22,7 @@ export const ThesisCreateForm: React.FC = () => {
   };
 
   const onSave = (formData: FormData) => 
-    Api.post(AppSettings.API.Theses.Base, formData, {
+    api.post(AppSettings.API.Theses.Base, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

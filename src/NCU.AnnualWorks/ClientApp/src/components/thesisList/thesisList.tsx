@@ -42,8 +42,8 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
           </Link>;
       case 'actions':
         const actionItems = [];
-        if(item.actions.canAddReview) actionItems.push(addReviewAction({href: RouteNames.review}));
-        if(item.actions.canEditReview) actionItems.push(editReviewAction({href: RouteNames.review}));
+        if(item.actions.canAddReview) actionItems.push(addReviewAction({href: RouteNames.addReviewPath(item.guid)}));
+        if(item.actions.canEditReview) actionItems.push(editReviewAction({href: RouteNames.editReviewPath(item.guid, item.reviewGuid)}));
         if(item.actions.canEdit) actionItems.push(editAction({href: RouteNames.editThesisPath(item.guid)}));
         if(item.actions.canDownload) actionItems.push(downloadAction({disabled: true}));
         if(item.actions.canPrint) actionItems.push(printAction({disabled: true}));

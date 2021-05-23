@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
-import Api, { ThesisRequestData } from '../api/Api';
+import { ThesisRequestData, useApi } from '../api/Api';
 import Thesis from '../models/Thesis';
 import { AppSettings } from '../../AppSettings';
 
 export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
   const [thesis, setThesis] = useState<Thesis>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const api = useApi();
 
   useEffect(() => {
     setIsFetching(true);
-    Api.get<Thesis>(`${AppSettings.API.Theses.Base}/${guid}`)
+    api.get<Thesis>(`${AppSettings.API.Theses.Base}/${guid}`)
       .then(response => {
         setThesis(response.data);
         setIsFetching(false);
       })
       .catch(error => {
+        debugger;
         console.error(error);
         setIsFetching(false)
       });
@@ -26,10 +28,11 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
 const useTheses = (endpoint: string): [Thesis[], boolean] => {
   const [thesis, setThesis] = useState<Thesis[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const api = useApi();
 
   useEffect(() => {
     setIsFetching(true);
-    Api.get<Thesis[]>(endpoint)
+    api.get<Thesis[]>(endpoint)
       .then(response => {
         setThesis(response.data);
         setIsFetching(false);

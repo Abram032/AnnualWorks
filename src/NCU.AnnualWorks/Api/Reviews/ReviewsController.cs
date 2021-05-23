@@ -73,7 +73,7 @@ namespace NCU.AnnualWorks.Api.Reviews
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromBody] ReviewRequest request)
         {
-            var thesis = _thesisRepository.GetAll().FirstOrDefault(t => t.Guid == request.ThesisGuid);
+            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
 
             if (thesis == null)
@@ -87,13 +87,19 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new ForbidResult();
             }
 
+            if (thesis.Reviews.Any(r => r.CreatedBy == currentUser))
+            {
+                return new ConflictObjectResult("Recenzja dla tej pracy została już wystawiona.");
+            }
+
             var questionIds = request.Review.QnAs.Select(qa => qa.Question.Id);
             var questions = _questionRepository.GetAll().Where(q => questionIds.Contains(q.Id)).ToList();
+            var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
 
             //Not all active questions have been answered
-            if (questions.Count != _questionRepository.GetAll().Where(q => q.IsActive).Count())
+            if (!activeQuestions.Select(q => q.Id).All(questions.Select(q => q.Id).Distinct().Contains) || activeQuestions.Count != questions.Count)
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult(new { errorMessage = "Nieprawidłowa lista pytań." });
             }
 
             var reviewGuid = Guid.NewGuid();
@@ -103,18 +109,7 @@ namespace NCU.AnnualWorks.Api.Reviews
                 Thesis = thesis,
                 CreatedBy = currentUser,
                 Grade = request.Review.Grade,
-                ReviewQnAs = new List<ReviewQnA>(),
-                //TODO: Generate PDF and save it
-                File = new File
-                {
-                    FileName = "Recenzja",
-                    Path = $"{thesis.Guid}/{reviewGuid}",
-                    Size = 0,
-                    Extension = ".pdf",
-                    ContentType = "application/pdf",
-                    CreatedBy = currentUser,
-                    Checksum = "0a3a977722b7afc1c7b3550b62b3b54790c4738d7c5f3aaa2f9614058d9c7b15"
-                }
+                ReviewQnAs = new List<ReviewQnA>()
             };
 
             foreach (var qna in request.Review.QnAs)
@@ -141,7 +136,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             });
             await _reviewRepository.AddAsync(review);
 
-            return new OkResult();
+            return new CreatedResult("/reviews", reviewGuid);
         }
 
         [HttpPut("{id:guid}")]
@@ -168,11 +163,12 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             var questionIds = request.Review.QnAs.Select(qa => qa.Question.Id);
             var questions = _questionRepository.GetAll().Where(q => questionIds.Contains(q.Id)).ToList();
+            var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
 
             //Not all active questions have been answered
-            if (questions.Count != _questionRepository.GetAll().Where(q => q.IsActive).Count())
+            if (!activeQuestions.Select(q => q.Id).All(questions.Select(q => q.Id).Distinct().Contains) || activeQuestions.Count != questions.Count)
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult(new { errorMessage = "Nieprawidłowa lista pytań." });
             }
 
             review.ModifiedAt = DateTime.Now;
@@ -208,7 +204,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             await _reviewRepository.UpdateAsync(review);
             await _answerRepository.RemoveRangeAsync(answersToRemove);
 
-            return new OkResult();
+            return new OkObjectResult(review.Guid);
         }
     }
 }

@@ -3,20 +3,25 @@ import React, { useEffect, useState } from 'react';
 import Tile from '../../components/tile/tile';
 import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
-import { Review, Question } from '../../shared/models/Review';
+import { Review, Question, QnA } from '../../shared/models/Review';
 import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/controlledTextField';
 import ControlledDropdown from '../dropdown/controlledDropdown';
 import { useForm } from 'react-hook-form';
 import { answerRules, gradeRules } from './thesisReviewFormRules';
+import { ReviewRequestData } from '../../shared/api/Api';
+import Thesis from '../../shared/models/Thesis';
+import { useHistory } from 'react-router-dom';
 
 interface ThesisReviewFormProps {
+  thesis: Thesis,
   questions: Question[],
-  onSave: () => Promise<AxiosResponse<any>>;
+  onSave: (data: ReviewRequestData) => Promise<AxiosResponse<any>>;
   review?: Review,
 };
 
 export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
+  const history = useHistory();
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>();
@@ -44,8 +49,33 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const onSave = () => {
     handleSubmit(
       (values) => {
-        debugger;
-        console.log(values);
+        const questionIds = Object.keys(values)
+          .filter(k => !isNaN(parseInt(k)))
+          .map(k => parseInt(k));
+        const qnas = questionIds.map<QnA>(q => ({
+          question: {
+            id: q,
+            text: '',
+            order: 0
+          },
+          answer: values[q]
+        }));
+        const review: Review = {
+          qnAs: qnas,
+          grade: values["grade"]
+        };
+        props.onSave({
+          thesisGuid: props.thesis.guid,
+          review: review
+        }).then(result => {
+          setUploadSuccess(true);
+          setIsUploading(false);
+          history.push(RouteNames.detailsPath(props.thesis.guid))
+        }).catch(err => {
+          setUploadSuccess(false);
+            setErrorMessages([err]);
+            setIsUploading(false);
+        })
       },
       (err) => {
         debugger;
@@ -74,7 +104,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           name={id.toString()}
           label={`${index + 1}. ${question}`}
           rules={answerRules}
-          value={answer ?? ""}
+          defaultValue={answer ?? ""}
           required
           multiline
         />
@@ -84,8 +114,14 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
 
   const buildForm = (): React.ReactNode => {
     const fields: React.ReactNode[] = [];
-    props.questions.forEach((question, index) => 
-      fields.push(buildFormQuestion(index, question.id, question.text)));
+    if(!props.review) {
+      props.questions.forEach((question, index) => 
+        fields.push(buildFormQuestion(index, question.id, question.text)));
+    } else {
+      props.review.qnAs.forEach((qna, index) => 
+        fields.push(buildFormQuestion(index, qna.question.id, qna.question.text, qna.answer)));
+    }
+    
     return (
       <Stack tokens={stackTokens}>
         {fields}
@@ -97,6 +133,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
             rules={gradeRules}
             placeholder='Wybierz ocenę'
             options={grades}
+            defaultValue={props.review?.grade ?? undefined}
             required
           />
         </StackItem>
@@ -106,7 +143,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
 
   return (
     <Stack style={{ width: '100%' }} tokens={stackTokens}>
-      <Tile title='Recenzja pracy - Tytuł pracy 1'>
+      <Tile title={`Recenzja pracy - ${props.thesis.title}`}>
         <CommandBar
           className='theses-simple-list-actions'
           items={actionItems}

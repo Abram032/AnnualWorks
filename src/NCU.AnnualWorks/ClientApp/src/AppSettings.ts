@@ -31,6 +31,9 @@ export namespace AppSettings {
     Questions: {
       Base: process.env.REACT_APP_API_QUESTIONS!,
       Active: process.env.REACT_APP_API_QUESTIONS_ACTIVE!,
+    },
+    Reviews: {
+      Base: process.env.REACT_APP_API_REVIEWS!
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;

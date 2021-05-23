@@ -7,6 +7,7 @@ using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
+using NCU.AnnualWorks.Core.Models.Dto.Reviews;
 using NCU.AnnualWorks.Core.Models.Dto.Thesis;
 using NCU.AnnualWorks.Core.Models.Dto.Users;
 using NCU.AnnualWorks.Core.Models.Enums;
@@ -68,6 +69,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 {
                     Guid = p.Guid,
                     Title = p.Title,
+                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
@@ -95,6 +97,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 {
                     Guid = p.Guid,
                     Title = p.Title,
+                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
@@ -149,6 +152,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 {
                     Guid = p.Guid,
                     Title = p.Title,
+                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
@@ -194,19 +198,32 @@ namespace NCU.AnnualWorks.Api.Theses
             var reviewer = await _usosService.GetUser(oauthRequest, thesis.Reviewer.UsosId);
             var authors = await _usosService.GetUsers(oauthRequest, thesis.ThesisAuthors.Select(p => p.Author.UsosId));
 
+            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter);
+            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer);
+
             //Mapping
             var thesisDto = _mapper.Map<ThesisDTO>(thesis);
             thesisDto.ThesisAuthors = _mapper.Map<List<UserDTO>>(authors);
             thesisDto.Promoter = _mapper.Map<UserDTO>(promoter);
             thesisDto.Reviewer = _mapper.Map<UserDTO>(reviewer);
+            thesisDto.PromoterReview = promoterReview == null ? null : new ReviewBasicDTO
+            {
+                Guid = promoterReview.Guid,
+                Grade = promoterReview.Grade
+            };
+            thesisDto.ReviewerReview = reviewerReview == null ? null : new ReviewBasicDTO
+            {
+                Guid = reviewerReview.Guid,
+                Grade = reviewerReview.Grade
+            };
             thesisDto.Actions = new ThesisActionsDTO
             {
                 //TODO: Check if review exists
-                CanAddReview = true,
+                CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy == currentUser),
                 CanDownload = true,
                 CanEdit = isPromoter,
                 //TODO: Check if review exists
-                CanEditReview = true,
+                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser),
                 CanPrint = true,
                 CanView = true
             };
@@ -247,7 +264,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             if (currentUserUsosId == requestData.ReviewerUsosId)
             {
-                return new BadRequestObjectResult("Promoter cannot be a reviever at the same time.");
+                return new BadRequestObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
 
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
@@ -261,7 +278,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 var usosUser = await _usosService.GetUser(oauthRequest, requestData.ReviewerUsosId);
                 if (usosUser == null)
                 {
-                    return new BadRequestObjectResult("User does not exist.");
+                    return new BadRequestObjectResult("Użytkownik nie istnieje.");
                 }
 
                 reviewer = _mapper.Map<UsosUser, User>(usosUser);
@@ -274,7 +291,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 var newUsosUsers = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), newUsers);
                 if (newUsosUsers.Any(p => p == null))
                 {
-                    return new BadRequestObjectResult("User does not exist.");
+                    return new BadRequestObjectResult("Użytkownik nie istnieje.");
                 }
                 var newAuthors = _mapper.Map<List<User>>(newUsosUsers);
                 await _userRepository.AddRangeAsync(newAuthors);
@@ -348,7 +365,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             await _thesisRepository.AddAsync(thesis);
 
-            return new OkObjectResult(thesisGuid);
+            return new CreatedResult("/theses", thesisGuid);
         }
 
         [HttpPut("{id:guid}")]
@@ -420,7 +437,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     var newUsosUsers = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), newUsers);
                     if (newUsosUsers.Any(p => p == null))
                     {
-                        return new BadRequestObjectResult("User does not exist.");
+                        return new BadRequestObjectResult("Użytkownik nie istnieje.");
                     }
                     var newAuthors = _mapper.Map<List<User>>(newUsosUsers);
                     await _userRepository.AddRangeAsync(newAuthors);
@@ -447,7 +464,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     var usosUser = await _usosService.GetUser(HttpContext.BuildOAuthRequest(), requestData.ReviewerUsosId);
                     if (usosUser == null)
                     {
-                        return new BadRequestObjectResult("User does not exist.");
+                        return new BadRequestObjectResult("Użytkownik nie istnieje.");
                     }
 
                     reviewer = _mapper.Map<UsosUser, User>(usosUser);
@@ -477,7 +494,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             await _thesisRepository.UpdateAsync(thesis);
 
-            return new OkResult();
+            return new OkObjectResult(thesis.Guid);
         }
     }
 }

@@ -9,7 +9,7 @@ using NCU.AnnualWorks.Infrastructure.Data;
 namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20210518174121_InitialCreate")]
+    [Migration("20210522140231_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -206,9 +206,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.Property<long>("CreatedById")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("FileId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Grade")
                         .IsRequired()
                         .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
@@ -233,9 +230,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.HasAlternateKey("Guid");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FileId")
-                        .IsUnique();
 
                     b.HasIndex("ModifiedById");
 
@@ -533,12 +527,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "CreatedBy")
                         .WithMany("CreatedReviews")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.File", "File")
-                        .WithOne("Review")
-                        .HasForeignKey("NCU.AnnualWorks.Core.Models.DbModels.Review", "FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

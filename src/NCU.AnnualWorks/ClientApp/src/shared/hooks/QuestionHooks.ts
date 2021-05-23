@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import Api from '../api/Api';
+import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Question } from '../models/Review';
 
 export const useActiveQuestions = (): Question[] => {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const api = useApi();
 
   useEffect(() => {
-    Api.get<Question[]>(AppSettings.API.Questions.Active)
+    api.get<Question[]>(AppSettings.API.Questions.Active)
       .then(response => {
         setQuestions(response.data);
       })

@@ -24,7 +24,7 @@ namespace NCU.AnnualWorks.Api.Questions
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetQuestions()
+        public IActionResult GetQuestions()
         {
             var questions = _questionRepository.GetAll()
                 .Select(q => new QuestionDTO
@@ -38,7 +38,7 @@ namespace NCU.AnnualWorks.Api.Questions
         }
 
         [HttpGet("active")]
-        public async Task<IActionResult> GetActiveQuestions()
+        public IActionResult GetActiveQuestions()
         {
             var questions = _questionRepository.GetAll()
                 .Where(q => q.IsActive)
@@ -73,7 +73,7 @@ namespace NCU.AnnualWorks.Api.Questions
 
         [HttpPut("{id:long}")]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> CreateQuestion(long id, [FromBody] UpdateQuestionRequest request)
+        public async Task<IActionResult> UpdateQuestion(long id, [FromBody] UpdateQuestionRequest request)
         {
             var currentUserId = HttpContext.CurrentUserUsosId();
             var user = await _userRepository.GetAsync(currentUserId);

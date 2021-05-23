@@ -13,8 +13,6 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public User ModifiedBy { get; set; }
         public string Grade { get; set; }
 
-        public long FileId { get; set; }
-        public File File { get; set; }
         public long ThesisId { get; set; }
         public Thesis Thesis { get; set; }
         public ICollection<ReviewQnA> ReviewQnAs { get; set; }

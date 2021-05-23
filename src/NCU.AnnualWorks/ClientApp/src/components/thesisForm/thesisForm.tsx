@@ -4,6 +4,8 @@ import {
   IStackTokens,
   ITag,
   mergeStyles,
+  MessageBar,
+  MessageBarType,
   PrimaryButton,
   Stack,
   StackItem,
@@ -26,6 +28,7 @@ import User from "../../shared/models/User";
 import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './thesisFormRules';
 import { AxiosResponse } from "axios";
 import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/mappers";
+import { useHistory } from "react-router";
 
 type Form = {
   guid?: string;
@@ -48,11 +51,13 @@ interface ThesisFormProps {
 }
 
 export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
+  const history = useHistory();
+
   const [validFormData, setValidFormData] = useState<Form>();
   const [validationError, setValidationError] = useState<DeepMap<Form, FieldError>>();
 
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [isUploading, setIsUploading] = useState<boolean>();
 
   const [tags, selectedTags, onChangeSelectedTags] = useTagPicker(props.keywords);
@@ -87,12 +92,12 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
     }
 
     if(!isUploading && !uploadSuccess) {
-      console.error(errorMessages);
+      console.error(errorMessage);
       return;
     }
-  }, [isUploading, uploadSuccess, errorMessages]);
+  }, [isUploading, uploadSuccess, errorMessage]);
 
-  const onSave = () => {
+  const onSave = (withReview?: boolean) => {
     setValidationError(undefined);
     setValidFormData(undefined);
 
@@ -122,10 +127,15 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
           .then(result => {
             setUploadSuccess(true);
             setIsUploading(false);
-            console.log(result.data);
+            debugger;
+            if(!withReview) {
+              history.push(RouteNames.detailsPath(result.data))
+            } else {
+              history.push(RouteNames.addReviewPath(result.data))
+            }
           }).catch(err => {
             setUploadSuccess(false);
-            setErrorMessages([err]);
+            setErrorMessage(err);
             setIsUploading(false);
             console.error(err);
           });
@@ -142,10 +152,21 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
     width: "100%",
   });
 
+  const errorMessageBar = (
+    <MessageBar
+      messageBarType={MessageBarType.error}
+    >
+      {errorMessage}
+    </MessageBar>
+  );
+
   return (
     <Stack className={formStyles} tokens={stackTokens}>
       <Tile title="Wypełnij dane pracy">
         <Stack tokens={stackTokens}>
+          <StackItem>
+            {errorMessage ? errorMessageBar : null}
+          </StackItem>
           <StackItem>
             <ControlledTextField
               required={true}
@@ -226,15 +247,15 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
       </Tile>
       <Stack horizontalAlign="end" horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton href={RouteNames.review}>
+          <PrimaryButton onClick={() => onSave(true)}>
             Zapisz pracę i zrecenzuj
           </PrimaryButton>
         </StackItem>
         <StackItem styles={{ root: { marginRight: "auto" } }}>
-          <DefaultButton onClick={onSave}>Zapisz pracę</DefaultButton>
+          <DefaultButton onClick={() => onSave()}>Zapisz pracę</DefaultButton>
         </StackItem>
         <StackItem>
-          <DefaultButton href={RouteNames.root}>
+          <DefaultButton href={RouteNames.root} onClick={() => history.push(RouteNames.root)}>
             Powrót do listy prac
           </DefaultButton>
         </StackItem>

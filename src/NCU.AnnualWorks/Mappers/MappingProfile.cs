@@ -42,7 +42,9 @@ namespace NCU.AnnualWorks.Mappers
                 .ForMember(dest => dest.ThesisAuthors, opt => opt.Ignore())
                 .ForMember(dest => dest.Promoter, opt => opt.Ignore())
                 .ForMember(dest => dest.Reviewer, opt => opt.Ignore())
-                .ForMember(dest => dest.ThesisLogs, opt => opt.Ignore());
+                .ForMember(dest => dest.ThesisLogs, opt => opt.Ignore())
+                .ForMember(dest => dest.PromoterReview, opt => opt.Ignore())
+                .ForMember(dest => dest.ReviewerReview, opt => opt.Ignore());
             CreateMap<Thesis, ThesisBasicDTO>();
         }
     }

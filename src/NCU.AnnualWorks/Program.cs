@@ -5,11 +5,14 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,6 +29,20 @@ namespace NCU.AnnualWorks
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    var env = hostingContext.HostingEnvironment;
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    if (env.IsDevelopment())
+                    {
+                        logging.AddFile(Path.Combine(Environment.CurrentDirectory, "logs/log-{Date}.log"), fileSizeLimitBytes: 10000000, retainedFileCountLimit: 128);
+                    }
+                    else
+                    {
+                        logging.AddFile("/app/logs/log-{Date}.log", fileSizeLimitBytes: 10000000, retainedFileCountLimit: 128);
+                    }
+                })
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;

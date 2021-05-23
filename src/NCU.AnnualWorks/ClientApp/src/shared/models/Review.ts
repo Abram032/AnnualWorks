@@ -10,9 +10,16 @@ export type QnA = {
 };
 
 export type Review = {
-  guid: string,
-  QnAs: QnA[],
-  grade: string,
+  guid?: string,
+  qnAs: QnA[],
+  grade: string
+};
+
+export type ReviewActions = {
+  canAdd: boolean,
+  canEdit: boolean,
+  canView: boolean,
+  canDownload: boolean,
 };
 
 export default Review;

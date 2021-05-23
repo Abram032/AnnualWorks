@@ -1,6 +1,7 @@
 import User from './User';
 import Keyword from './Keyword';
 import File from './File';
+import Review from './Review';
 
 export interface ThesisActions {
   canView: boolean,
@@ -37,11 +38,14 @@ export interface ThesisLog {
 
 export type Thesis = {
   guid: string,
+  reviewGuid: string,
   title: string,
   abstract: string,
-  grade: string | null,
+  grade?: string | null,
   promoter: User,
   reviewer: User,
+  promoterReview?: Review,
+  reviewerReview?: Review,
   thesisAuthors: User[],
   thesisKeywords: Keyword[],
   actions: ThesisActions,

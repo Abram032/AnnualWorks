@@ -10,5 +10,13 @@ export namespace RouteNames {
   export const addThesis = '/add-thesis';
   export const editThesis = '/edit-thesis/:guid';
   export const editThesisPath = (guid: string) => editThesis.replace(':guid', guid);
-  export const review = '/review/create';
+  export const addReview = '/add-review/:thesisGuid';
+  export const addReviewPath = (thesisGuid: string) => addReview.replace(':thesisGuid', thesisGuid);
+  export const editReview = '/edit-review/:thesisGuid/:reviewGuid';
+  export const editReviewPath = (thesisGuid: string, reviewGuid: string) => 
+    editReview.replace(':thesisGuid', thesisGuid).replace(':reviewGuid', reviewGuid);
+  export const notFound = '/404';
+  export const forbidden = '/forbidden';
+  export const error = '/error';
+  export const search = '/search';
 };
