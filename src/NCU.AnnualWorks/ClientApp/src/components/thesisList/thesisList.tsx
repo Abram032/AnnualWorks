@@ -1,6 +1,6 @@
 import React from 'react';
-import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Link, SelectionMode } from '@fluentui/react';
-import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/thesisActions';
+import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, Link, SelectionMode } from '@fluentui/react';
+import { downloadAction, editAction, printAction, addReviewAction, editReviewAction, addActions } from '../thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
@@ -34,19 +34,18 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'title':
-        return <Link 
-          style={{fontSize: FontSizes.size16}} 
-          href={RouteNames.detailsPath(item.guid)} 
-          onClick={() => history.push(RouteNames.detailsPath(item.guid))}>
-            {item.title}
-          </Link>;
+        if(item.actions.canView) {
+          return <Link 
+            style={{fontSize: FontSizes.size16}} 
+            //href={RouteNames.detailsPath(item.guid)} 
+            onClick={() => history.push(RouteNames.detailsPath(item.guid))}>
+              {item.title}
+            </Link>
+        } else {
+          return <Label>{item.title}</Label>
+        }
       case 'actions':
-        const actionItems = [];
-        if(item.actions.canAddReview) actionItems.push(addReviewAction({href: RouteNames.addReviewPath(item.guid)}));
-        if(item.actions.canEditReview) actionItems.push(editReviewAction({href: RouteNames.editReviewPath(item.guid, item.reviewGuid)}));
-        if(item.actions.canEdit) actionItems.push(editAction({href: RouteNames.editThesisPath(item.guid)}));
-        if(item.actions.canDownload) actionItems.push(downloadAction({disabled: true}));
-        if(item.actions.canPrint) actionItems.push(printAction({disabled: true}));
+        const actionItems = addActions(item, history, true);
         return (
           <CommandBar
             className='theses-simple-list-actions'

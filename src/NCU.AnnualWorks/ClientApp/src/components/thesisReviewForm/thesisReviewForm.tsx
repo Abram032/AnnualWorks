@@ -1,7 +1,7 @@
-import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, PrimaryButton, DefaultButton } from '@fluentui/react';
+import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
 import Tile from '../../components/tile/tile';
-import { viewAction, downloadAction, printAction } from '../../components/thesisActions/thesisActions';
+import { viewAction, downloadAction, printAction, addActions } from '../../components/thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { Review, Question, QnA } from '../../shared/models/Review';
 import { AxiosResponse } from 'axios';
@@ -23,7 +23,7 @@ interface ThesisReviewFormProps {
 export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const history = useHistory();
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [isUploading, setIsUploading] = useState<boolean>();
   const { handleSubmit, control } = useForm<any>({
     reValidateMode: "onSubmit",
@@ -41,14 +41,19 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     }
 
     if(!isUploading && !uploadSuccess) {
-      console.error(errorMessages);
+      console.error(errorMessage);
       return;
     }
-  }, [isUploading, uploadSuccess, errorMessages]);
+  }, [isUploading, uploadSuccess, errorMessage]);
 
   const onSave = () => {
+    setErrorMessage(undefined);
+    setUploadSuccess(false);
+    setIsUploading(false);
+    
     handleSubmit(
       (values) => {
+        setIsUploading(true);
         const questionIds = Object.keys(values)
           .filter(k => !isNaN(parseInt(k)))
           .map(k => parseInt(k));
@@ -68,28 +73,24 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           thesisGuid: props.thesis.guid,
           review: review
         }).then(result => {
+          window.scrollTo(0,0);
           setUploadSuccess(true);
           setIsUploading(false);
           history.push(RouteNames.detailsPath(props.thesis.guid))
-        }).catch(err => {
+        }).catch(error => {
+          window.scrollTo(0,0);
+          setErrorMessage(error.data);
           setUploadSuccess(false);
-            setErrorMessages([err]);
-            setIsUploading(false);
+          setIsUploading(false);
         })
       },
       (err) => {
-        debugger;
         console.log(err);
       }
     )();
   };
 
-
-  const actionItems = [
-    viewAction({iconOnly: false, disabled: true}),
-    downloadAction({iconOnly: false, disabled: true}),
-    printAction({iconOnly: false, disabled: true}),
-  ];
+  const actionItems = addActions(props.thesis, history, false);
 
   const gradeValues = ['2', '3', '3.5', '4', '4.5', '5'];
   const grades: IDropdownOption[] = gradeValues.map<IDropdownOption>(g => ({ key: g, text: g }));
@@ -141,9 +142,27 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     )
   }
 
+  const errorMessageBar = (
+    <MessageBar
+      messageBarType={MessageBarType.error}
+    >
+      {errorMessage}
+    </MessageBar>
+  );
+
+  const successMessageBar = (
+    <MessageBar
+      messageBarType={MessageBarType.success}
+    >
+      Recenzja została zapisana
+    </MessageBar>
+  )
+
   return (
     <Stack style={{ width: '100%' }} tokens={stackTokens}>
       <Tile title={`Recenzja pracy - ${props.thesis.title}`}>
+        {errorMessage ? errorMessageBar : null}
+        {uploadSuccess ? successMessageBar : null}
         <CommandBar
           className='theses-simple-list-actions'
           items={actionItems}
@@ -155,7 +174,12 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           <PrimaryButton onClick={onSave}>Zapisz recenzję</PrimaryButton>
         </StackItem>
         <StackItem>
-          <DefaultButton href={RouteNames.root}>Powrót do listy prac</DefaultButton>
+          <DefaultButton 
+            //href={RouteNames.root}
+            onClick={() => history.push(RouteNames.root)}
+          >
+              Powrót do listy prac
+          </DefaultButton>
         </StackItem>
       </Stack>
     </Stack>

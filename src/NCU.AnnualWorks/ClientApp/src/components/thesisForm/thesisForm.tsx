@@ -100,11 +100,12 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
   const onSave = (withReview?: boolean) => {
     setValidationError(undefined);
     setValidFormData(undefined);
+    setErrorMessage(undefined);
+    setUploadSuccess(false);
+    setIsUploading(false);
 
     handleSubmit(
       (values) => {
-        debugger;
-        console.log(values);
         setValidFormData(values);
 
         setIsUploading(true);
@@ -125,23 +126,22 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
 
         props.onSave(formData)
           .then(result => {
+            window.scrollTo(0,0);
             setUploadSuccess(true);
             setIsUploading(false);
-            debugger;
             if(!withReview) {
               history.push(RouteNames.detailsPath(result.data))
             } else {
               history.push(RouteNames.addReviewPath(result.data))
             }
-          }).catch(err => {
+          }).catch(error => {
+            window.scrollTo(0,0);
+            setErrorMessage(error.data);
             setUploadSuccess(false);
-            setErrorMessage(err);
             setIsUploading(false);
-            console.error(err);
           });
       },
       (err) => {
-        console.log(err);
         setValidationError(err);
       }
     )();
@@ -160,12 +160,21 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
     </MessageBar>
   );
 
+  const successMessageBar = (
+    <MessageBar
+      messageBarType={MessageBarType.success}
+    >
+      Praca została zapisana
+    </MessageBar>
+  )
+
   return (
     <Stack className={formStyles} tokens={stackTokens}>
       <Tile title="Wypełnij dane pracy">
         <Stack tokens={stackTokens}>
           <StackItem>
             {errorMessage ? errorMessageBar : null}
+            {uploadSuccess ? successMessageBar : null}
           </StackItem>
           <StackItem>
             <ControlledTextField
@@ -199,6 +208,9 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
               name={"abstract"}
               rules={abstractRules}
             />
+          </StackItem>
+          <StackItem>
+            <MessageBar messageBarType={MessageBarType.info}>Słowa kluczowe oddzielane są średnikiem</MessageBar>
           </StackItem>
           <StackItem>
             <ControlledTagPicker
@@ -255,7 +267,10 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
           <DefaultButton onClick={() => onSave()}>Zapisz pracę</DefaultButton>
         </StackItem>
         <StackItem>
-          <DefaultButton href={RouteNames.root} onClick={() => history.push(RouteNames.root)}>
+          <DefaultButton 
+            //href={RouteNames.root} 
+            onClick={() => history.push(RouteNames.root)}
+          >
             Powrót do listy prac
           </DefaultButton>
         </StackItem>

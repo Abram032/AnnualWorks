@@ -50,6 +50,7 @@ export type Thesis = {
   thesisKeywords: Keyword[],
   actions: ThesisActions,
   file: File,
+  fileGuid: string,
   thesisAdditionalFiles: File[],
   thesisLogs: ThesisLog[],
   hidden: boolean | null,

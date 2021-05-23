@@ -17,7 +17,12 @@ export const HomeSignIn: React.FC = () => {
         </Label>
       </Stack.Item>
       <Stack.Item align="center" tokens={stackTokens}>
-        <PrimaryButton href={RouteNames.signIn} onClick={() => history.push(RouteNames.signIn)}>{t('signIn')}</PrimaryButton>
+        <PrimaryButton 
+          //href={RouteNames.signIn} 
+          onClick={() => history.push(RouteNames.signIn)}
+          >
+            {t('signIn')}
+          </PrimaryButton>
       </Stack.Item>
     </Stack>
   );

@@ -13,18 +13,22 @@ export const useApi = (): AxiosInstance => {
   });
 
   api.interceptors.response.use(response => response, error => {
-    console.error(error.response.data);
     switch(error.response.status) {
       case 400:
       case 409:
+      case 500:
+      case 401:
+      case 403:
+      case 404:
+        throw error.response;
         //Only logging errors to show prompt to user.
         return;
-      case 401:
-        return history.push(RouteNames.signIn);
-      case 403:
-        return history.push(RouteNames.forbidden);
-      case 404:
-        return history.push(RouteNames.notFound);
+      // case 401:
+      //   return history.push(RouteNames.signIn);
+      // case 403:
+      //   return history.push(RouteNames.forbidden);
+      // case 404:
+      //   return history.push(RouteNames.notFound);
       default:
         return history.push(RouteNames.error);
     }

@@ -1,13 +1,14 @@
-import { CommandBar, DefaultButton, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import React, { useContext, useEffect } from 'react';
+import { CommandBar, DefaultButton, DetailsRow, FontSizes, ICellStyleProps, IColumn, ICommandBarItemProps, IconButton, IDetailsRowStyleProps, IStackTokens, Label, Link, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import Loader from '../../components/loader/loader';
-import { addReviewAction, downloadAction, editAction, printAction, viewAction, editReviewAction } from '../../components/thesisActions/thesisActions';
+import { addReviewAction, downloadAction, editAction, printAction, viewAction, editReviewAction, addActions } from '../../components/thesisActions/thesisActions';
 import Tile from '../../components/tile/tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
 import Review from '../../shared/models/Review';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import ReviewModal from '../../components/reviewModal/reviewModal';
 
 interface ThesisDetailsProps {
   guid: string
@@ -17,6 +18,8 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const authContext = useContext(AuthenticationContext);
   const history = useHistory();
   const [thesis, isFetching] = useThesis(props.guid);
+  const [isPromoterReviewVisible, setIsPromoterReviewVisible] = useState<boolean>(false);
+  const [isReviewerReviewVisible, setIsReviewerReviewVisible] = useState<boolean>(false);
 
   if(isFetching) {
     return <Loader size='medium' label={"Ładowanie..."} />
@@ -27,28 +30,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   }
   
   //Adding available actions
-  const actionItems: ICommandBarItemProps[] = [];
-  if(thesis?.actions.canView) 
-    actionItems.push(viewAction({iconOnly: false, disabled: true}));
-  if(thesis?.actions.canDownload) 
-    actionItems.push(downloadAction({iconOnly: false, disabled: true}));
-  if(thesis?.actions.canEdit) 
-    actionItems.push(editAction({
-      iconOnly: false, 
-      href: RouteNames.editThesisPath(thesis?.guid), 
-      onClick: () => history.push(RouteNames.editThesisPath(thesis?.guid))
-    }));
-  if(thesis?.actions.canPrint) 
-    actionItems.push(printAction({iconOnly: false, disabled: true}));
-  if(thesis?.actions.canAddReview) 
-    actionItems.push(addReviewAction({
-      iconOnly: false,
-       href: RouteNames.addReviewPath(props.guid), 
-       onClick: () => history.push(RouteNames.addReviewPath(props.guid))}));
-  if(thesis?.actions.canEditReview) 
-    actionItems.push(editReviewAction({iconOnly: false, 
-      href: RouteNames.addReviewPath(props.guid), 
-      onClick: () => history.push(RouteNames.addReviewPath(props.guid))}));
+  const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
 
   const columns: IColumn[] = [
     { key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
@@ -63,14 +45,14 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const reviewAddAction = (
     <IconButton 
       iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} 
-      href={RouteNames.addReviewPath(props.guid)} 
+      //href={RouteNames.addReviewPath(props.guid)} 
       onClick={() => history.push(RouteNames.addReviewPath(props.guid))} />
   );
 
   const reviewEditAction = (reviewGuid: string) => (
     <IconButton 
       iconProps={{ iconName: 'PageEdit', className: `${iconStyles}` }} 
-      href={RouteNames.editReviewPath(props.guid, reviewGuid)} 
+      //href={RouteNames.editReviewPath(props.guid, reviewGuid)} 
       onClick={() => history.push(RouteNames.editReviewPath(props.guid, reviewGuid))} />
   );
 
@@ -97,13 +79,15 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const promoterReview = {
     name: `${thesis?.promoter.firstName} ${thesis?.promoter.lastName}`,
     grade: thesis?.promoterReview?.grade ?? "Brak oceny",
-    action: getPromoterAction()
+    action: getPromoterAction(),
+    showModal: thesis.promoterReview ? () => setIsPromoterReviewVisible(true) : undefined
   };
 
   const reviewerReview = {
     name: `${thesis?.reviewer.firstName} ${thesis?.reviewer.lastName}`,
     grade: thesis?.reviewerReview?.grade ?? "Brak oceny",
-    action: getReviewerAction()
+    action: getReviewerAction(),
+    showModal: thesis.reviewerReview ? () => setIsReviewerReviewVisible(true) : undefined
   };
 
   const onRenderItemColumn = (
@@ -115,7 +99,11 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
       case 'action':
         return item.action
       case 'name':
-        return <Label>{item.name}</Label>
+        if(item.showModal) {
+          return <Link style={{fontSize: FontSizes.size14}} onClick={item.showModal}>{item.name}</Link>
+        } else {
+          return <Label>{item.name}</Label>
+        }
       case 'grade':
         return <Label>Ocena: {item.grade}</Label>
       default:
@@ -129,6 +117,24 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const containerStyles = mergeStyles({
     width: '100%'
   });
+  
+  const rowStyles = mergeStyles({
+    alignItems: 'center'
+  });
+
+  const reviewModal = (name: string, isVisible: boolean, setIsVisible: (value: boolean) => void, guid?: string) => {
+    if(!guid) {
+      return null;
+    }
+    return (
+      <ReviewModal 
+        guid={guid}
+        person={name}
+        isModalVisible={isVisible}
+        setModalVisible={setIsVisible}
+      />
+    )
+  };
 
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
@@ -153,25 +159,35 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
           <p>{thesis?.thesisKeywords.map(k => k.text).join(', ')}</p>
           <Label style={{fontSize: FontSizes.size20}}>Recenzja promotora:</Label>
           <DetailsRow 
+            className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
             item={promoterReview} 
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
+          {reviewModal(promoterReview.name, isPromoterReviewVisible, setIsPromoterReviewVisible, thesis.promoterReview?.guid)}
           <Label style={{fontSize: FontSizes.size20}}>Recenzja recenzenta:</Label>
           <DetailsRow 
+            className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
             item={reviewerReview} 
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
+          {reviewModal(reviewerReview.name, isReviewerReviewVisible, setIsReviewerReviewVisible, thesis.reviewerReview?.guid)}
+          <Label style={{fontSize: FontSizes.size20}}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
         </Stack>
       </Tile>
       <Stack horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton href={RouteNames.root} onClick={() => history.push(RouteNames.root)}>Powrót do listy prac</PrimaryButton>
+          <PrimaryButton 
+            //href={RouteNames.root} 
+            onClick={() => history.push(RouteNames.root)}
+            >
+              Powrót do listy prac
+            </PrimaryButton>
         </StackItem>
       </Stack>
     </Stack>

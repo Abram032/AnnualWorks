@@ -37,15 +37,16 @@ namespace NCU.AnnualWorks.Services
         public string GetFileSavePath(string path)
             => Path.Combine(Directory.GetCurrentDirectory(), _options.FileStoragePath, path);
 
-        public Task<Stream> GetFile(string path)
-        {
-            throw new NotImplementedException();
-        }
+        public Stream GetFile(string path)
+            => File.OpenRead(GetFileSavePath(path));
 
         public Task<string> GetFileAsBase64(string path)
         {
             throw new NotImplementedException();
         }
+
+        public bool FileExists(string path)
+            => File.Exists(GetFileSavePath(path));
 
         public async Task SaveFile(Stream file, string path, string fileName)
         {

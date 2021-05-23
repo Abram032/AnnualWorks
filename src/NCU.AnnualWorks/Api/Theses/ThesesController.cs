@@ -70,6 +70,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     Guid = p.Guid,
                     Title = p.Title,
                     ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
+                    FileGuid = p.File.Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
@@ -98,6 +99,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     Guid = p.Guid,
                     Title = p.Title,
                     ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
+                    FileGuid = p.File.Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
@@ -125,6 +127,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 {
                     Guid = p.Guid,
                     Title = p.Title,
+                    FileGuid = p.File.Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
@@ -153,6 +156,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     Guid = p.Guid,
                     Title = p.Title,
                     ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
+                    FileGuid = p.File.Guid,
                     Actions = new ThesisActionsDTO
                     {
                         CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
@@ -206,6 +210,8 @@ namespace NCU.AnnualWorks.Api.Theses
             thesisDto.ThesisAuthors = _mapper.Map<List<UserDTO>>(authors);
             thesisDto.Promoter = _mapper.Map<UserDTO>(promoter);
             thesisDto.Reviewer = _mapper.Map<UserDTO>(reviewer);
+            thesisDto.FileGuid = thesis.File.Guid;
+            thesisDto.ReviewGuid = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == currentUser)?.Guid;
             thesisDto.PromoterReview = promoterReview == null ? null : new ReviewBasicDTO
             {
                 Guid = promoterReview.Guid,
@@ -264,7 +270,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             if (currentUserUsosId == requestData.ReviewerUsosId)
             {
-                return new BadRequestObjectResult("Promotor nie może być jednocześnie recenzentem.");
+                return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
 
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
@@ -385,7 +391,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             if (requestData.ReviewerUsosId == currentUserUsosId)
             {
-                return new BadRequestResult();
+                return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
 
 

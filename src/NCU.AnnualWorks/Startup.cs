@@ -108,6 +108,7 @@ namespace NCU.AnnualWorks
             services.AddTransient<IThesisRepository, ThesisRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReviewRepository, ReviewRepository>();
+            services.AddTransient<IFileRepository, FileRepository>();
 
             services.AddSwaggerGen();
         }

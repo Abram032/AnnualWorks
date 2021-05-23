@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Integrations.Usos.Core.Exceptions;
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -35,7 +34,7 @@ namespace NCU.AnnualWorks.Core.Middleware
 
                 string message = string.Empty;
                 var response = context.Response;
-                response.ContentType = "application/json";
+                //response.ContentType = "application/json";
 
                 switch (exception)
                 {
@@ -56,8 +55,7 @@ namespace NCU.AnnualWorks.Core.Middleware
                         break;
                 }
 
-
-                await response.WriteAsync(JsonConvert.SerializeObject(new { errorMessage = message }));
+                await response.WriteAsync(message);
             }
         }
     }

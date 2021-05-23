@@ -73,7 +73,7 @@ namespace NCU.AnnualWorks.Api.Users
             //TODO: Add validation
             if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
@@ -101,7 +101,7 @@ namespace NCU.AnnualWorks.Api.Users
             //TODO: Add validation
             if (string.IsNullOrWhiteSpace(usosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
@@ -113,7 +113,7 @@ namespace NCU.AnnualWorks.Api.Users
 
             if (!user.CustomAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik nie posiada już dostępu.");
             }
 
             user.CustomAccess = false;
@@ -148,12 +148,12 @@ namespace NCU.AnnualWorks.Api.Users
             //TODO: Add validation
             if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             if (request.UsosId == _options.DefaultAdministratorUsosId)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Główny administrator jest już administratorem.");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
@@ -171,7 +171,7 @@ namespace NCU.AnnualWorks.Api.Users
 
             if (user.AdminAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik jest już administratorem");
             }
 
             user.AdminAccess = true;
@@ -186,12 +186,12 @@ namespace NCU.AnnualWorks.Api.Users
             //TODO: Add validation
             if (string.IsNullOrWhiteSpace(usosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             if (usosId == _options.DefaultAdministratorUsosId)
             {
-                return new ForbidResult();
+                return new ConflictObjectResult("Nie można usunąć głównego administratora.");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
@@ -203,7 +203,7 @@ namespace NCU.AnnualWorks.Api.Users
 
             if (!user.AdminAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik nie jest administratorem");
             }
 
             user.AdminAccess = false;

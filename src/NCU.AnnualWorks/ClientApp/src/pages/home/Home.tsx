@@ -42,7 +42,7 @@ export const Home: React.FC = () => {
   };
 
   const reviewedList = (): React.ReactNode => {
-    if(!currentUser?.isLecturer || !currentUser?.isCustom || !currentUser?.isAdmin) {
+    if(!currentUser?.isLecturer && !currentUser?.isCustom && !currentUser?.isAdmin) {
       return null;
     }
     return <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/>
@@ -52,19 +52,24 @@ export const Home: React.FC = () => {
     if(!currentUser?.isLecturer) {
       return null;
     }
-    return <PrimaryButton href={RouteNames.addThesis} onClick={() => history.push(RouteNames.addThesis)}>Dodaj pracę</PrimaryButton>
+    return <PrimaryButton 
+      //href={RouteNames.addThesis} 
+      onClick={() => history.push(RouteNames.addThesis)}
+      >
+        Dodaj pracę
+      </PrimaryButton>
   }
 
   return (
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
         {addThesis()}
-        <Label>Termin końcowy: 07.05.2021</Label>
+        <Label>Termin końcowy: 20.09.2021</Label>
       </Stack>
       {authoredList()}
       {promotedList()}
       {reviewedList()} 
-      <ThesisList title='Semestr zimowy 2020/2021' items={currentTheses} />
+      <ThesisList title='Semestr letni 2020/2021' items={currentTheses} />
     </Tile>
   );
 };

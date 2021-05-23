@@ -10,6 +10,7 @@ namespace NCU.AnnualWorks.Core.Models.Dto
     public class ThesisDTO
     {
         public Guid Guid { get; set; }
+        public Guid? ReviewGuid { get; set; }
         public string Title { get; set; }
         public string Abstract { get; set; }
         public string Grade { get; set; }
@@ -21,6 +22,7 @@ namespace NCU.AnnualWorks.Core.Models.Dto
         public List<UserDTO> ThesisAuthors { get; set; }
         public List<KeywordDTO> ThesisKeywords { get; set; }
         public ThesisActionsDTO Actions { get; set; }
+        public Guid FileGuid { get; set; }
         public ThesisFileDTO File { get; set; }
         public List<ThesisFileDTO> ThesisAdditionalFiles { get; set; }
         public List<ThesisLogDTO> ThesisLogs { get; set; }

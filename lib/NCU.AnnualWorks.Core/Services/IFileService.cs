@@ -7,7 +7,8 @@ namespace NCU.AnnualWorks.Core.Services
     {
         string GenerateChecksum(Stream file);
         Task SaveFile(Stream file, string path, string fileName);
-        Task<Stream> GetFile(string path);
+        Stream GetFile(string path);
         Task<string> GetFileAsBase64(string path);
+        bool FileExists(string path);
     }
 }

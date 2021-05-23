@@ -34,6 +34,9 @@ export namespace AppSettings {
     },
     Reviews: {
       Base: process.env.REACT_APP_API_REVIEWS!
+    },
+    Files: {
+      Base: process.env.REACT_APP_API_FILES!
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;
