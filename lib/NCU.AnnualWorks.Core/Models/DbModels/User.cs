@@ -1,5 +1,4 @@
-﻿using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
-using NCU.AnnualWorks.Core.Models.DbModels.Base;
+﻿using NCU.AnnualWorks.Core.Models.DbModels.Base;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +9,7 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public string UsosId { get; set; }
         public DateTime? FirstLoginAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
-        public AccessType AccessType { get; set; }
+        public bool AdminAccess { get; set; }
         public bool CustomAccess { get; set; }
 
 

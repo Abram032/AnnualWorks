@@ -16,6 +16,8 @@
         AdditionalFilesRemoved,
         ReviewAdded,
         ReviewChanged,
-        ReveiewQuestionsUpdated
+        ReveiewQuestionsUpdated,
+        ReviewConfirmed,
+        GradeConfirmed
     }
 }

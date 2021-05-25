@@ -1,16 +1,19 @@
 import React from 'react';
-import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Link, SelectionMode } from '@fluentui/react';
-import { downloadAction, editAction, printAction, addReviewAction, editReviewAction } from '../thesisActions/thesisActions';
+import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, Link, SelectionMode } from '@fluentui/react';
+import { addActions } from '../thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
+import Thesis from '../../shared/models/Thesis';
+import { useHistory } from 'react-router-dom';
 
 interface ThesisListProps {
   title: string,
-  items: any[],
+  items: Thesis[],
   isCollapsed?: boolean,
   renderHeader?: boolean,
 }
 
 export const ThesisList: React.FC<ThesisListProps> = (props) => {
+  const history = useHistory();
   const groups: IGroup[] = [{
     key: props.title,
     name: props.title,
@@ -25,20 +28,24 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
   ];
 
   const onRenderItemColumn = (
-    item: any,
+    item: Thesis,
     index?: number,
     column?: IColumn
   ): React.ReactNode => {
     switch (column?.key) {
       case 'title':
-        return <Link style={{fontSize: FontSizes.size16}} href="/details">{item.title}</Link>;
+        if(item.actions.canView) {
+          return <Link 
+            style={{fontSize: FontSizes.size16}} 
+            //href={RouteNames.detailsPath(item.guid)} 
+            onClick={() => history.push(RouteNames.detailsPath(item.guid))}>
+              {item.title}
+            </Link>
+        } else {
+          return <Label>{item.title}</Label>
+        }
       case 'actions':
-        const actionItems = [];
-        if(item.canAddReview) actionItems.push(addReviewAction({href: RouteNames.review}));
-        if(item.canEditReview) actionItems.push(editReviewAction({href: RouteNames.review}));
-        if(item.canEdit) actionItems.push(editAction({href: RouteNames.addthesis}));
-        if(item.canDownload) actionItems.push(downloadAction({disabled: true}));
-        if(item.canPrint) actionItems.push(printAction({disabled: true}));
+        const actionItems = addActions(item, history, true);
         return (
           <CommandBar
             className='theses-simple-list-actions'
@@ -59,6 +66,9 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
       selectionMode={SelectionMode.none}
       onRenderItemColumn={onRenderItemColumn}
       onRenderDetailsHeader={() => null}
+      groupProps={{
+        showEmptyGroups: true
+      }}
     />
   );
 }

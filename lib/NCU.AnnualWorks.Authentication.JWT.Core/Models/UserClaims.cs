@@ -1,6 +1,4 @@
-﻿using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
-
-namespace NCU.AnnualWorks.Authentication.JWT.Core.Models
+﻿namespace NCU.AnnualWorks.Authentication.JWT.Core.Models
 {
     public class UserClaims
     {
@@ -8,6 +6,9 @@ namespace NCU.AnnualWorks.Authentication.JWT.Core.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string AvatarUrl { get; set; }
-        public AccessType AccessType { get; set; }
+        public bool IsParticipant { get; set; }
+        public bool IsLecturer { get; set; }
+        public bool IsAdmin { get; set; }
+        public bool IsCustom { get; set; }
     }
 }

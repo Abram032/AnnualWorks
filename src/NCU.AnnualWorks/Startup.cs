@@ -13,13 +13,16 @@ using Microsoft.Extensions.Hosting;
 using NCU.AnnualWorks.Authentication.JWT.IoC;
 using NCU.AnnualWorks.Authentication.OAuth.IoC;
 using NCU.AnnualWorks.Constants;
+using NCU.AnnualWorks.Core.Middleware;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
+using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Infrastructure.Data.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
+using NCU.AnnualWorks.Services;
 
 namespace NCU.AnnualWorks
 {
@@ -89,6 +92,8 @@ namespace NCU.AnnualWorks
                 options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
             });
 
+            services.AddSingleton<IFileService, FileService>();
+
             //TODO: Figure out a way to move repositories to external assembly
             services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();
             services.AddTransient<IAsyncRepository<File>, AsyncRepository<File>>();
@@ -102,6 +107,8 @@ namespace NCU.AnnualWorks
 
             services.AddTransient<IThesisRepository, ThesisRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IReviewRepository, ReviewRepository>();
+            services.AddTransient<IFileRepository, FileRepository>();
 
             services.AddSwaggerGen();
         }
@@ -129,8 +136,12 @@ namespace NCU.AnnualWorks
             app.UseHttpsRedirection();
             app.UseRouting();
 
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //app.UseMiddleware<ErrorResultHandlerMiddleware>();
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -142,6 +153,12 @@ namespace NCU.AnnualWorks
                 }
             });
             app.UseSpaStaticFiles();
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //        Path.Combine(Directory.GetCurrentDirectory(), "files")),
+            //    RequestPath = "/files",
+            //});
 
             app.Use(next => context =>
             {

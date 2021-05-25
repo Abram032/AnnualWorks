@@ -59,7 +59,10 @@ namespace NCU.AnnualWorks.Authentication.JWT
             return new ClaimsIdentity(new[]
             {
                 new Claim(nameof(claims.Id), claims.Id.ToString()),
-                new Claim(nameof(claims.AccessType), claims.AccessType.ToString()),
+                new Claim(nameof(claims.IsParticipant), claims.IsParticipant.ToString()),
+                new Claim(nameof(claims.IsLecturer), claims.IsLecturer.ToString()),
+                new Claim(nameof(claims.IsAdmin), claims.IsAdmin.ToString()),
+                new Claim(nameof(claims.IsCustom), claims.IsCustom.ToString()),
                 new Claim(nameof(claims.Token), claims.Token),
                 new Claim(nameof(claims.TokenSecret), claims.TokenSecret)
             });
@@ -73,7 +76,10 @@ namespace NCU.AnnualWorks.Authentication.JWT
                 new Claim(nameof(claims.Name), claims.Name),
                 new Claim(nameof(claims.Email), claims.Email),
                 new Claim(nameof(claims.AvatarUrl), claims.AvatarUrl),
-                new Claim(nameof(claims.AccessType), claims.AccessType.ToString()),
+                new Claim(nameof(claims.IsParticipant), claims.IsParticipant.ToString()),
+                new Claim(nameof(claims.IsLecturer), claims.IsLecturer.ToString()),
+                new Claim(nameof(claims.IsAdmin), claims.IsAdmin.ToString()),
+                new Claim(nameof(claims.IsCustom), claims.IsCustom.ToString()),
             });
         }
 

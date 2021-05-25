@@ -12,6 +12,7 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public DateTime? ModifiedAt { get; set; }
         public User CreatedBy { get; set; }
         public User ModifiedBy { get; set; }
+        public bool IsRequired { get; set; }
         public bool IsActive { get; set; }
 
         public ICollection<ReviewQnA> ReviewQnAs { get; set; }

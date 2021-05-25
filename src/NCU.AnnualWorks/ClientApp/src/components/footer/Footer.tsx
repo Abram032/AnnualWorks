@@ -3,7 +3,6 @@ import { IStackTokens, Label, Link, mergeStyles, Stack } from "@fluentui/react";
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import ThemePicker from "../themePicker/themePicker";
-import LanguagePicker from "../languagePicker/languagePicker";
 
 export const Footer: React.FC = () => {
   const stackTokens: IStackTokens = { childrenGap: 50 }
@@ -25,7 +24,7 @@ export const Footer: React.FC = () => {
       <Link href={RouteNames.privacy}>Prywatność</Link>
       <Link href={RouteNames.about}>O stronie</Link>
       <ThemePicker useDropdown/>
-      <LanguagePicker useDropdown/>
+      {/* <LanguagePicker useDropdown/> */}
     </Stack>
   );
 };

@@ -8,6 +8,7 @@ import { initializeIcons } from "@fluentui/font-icons-mdl2";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./shared/localization/i18n";
 import "./styles/index.scss";
+import { BrowserRouter } from "react-router-dom";
 
 initializeIcons();
 
@@ -17,9 +18,11 @@ export const App: React.FC = () => {
       <I18nextProvider i18n={i18n}>
         <PersonalizationProvider>
           <AuthenticationProvider>
-            <Layout>
-              <Routes />
-            </Layout>
+            <BrowserRouter forceRefresh={true}>
+              <Layout>
+                <Routes />
+              </Layout>
+            </BrowserRouter>
           </AuthenticationProvider>
         </PersonalizationProvider>
       </I18nextProvider>

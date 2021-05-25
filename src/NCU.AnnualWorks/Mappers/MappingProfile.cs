@@ -20,10 +20,8 @@ namespace NCU.AnnualWorks.Mappers
             CreateMap<UsosUser, UserDTO>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(e => e.PhotoUrls.FirstOrDefault().Value))
                 .ForMember(dest => dest.UsosId, opt => opt.MapFrom(e => e.Id));
-
             CreateMap<UserDTO, User>();
             CreateMap<User, UserDTO>();
-
             CreateMap<UsosUser, User>()
                 .ForMember(dest => dest.UsosId, opt => opt.MapFrom(e => e.Id));
 
@@ -31,6 +29,7 @@ namespace NCU.AnnualWorks.Mappers
             CreateMap<ThesisKeyword, KeywordDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(e => e.Keyword.Id))
                 .ForMember(dest => dest.Text, opt => opt.MapFrom(e => e.Keyword.Text));
+
             CreateMap<File, ThesisFileDTO>();
             CreateMap<ThesisAdditionalFile, ThesisFileDTO>()
                 .ForMember(dest => dest.Guid, opt => opt.MapFrom(e => e.File.Guid))
@@ -43,7 +42,10 @@ namespace NCU.AnnualWorks.Mappers
                 .ForMember(dest => dest.ThesisAuthors, opt => opt.Ignore())
                 .ForMember(dest => dest.Promoter, opt => opt.Ignore())
                 .ForMember(dest => dest.Reviewer, opt => opt.Ignore())
-                .ForMember(dest => dest.ThesisLogs, opt => opt.Ignore());
+                .ForMember(dest => dest.ThesisLogs, opt => opt.Ignore())
+                .ForMember(dest => dest.PromoterReview, opt => opt.Ignore())
+                .ForMember(dest => dest.ReviewerReview, opt => opt.Ignore());
+            CreateMap<Thesis, ThesisBasicDTO>();
         }
     }
 }

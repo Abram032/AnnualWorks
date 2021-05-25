@@ -13,7 +13,6 @@ import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
 import CurrentUser from "../../shared/models/Auth/CurrentUser";
 import ThemePicker from '../themePicker/themePicker';
-import LanguagePicker from '../languagePicker/languagePicker';
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
 
@@ -73,9 +72,9 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
       <Stack.Item tokens={stackTokens}>
         <ThemePicker />
       </Stack.Item>
-      <Stack.Item tokens={stackTokens}>
+      {/* <Stack.Item tokens={stackTokens}>
         <LanguagePicker />
-      </Stack.Item>
+      </Stack.Item> */}
     </Stack>
   )
 

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
-using System;
 using System.Linq;
 
 namespace NCU.AnnualWorks.Core.Extensions
@@ -32,7 +30,19 @@ namespace NCU.AnnualWorks.Core.Extensions
         public static string CurrentUserUsosId(this HttpContext context)
             => context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Id))?.Value;
 
-        public static AccessType CurrentUserAccessType(this HttpContext context)
-            => (AccessType)Enum.Parse(typeof(AccessType), context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.AccessType))?.Value);
+        public static bool IsCurrentUserParticipant(this HttpContext context)
+            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsParticipant))?.Value);
+
+        public static bool IsCurrentUserLecturer(this HttpContext context)
+            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsLecturer))?.Value);
+
+        public static bool IsCurrentUserAdmin(this HttpContext context)
+            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsAdmin))?.Value);
+
+        public static bool IsCurrentUserCustom(this HttpContext context)
+            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsCustom))?.Value);
+
+        public static bool IsCurrentUserEmployee(this HttpContext context)
+            => context.IsCurrentUserLecturer() || context.IsCurrentUserAdmin() || context.IsCurrentUserCustom();
     }
 }

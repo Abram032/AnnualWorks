@@ -12,7 +12,7 @@ export const lightTheme: PartialTheme = {
     themeDarkAlt: "#0068b8",
     themeDark: "#00589b",
     themeDarker: "#004172",
-    neutralLighterAlt: "#f8f8f8",
+    neutralLighterAlt: '"#f8f8f8"',
     neutralLighter: "#f4f4f4",
     neutralLight: "#eaeaea",
     neutralQuaternaryAlt: "#dadada",

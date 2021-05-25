@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NCU.AnnualWorks.Authentication.OAuth.Core\NCU.AnnualWorks.Authentication.OAuth.Core.csproj" />
+    <ProjectReference Include="..\NCU.AnnualWorks.Core\NCU.AnnualWorks.Core.csproj" />
     <ProjectReference Include="..\NCU.AnnualWorks.Integrations.Usos.Core\NCU.AnnualWorks.Integrations.Usos.Core.csproj" />
   </ItemGroup>
 

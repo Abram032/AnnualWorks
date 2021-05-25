@@ -18,11 +18,11 @@ namespace NCU.AnnualWorks.Infrastructure.Validators
             RuleFor(p => Path.GetExtension(p.FileName))
                     .NotEmpty().WithMessage("File extension required.")
                     .MaximumLength(255).WithMessage("File extension too long.");
-            if (options.Value.AllowedFileExtensions != null && options.Value.AllowedFileExtensions.Length != 0)
+            if (options.Value.AllowedThesisFileExtensions != null && options.Value.AllowedThesisFileExtensions.Length != 0)
             {
                 RuleFor(p => Path.GetExtension(p.FileName))
                    .Must(HaveAllowedExtension)
-                   .WithMessage($"File extension not allowed. Allowed file extensions: {string.Join(',', options.Value.AllowedFileExtensions)}");
+                   .WithMessage($"File extension not allowed. Allowed file extensions: {string.Join(',', options.Value.AllowedThesisFileExtensions)}");
             }
 
             if (options.Value.MaxFileSize != 0)
@@ -33,8 +33,8 @@ namespace NCU.AnnualWorks.Infrastructure.Validators
 
         private bool HaveAllowedExtension(string extension)
         {
-            var parsedExtension = extension.Replace(".", "");
-            var allowedExtensions = _options.AllowedFileExtensions.Select(e => e.Replace(".", "")).ToList();
+            var parsedExtension = extension.Replace(".", "").ToLower();
+            var allowedExtensions = _options.AllowedThesisFileExtensions.Select(e => e.Replace(".", "").ToLower()).ToList();
 
             return allowedExtensions.Contains(parsedExtension);
         }

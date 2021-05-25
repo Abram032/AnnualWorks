@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
-using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
+using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Options;
 
 namespace NCU.AnnualWorks.Authentication.JWT.IoC
@@ -21,28 +21,25 @@ namespace NCU.AnnualWorks.Authentication.JWT.IoC
                 (AuthenticationSchemes.JWTAuthenticationScheme, options => { }); //Options and keys loaded from configuration file
             services.AddAuthorizationCore(options =>
             {
-                //Requires access type of at least Unknown - used during login process or for non-registered users
-                options.AddPolicy(AuthorizationPolicies.AtLeastUnknown,
-                    policy => policy.RequireClaim(nameof(AccessType),
-                    AccessType.Unknown.ToString(),
-                    AccessType.Default.ToString(),
-                    AccessType.Employee.ToString(),
-                    AccessType.Admin.ToString()));
-                //Requires access type of at least Default - Read-only access - Students and past users of the system (including employees)
-                options.AddPolicy(AuthorizationPolicies.AtLeastDefault,
-                    policy => policy.RequireClaim(nameof(AccessType),
-                    AccessType.Default.ToString(),
-                    AccessType.Employee.ToString(),
-                    AccessType.Admin.ToString()));
-                //Requires access type of at least Employee - Read-Write access - Promoters and reviewers, lecuterers and coordinators of the course
+                //Used during login process or for non-registered users
+                options.AddPolicy(AuthorizationPolicies.AuthenticatedOnly, policy => policy.RequireAuthenticatedUser());
+                //Current participants of the course, lecturers, administrators and custom added users
+                options.AddPolicy(AuthorizationPolicies.AtLeastStudent,
+                    policy => policy.RequireAssertion(context =>
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsParticipant) && bool.Parse(claim.Value)) ||
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsLecturer) && bool.Parse(claim.Value)) ||
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsCustom) && bool.Parse(claim.Value)) ||
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsAdmin) && bool.Parse(claim.Value))));
+                //Current lecturers, administrators and custom added users
                 options.AddPolicy(AuthorizationPolicies.AtLeastEmployee,
-                    policy => policy.RequireClaim(nameof(AccessType),
-                    AccessType.Employee.ToString(),
-                    AccessType.Admin.ToString()));
-                //Requires access type of Admin - Full access - Users specified in database as administrators
-                options.AddPolicy(AuthorizationPolicies.AdminOnly,
-                    policy => policy.RequireClaim(nameof(AccessType),
-                    AccessType.Admin.ToString()));
+                    policy => policy.RequireAssertion(context =>
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsLecturer) && bool.Parse(claim.Value)) ||
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsCustom) && bool.Parse(claim.Value)) ||
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.IsAdmin) && bool.Parse(claim.Value))));
+                //Current lecturers only - used during creation process of thesis
+                options.AddPolicy(AuthorizationPolicies.LecturersOnly, policy => policy.RequireClaim(nameof(AuthClaims.IsLecturer), true.ToString()));
+                //Full access - Users specified in database as administrators or default system administrator specified in configuration file
+                options.AddPolicy(AuthorizationPolicies.AdminOnly, policy => policy.RequireClaim(nameof(AuthClaims.IsAdmin), true.ToString()));
             });
 
             return services;

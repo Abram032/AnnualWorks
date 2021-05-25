@@ -20,13 +20,22 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.5" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="files\**" />
+    <Compile Remove="logs\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="files\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="files\**" />
+    <EmbeddedResource Remove="logs\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="files\**" />
+    <None Remove="logs\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 

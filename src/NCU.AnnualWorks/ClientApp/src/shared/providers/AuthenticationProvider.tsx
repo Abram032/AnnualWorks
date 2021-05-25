@@ -6,19 +6,18 @@ import { useCookies } from 'react-cookie';
 import jwtDecode from 'jwt-decode';
 
 interface IAuthenticationContext {
-  currentUser: CurrentUser | null,
+  currentUser?: CurrentUser,
   isAuthenticated: boolean,
   isFetching: boolean
 }
 
 export const AuthenticationContext = React.createContext<IAuthenticationContext>({
-  currentUser: null,
   isAuthenticated: false,
   isFetching: true
 });
 
 export const AuthenticationProvider: React.FC = (props) => {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser>();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [cookies] = useCookies([CookieNames.user]);
@@ -32,17 +31,20 @@ export const AuthenticationProvider: React.FC = (props) => {
         id: userClaims.Id,
         name: userClaims.Name,
         avatarUrl: userClaims.AvatarUrl,
-        accessType: userClaims.AccessType,
-        email: userClaims.Email
+        isParticipant: (userClaims.IsParticipant.toLowerCase() === 'true'),
+        isLecturer: (userClaims.IsLecturer.toLowerCase() === 'true'),
+        isAdmin: (userClaims.IsAdmin.toLowerCase() === 'true'),
+        isCustom: (userClaims.IsCustom .toLowerCase()=== 'true'),
+        email: userClaims.Email,
       });
       setIsAuthenticated(true);
       setIsFetching(false);
     }
     catch
     {
+      setCurrentUser(undefined);
       setIsAuthenticated(false);
       setIsFetching(false);
-      setCurrentUser(null);
     }
   }, [cookies])
 

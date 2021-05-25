@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Terms
 {
-    [Authorize(AuthorizationPolicies.AtLeastDefault)]
+    [Authorize(AuthorizationPolicies.AuthenticatedOnly)]
     public class TermsController : ApiControllerBase
     {
         private readonly IUsosService _usosService;

@@ -4,6 +4,7 @@ import React from "react";
 interface NavLinkProps {
   label: string;
   href: string;
+  onClick: () => void;
 }
 
 export const NavLink: React.FC<NavLinkProps> = (props) => {
@@ -31,7 +32,7 @@ export const NavLink: React.FC<NavLinkProps> = (props) => {
   };
 
   return (
-    <Link className="nav-link" styles={styles} href={props.href}>
+    <Link className="nav-link" styles={styles} href={props.href} onClick={props.onClick}>
       {props.label}
     </Link>
   );

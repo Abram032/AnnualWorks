@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import Loader from '../../components/loader/loader';
 import { AppSettings } from '../../AppSettings';
-import Api from '../../shared/api/Api';
+import { useApi } from '../../shared/api/Api';
 import { useHistory } from "react-router-dom";
+import { RouteNames } from '../../shared/consts/RouteNames';
 
 export const Authorize: React.FC = () =>
 {
     const history = useHistory();
+    const api = useApi();
     //TODO: Move to api
     useEffect(() => {
         const query = window.location.search.substring(1);
@@ -14,13 +16,16 @@ export const Authorize: React.FC = () =>
         const token = params[0].split('=')[1];
         const verifier = params[1].split('=')[1];
 
-        Api.post(AppSettings.API.Auth.Authorize, {
+        api.post(AppSettings.API.Auth.Authorize, {
             OAuthToken: token,
             OAuthVerifier: verifier
         }).then(response => {
-            history.push('/');
+            history.push(RouteNames.root);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.error(error);
+            history.push(RouteNames.error);
+        });
     }, [])
 
     return <Loader size='medium' label='Autoryzacja...'/>

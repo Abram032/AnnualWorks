@@ -1,10 +1,11 @@
-import { AccessType } from './AccessType';
-
 export type CurrentUser = {
   id: string;
   name: string;
   email: string;
-  accessType: AccessType;
+  isParticipant: boolean;
+  isLecturer: boolean;
+  isAdmin: boolean;
+  isCustom: boolean;
   avatarUrl: string;
 };
 
