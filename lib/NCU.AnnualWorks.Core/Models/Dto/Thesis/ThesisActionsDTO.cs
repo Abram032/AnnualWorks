@@ -8,5 +8,6 @@
         public bool CanEdit { get; set; }
         public bool CanAddReview { get; set; }
         public bool CanEditReview { get; set; }
+        public bool CanEditGrade { get; set; }
     }
 }

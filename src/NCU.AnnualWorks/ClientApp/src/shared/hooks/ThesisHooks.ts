@@ -16,7 +16,6 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
         setIsFetching(false);
       })
       .catch(error => {
-        debugger;
         console.error(error);
         setIsFetching(false)
       });

@@ -17,6 +17,7 @@
         ReviewAdded,
         ReviewChanged,
         ReveiewQuestionsUpdated,
-        ReviewConfirmed
+        ReviewConfirmed,
+        GradeConfirmed
     }
 }

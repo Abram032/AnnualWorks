@@ -49,3 +49,7 @@ export interface ReviewRequestData {
   grade: string,
   isConfirmed: boolean,
 }
+
+export interface ConfirmGradeRequestData {
+  grade: string
+}

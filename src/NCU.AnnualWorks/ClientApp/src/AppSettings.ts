@@ -27,6 +27,7 @@ export namespace AppSettings {
       Promoted: process.env.REACT_APP_API_THESES_PROMOTED!,
       Reviewed: process.env.REACT_APP_API_THESES_REVIEWED!,
       Authored: process.env.REACT_APP_API_THESES_AUTHORED!,
+      Grade: process.env.REACT_APP_API_THESES_GRADE!,
     },
     Questions: {
       Base: process.env.REACT_APP_API_QUESTIONS!,

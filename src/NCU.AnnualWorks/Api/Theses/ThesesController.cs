@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Theses
@@ -231,7 +232,8 @@ namespace NCU.AnnualWorks.Api.Theses
                 //TODO: Check if review exists
                 CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed),
                 CanPrint = true,
-                CanView = true
+                CanView = true,
+                CanEditGrade = (isPromoter && thesis.Grade == null && thesis.Reviews.All(r => r.IsConfirmed))
             };
             foreach (var additionalFile in thesisDto.ThesisAdditionalFiles)
             {
@@ -386,6 +388,11 @@ namespace NCU.AnnualWorks.Api.Theses
                 return new NotFoundResult();
             }
 
+            if (thesis.Grade != null)
+            {
+                return new ConflictObjectResult("Nie można edytować pracy z wystawioną oceną.");
+            }
+
             if (thesis.Reviews.Any(r => r.IsConfirmed) && !HttpContext.IsCurrentUserAdmin())
             {
                 return new BadRequestObjectResult("Nie można edytować pracy z zatwierdzoną recenzją.");
@@ -514,6 +521,35 @@ namespace NCU.AnnualWorks.Api.Theses
             await _thesisRepository.UpdateAsync(thesis);
 
             return new OkObjectResult(thesis.Guid);
+        }
+
+
+        [HttpPost("grade/{id:guid}")]
+        [Authorize(AuthorizationPolicies.LecturersOnly)]
+        public async Task<IActionResult> ConfirmGrade(Guid id, [FromBody] ConfirmGradeRequest request)
+        {
+            var thesis = await _thesisRepository.GetAsync(id);
+            var currentUserUsosId = HttpContext.CurrentUserUsosId();
+            var currentUser = await _userRepository.GetAsync(currentUserUsosId);
+            var regex = new Regex(@"(^2$)|(^3$)|(^3\.5$)|(^4$)|(^4\.5$)|(^5$)");
+
+            if (thesis.Promoter == currentUser &&
+                thesis.Grade == null &&
+                thesis.Reviews.All(r => r.IsConfirmed) &&
+                thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
+                thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer) &&
+                regex.IsMatch(request.Grade))
+            {
+                thesis.Grade = request.Grade;
+                thesis.LogChange(currentUser, ModificationType.GradeConfirmed);
+                await _thesisRepository.UpdateAsync(thesis);
+
+                return new OkResult();
+            }
+            else
+            {
+                return new BadRequestObjectResult("Ocena została już wystawiona lub nie posiadasz uprawnień do jej wystawienia.");
+            }
         }
     }
 }

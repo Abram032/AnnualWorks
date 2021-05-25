@@ -1,5 +1,9 @@
 import {
   DefaultButton,
+  Dialog,
+  DialogFooter,
+  DialogType,
+  IDialogStyles,
   IPersonaProps,
   IStackTokens,
   ITag,
@@ -29,6 +33,7 @@ import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileR
 import { AxiosResponse } from "axios";
 import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/mappers";
 import { useHistory } from "react-router";
+import { useBoolean, useId } from "@fluentui/react-hooks";
 
 type Form = {
   guid?: string;
@@ -53,8 +58,25 @@ interface ThesisFormProps {
 export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
   const history = useHistory();
 
-  const [validFormData, setValidFormData] = useState<Form>();
-  const [validationError, setValidationError] = useState<DeepMap<Form, FieldError>>();
+  //const [validFormData, setValidFormData] = useState<Form>();
+  //const [validationError, setValidationError] = useState<DeepMap<Form, FieldError>>();
+  const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
+  const labelId: string = useId('confirmDialogLabelId');
+  const subTextId: string = useId('confirmDialogSubtextId');
+  const dialogContentProps = {
+    type: DialogType.normal,
+    title: 'Zapis pracy',
+    closeButtonAriaLabel: 'Close',
+    subText: 'Czy jesteś pewien, że chcesz zapisać pracę i rozpocząć proces recenzji? Po zatwierdzeniu pierwszej recenzji nie ma możliwości dalszej edycji pracy.',
+  };
+  const modalProps = React.useMemo(
+    () => ({
+      titleAriaId: labelId,
+      subtitleAriaId: subTextId,
+      isBlocking: false,
+    }),
+    [labelId, subTextId],
+  );
 
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -87,26 +109,26 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
     }
 
     if(!isUploading && uploadSuccess) {
-      console.log("upload complete");
+      //console.log("upload complete");
       return;
     }
 
     if(!isUploading && !uploadSuccess) {
-      console.error(errorMessage);
+      //console.error(errorMessage);
       return;
     }
   }, [isUploading, uploadSuccess, errorMessage]);
 
   const onSave = (withReview?: boolean) => {
-    setValidationError(undefined);
-    setValidFormData(undefined);
+    //setValidationError(undefined);
+    //setValidFormData(undefined);
     setErrorMessage(undefined);
     setUploadSuccess(false);
     setIsUploading(false);
 
     handleSubmit(
       (values) => {
-        setValidFormData(values);
+        //setValidFormData(values);
 
         setIsUploading(true);
         const data: ThesisRequestData = {
@@ -136,13 +158,13 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             }
           }).catch(error => {
             window.scrollTo(0,0);
-            setErrorMessage(error.data);
+            //setErrorMessage(error.data);
             setUploadSuccess(false);
             setIsUploading(false);
           });
       },
       (err) => {
-        setValidationError(err);
+        //setValidationError(err);
       }
     )();
   };
@@ -273,7 +295,8 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
       </Tile>
       <Stack horizontalAlign="end" horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton onClick={() => onSave(true)}>
+          {/* <PrimaryButton onClick={() => onSave(true)}> */}
+          <PrimaryButton onClick={toggleConfirmDialog}>
             Zapisz pracę i zrecenzuj
           </PrimaryButton>
         </StackItem>
@@ -289,6 +312,23 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
           </DefaultButton>
         </StackItem>
       </Stack>
+      <Dialog
+        hidden={confirmDialog}
+        onDismiss={toggleConfirmDialog}
+        dialogContentProps={dialogContentProps}
+        modalProps={modalProps}
+      >
+        <DialogFooter>
+          <PrimaryButton onClick={() => {
+            toggleConfirmDialog();
+            onSave(true);
+          }} text="Zapisz i zrecenzuj" />
+          <DefaultButton onClick={() => {
+            toggleConfirmDialog();
+            onSave(false);
+          }} text="Zapisz" />
+        </DialogFooter>
+      </Dialog>
     </Stack>
   );
 };

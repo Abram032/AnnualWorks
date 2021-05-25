@@ -1,4 +1,4 @@
-import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType } from '@fluentui/react';
+import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType, Dialog, DialogFooter, DialogType } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
 import Tile from '../../components/tile/tile';
 import { addActions } from '../../components/thesisActions/thesisActions';
@@ -12,6 +12,7 @@ import { gradeRules, notRequiredAnswerRules } from './thesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
 import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
+import { useBoolean, useId } from '@fluentui/react-hooks';
 
 interface ThesisReviewFormProps {
   thesis: Thesis,
@@ -23,6 +24,25 @@ interface ThesisReviewFormProps {
 export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const history = useHistory();
   //const shouldValidate = useRef<boolean>(true);
+
+  const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
+  const labelId: string = useId('confirmDialogLabelId');
+  const subTextId: string = useId('confirmDialogSubtextId');
+  const dialogContentProps = {
+    type: DialogType.normal,
+    title: 'Zatwierdzanie recenzji',
+    closeButtonAriaLabel: 'Close',
+    subText: 'Czy jesteś pewien, że chcesz zatwierdzić swoją recenzję? Po zatwierdzeniu nie ma możliwości jej dalszej edycji oraz edycji pracy.',
+  };
+  const modalProps = React.useMemo(
+    () => ({
+      titleAriaId: labelId,
+      subtitleAriaId: subTextId,
+      isBlocking: false,
+    }),
+    [labelId, subTextId],
+  );
+
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [isUploading, setIsUploading] = useState<boolean>();
@@ -37,18 +57,17 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     }
 
     if(!isUploading && uploadSuccess) {
-      console.log("upload complete");
+      //console.log("upload complete");
       return;
     }
 
     if(!isUploading && !uploadSuccess) {
-      console.error(errorMessage);
+      //console.error(errorMessage);
       return;
     }
   }, [isUploading, uploadSuccess, errorMessage]);
 
   const onSave = (confirm: boolean) => {
-    debugger;
     //shouldValidate.current = false;
     setErrorMessage(undefined);
     setUploadSuccess(false);
@@ -56,7 +75,6 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     
     handleSubmit(
       (values) => {
-        debugger;
         setIsUploading(true);
         const questionIds = Object.keys(values)
           .filter(k => !isNaN(parseInt(k)))
@@ -168,7 +186,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
       </Tile>
       <Stack horizontalAlign='end' horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton onClick={() => onSave(true)}>Zapisz i zatwierdź recenzję</PrimaryButton>
+          <PrimaryButton onClick={toggleConfirmDialog}>Zapisz i zatwierdź recenzję</PrimaryButton>
         </StackItem>
         <StackItem styles={{ root: { marginRight: "auto" } }}>
           <DefaultButton onClick={() => onSave(false)}>Zapisz recenzję</DefaultButton>
@@ -182,6 +200,23 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           </DefaultButton>
         </StackItem>
       </Stack>
+      <Dialog
+        hidden={confirmDialog}
+        onDismiss={toggleConfirmDialog}
+        dialogContentProps={dialogContentProps}
+        modalProps={modalProps}
+      >
+        <DialogFooter>
+          <PrimaryButton onClick={() => {
+            toggleConfirmDialog();
+            onSave(true);
+          }} text="Zatwierdź" />
+          <DefaultButton onClick={() => {
+            toggleConfirmDialog();
+            onSave(false);
+          }} text="Zapisz" />
+        </DialogFooter>
+      </Dialog>
     </Stack>
   )
 }

@@ -10,6 +10,7 @@ export interface ThesisActions {
   canEdit: boolean,
   canAddReview: boolean,
   canEditReview: boolean,
+  canEditGrade: boolean,
 }
 
 export enum ModificationType {

@@ -147,23 +147,28 @@ namespace NCU.AnnualWorks.Api.Reviews
                     return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań");
                 }
 
-                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
+                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
                 {
                     var grade = request.Grade;
                     var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
                         .Select(r => r.Grade).ToList();
                     grades.Add(grade);
 
-                    if (!TryGetAverageGrade(grades, out var average))
+                    if (TryGetAverageGrade(grades, out var average))
                     {
-                        var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                        return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                            $"którą można wpisać do systemu USOS (śr. {average}). " +
-                            $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
-                            "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                        thesis.Grade = average;
                     }
 
-                    thesis.Grade = average;
+                    //if (!TryGetAverageGrade(grades, out var average))
+                    //{
+                    //    var contactUser = isPromoter ? "recenzentem" : "promotorem";
+                    //    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
+                    //        $"którą można wpisać do systemu USOS (śr. {average}). " +
+                    //        $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
+                    //        "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                    //}
+
+                    //thesis.Grade = average;
                 }
             }
 
@@ -215,7 +220,7 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new NotFoundResult();
             }
 
-            var thesis = await _thesisRepository.GetAsync(review.ThesisId);
+            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             if (thesis == null)
             {
@@ -253,23 +258,28 @@ namespace NCU.AnnualWorks.Api.Reviews
                     return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań.");
                 }
 
-                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
+                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
                 {
                     var grade = request.Grade;
                     var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
                         .Select(r => r.Grade).ToList();
                     grades.Add(grade);
 
-                    if (!TryGetAverageGrade(grades, out var average))
+                    if (TryGetAverageGrade(grades, out var average))
                     {
-                        var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                        return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                            $"którą można wpisać do systemu USOS (śr. {average}). " +
-                            $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
-                            "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                        thesis.Grade = average;
                     }
 
-                    thesis.Grade = average;
+                    //if (!TryGetAverageGrade(grades, out var average))
+                    //{
+                    //    var contactUser = isPromoter ? "recenzentem" : "promotorem";
+                    //    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
+                    //        $"którą można wpisać do systemu USOS (śr. {average}). " +
+                    //        $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
+                    //        "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                    //}
+
+                    //thesis.Grade = average;
                 }
             }
 

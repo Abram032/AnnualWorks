@@ -118,6 +118,23 @@ export const printAction = (props: ActionProps): ICommandBarItemProps => {
   }
 };
 
+export const editGradeAction = (props: ActionProps): ICommandBarItemProps => {
+  return {
+    key: 'editGrade',
+    text: 'Wystaw ocenę',
+    iconProps: { 
+      iconName: 'Ribbon', 
+      className: `${iconStyles}`
+    },
+    ariaLabel: 'Confirm grade',
+    iconOnly: props.iconOnly ?? true,
+    onClick: props.onClick,
+    href: props.href,
+    disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
+  }
+};
+
 export const addActions = (thesis: Thesis, history: any, iconOnly: boolean): ICommandBarItemProps[] => {
   const items: ICommandBarItemProps[] = [];
   if(thesis?.actions.canView) {

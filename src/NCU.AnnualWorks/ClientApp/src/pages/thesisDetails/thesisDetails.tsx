@@ -1,14 +1,16 @@
-import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import { ComboBox, CommandBar, DefaultButton, DetailsRow, Dialog, DialogFooter, FontSizes, IColumn, ICommandBarItemProps, IconButton, IDropdownOption, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React, { useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import Loader from '../../components/loader/loader';
-import { addActions } from '../../components/thesisActions/thesisActions';
+import { addActions, editGradeAction } from '../../components/thesisActions/thesisActions';
 import Tile from '../../components/tile/tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import ReviewModal from '../../components/reviewModal/reviewModal';
-import { ThesisForm } from '../../components/thesisForm/thesisForm';
+import { useApi } from '../../shared/api/Api';
+import ThesisGradeConfirmDialog from '../../components/thesisGradeConfirm/ThesisGradeConfirmDialog';
+import { useBoolean } from '@fluentui/react-hooks';
 
 interface ThesisDetailsProps {
   guid: string
@@ -17,9 +19,11 @@ interface ThesisDetailsProps {
 export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const authContext = useContext(AuthenticationContext);
   const history = useHistory();
+
   const [thesis, isFetching] = useThesis(props.guid);
   const [isPromoterReviewVisible, setIsPromoterReviewVisible] = useState<boolean>(false);
   const [isReviewerReviewVisible, setIsReviewerReviewVisible] = useState<boolean>(false);
+  const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
 
   if(isFetching) {
     return <Loader size='medium' label={"Ładowanie..."} />
@@ -31,6 +35,12 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   
   //Adding available actions
   const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
+  if(thesis?.actions.canEditGrade) {
+    actionItems.push(editGradeAction({
+      iconOnly: false,
+      onClick: () => toggleConfirmDialog()
+    }))
+  }
 
   const columns: IColumn[] = [
     //{ key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
@@ -140,9 +150,21 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
     )
   };
 
+  const gradeConflictMessageBar = (
+    <Stack tokens={stackTokens}>
+      <MessageBar messageBarType={MessageBarType.blocked} isMultiline>
+        Oceny wystawione w recenzjach nie pozwalają na wyliczenie średniej, która może zostać wpisana do systemu USOS.
+        Skontaktuj się z promotorem lub recenzentem i wspólnie ustalcie końcową ocenę pracy. 
+        Ostatecznie ocena musi zostać zatwierdzona w systemie przez promotora przy wykorzystaniu akcji 'wystaw ocenę'.
+      </MessageBar>
+    </Stack>
+  );
+
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
       <Tile title={thesis?.title}>
+        {thesis?.promoterReview?.grade && thesis?.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
+        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialog} setIsVisible={toggleConfirmDialog} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar
