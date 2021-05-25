@@ -18,7 +18,6 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public User ModifiedBy { get; set; }
         public string Checksum { get; set; }
 
-        public Review Review { get; set; }
         public Thesis Thesis { get; set; }
         public ICollection<ThesisAdditionalFile> ThesisAdditionalFiles { get; set; }
     }

@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import Api from '../api/Api';
+import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import User from '../../shared/models/User';
 import { IPersonaProps } from '@fluentui/react';
 
 const useUsers = (endpoint: string) => {
+  const api = useApi();
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    Api.get<User[]>(endpoint)
+    api.get<User[]>(endpoint)
       .then(response => {
         setUsers(response.data);
       })

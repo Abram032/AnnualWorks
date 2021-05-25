@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Users.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
-using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto.Users;
@@ -55,7 +54,7 @@ namespace NCU.AnnualWorks.Api.Users
             var lecturers = await _usosService.GetCourseEditionLecturers(oauthRequest, currentTerm.Id);
 
             var customUserIds = _userRepository.GetAll()
-                .Where(p => p.CustomAccess || p.AccessType == AccessType.Employee || p.AccessType == AccessType.Admin)
+                .Where(p => p.CustomAccess)
                 .Select(p => p.UsosId).ToList();
             var lecturersIds = lecturers.Select(l => l.Id).ToList();
 
@@ -71,9 +70,10 @@ namespace NCU.AnnualWorks.Api.Users
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> AddCustomEmployee([FromBody] CreateUserRequest request)
         {
+            //TODO: Add validation
             if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
@@ -83,19 +83,12 @@ namespace NCU.AnnualWorks.Api.Users
                 await _userRepository.AddAsync(new User
                 {
                     UsosId = request.UsosId,
-                    AccessType = AccessType.Employee,
                     CustomAccess = true,
                 });
 
                 return new OkResult();
             }
 
-            if (user.CustomAccess || user.AccessType == AccessType.Admin)
-            {
-                return new ConflictResult();
-            }
-
-            user.AccessType = AccessType.Employee;
             user.CustomAccess = true;
             await _userRepository.UpdateAsync(user);
             return new OkResult();
@@ -105,9 +98,10 @@ namespace NCU.AnnualWorks.Api.Users
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> RemoveCustomEmployee(string usosId)
         {
+            //TODO: Add validation
             if (string.IsNullOrWhiteSpace(usosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
@@ -117,12 +111,11 @@ namespace NCU.AnnualWorks.Api.Users
                 return new NotFoundResult();
             }
 
-            if (!user.CustomAccess || user.AccessType == AccessType.Admin)
+            if (!user.CustomAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik nie posiada już dostępu.");
             }
 
-            user.AccessType = AccessType.Unknown;
             user.CustomAccess = false;
 
             await _userRepository.UpdateAsync(user);
@@ -136,7 +129,7 @@ namespace NCU.AnnualWorks.Api.Users
             var oauthRequest = HttpContext.BuildOAuthRequest();
 
             var userIds = _userRepository.GetAll()
-                .Where(p => p.AccessType == AccessType.Admin)
+                .Where(p => p.AdminAccess)
                 .Select(p => p.UsosId).ToList();
 
             userIds.Add(_options.DefaultAdministratorUsosId);
@@ -152,14 +145,15 @@ namespace NCU.AnnualWorks.Api.Users
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> AddAdmin([FromBody] CreateUserRequest request)
         {
+            //TODO: Add validation
             if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             if (request.UsosId == _options.DefaultAdministratorUsosId)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Główny administrator jest już administratorem.");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
@@ -169,18 +163,18 @@ namespace NCU.AnnualWorks.Api.Users
                 await _userRepository.AddAsync(new User
                 {
                     UsosId = request.UsosId,
-                    AccessType = AccessType.Admin
+                    AdminAccess = true,
                 });
 
                 return new OkResult();
             }
 
-            if (user.AccessType == AccessType.Admin)
+            if (user.AdminAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik jest już administratorem");
             }
 
-            user.AccessType = AccessType.Admin;
+            user.AdminAccess = true;
             await _userRepository.UpdateAsync(user);
             return new OkResult();
         }
@@ -189,14 +183,15 @@ namespace NCU.AnnualWorks.Api.Users
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> RemoveAdmin(string usosId)
         {
+            //TODO: Add validation
             if (string.IsNullOrWhiteSpace(usosId))
             {
-                return new BadRequestResult();
+                return new BadRequestObjectResult("Brak użytkownika");
             }
 
             if (usosId == _options.DefaultAdministratorUsosId)
             {
-                return new ForbidResult();
+                return new ConflictObjectResult("Nie można usunąć głównego administratora.");
             }
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
@@ -206,20 +201,12 @@ namespace NCU.AnnualWorks.Api.Users
                 return new NotFoundResult();
             }
 
-            if (user.AccessType != AccessType.Admin)
+            if (!user.AdminAccess)
             {
-                return new ConflictResult();
+                return new ConflictObjectResult("Użytkownik nie jest administratorem");
             }
 
-            if (user.CustomAccess)
-            {
-                user.AccessType = AccessType.Employee;
-            }
-            else
-            {
-                user.AccessType = AccessType.Unknown;
-            }
-
+            user.AdminAccess = false;
             await _userRepository.UpdateAsync(user);
             return new OkResult();
         }

@@ -1,38 +1,108 @@
-import { CommandBar, DefaultButton, DetailsRow, FontSizes, IColumn, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import React from 'react';
-import { addReviewAction, downloadAction, editAction, printAction, viewAction } from '../../components/thesisActions/thesisActions';
+import { ComboBox, CommandBar, DefaultButton, DetailsRow, Dialog, DialogFooter, FontSizes, IColumn, ICommandBarItemProps, IconButton, IDropdownOption, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import React, { useContext, useState } from 'react';
+import { Redirect, useHistory } from 'react-router';
+import Loader from '../../components/loader/loader';
+import { addActions, editGradeAction } from '../../components/thesisActions/thesisActions';
 import Tile from '../../components/tile/tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
+import { useThesis } from '../../shared/hooks/ThesisHooks';
+import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import ReviewModal from '../../components/reviewModal/reviewModal';
+import { useApi } from '../../shared/api/Api';
+import ThesisGradeConfirmDialog from '../../components/thesisGradeConfirm/ThesisGradeConfirmDialog';
+import { useBoolean } from '@fluentui/react-hooks';
 
-export const ThesisDetails: React.FC = (props) => {
-  const actionItems = [
-    viewAction({iconOnly: false, disabled: true}),
-    downloadAction({iconOnly: false, disabled: true}),
-    editAction({iconOnly: false, href: RouteNames.addthesis}),
-    printAction({iconOnly: false, disabled: true}),
-    addReviewAction({iconOnly: false, href: RouteNames.review}),
-    //editReviewAction({iconOnly: false}),
-  ];
+interface ThesisDetailsProps {
+  guid: string
+}
+
+export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
+  const authContext = useContext(AuthenticationContext);
+  const history = useHistory();
+
+  const [thesis, isFetching] = useThesis(props.guid);
+  const [isPromoterReviewVisible, setIsPromoterReviewVisible] = useState<boolean>(false);
+  const [isReviewerReviewVisible, setIsReviewerReviewVisible] = useState<boolean>(false);
+  const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
+
+  if(isFetching) {
+    return <Loader size='medium' label={"Ładowanie..."} />
+  } else {
+    if(!thesis) {
+      return <Redirect to={RouteNames.error} />
+    }
+  }
+  
+  //Adding available actions
+  const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
+  if(thesis?.actions.canEditGrade) {
+    actionItems.push(editGradeAction({
+      iconOnly: false,
+      onClick: () => toggleConfirmDialog()
+    }))
+  }
 
   const columns: IColumn[] = [
-    { key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
+    //{ key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
     { key: 'name', name: 'Imie i nazwisko', fieldName: 'name', minWidth: 200, maxWidth: 500 },
     { key: 'grade', name: 'Ocena', fieldName: 'grade', minWidth: 200, maxWidth: 500 },
   ];
 
-  const reviewP = {
-    name: 'Jan Nowak',
-    grade: 4
-  };
-
-  const reviewR = {
-    name: 'Jan Kowalski',
-    grade: 5
-  };
-
   const iconStyles = mergeStyles({
     fontWeight: '600!important'
-  });  
+  }); 
+
+  const reviewAddAction = (
+    <IconButton 
+      iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} 
+      //href={RouteNames.addReviewPath(props.guid)} 
+      onClick={() => history.push(RouteNames.addReviewPath(props.guid))} />
+  );
+
+  const reviewEditAction = (reviewGuid: string) => (
+    <IconButton 
+      iconProps={{ iconName: 'PageEdit', className: `${iconStyles}` }} 
+      //href={RouteNames.editReviewPath(props.guid, reviewGuid)} 
+      onClick={() => history.push(RouteNames.editReviewPath(props.guid, reviewGuid))} />
+  );
+
+  const getPromoterAction = () => {
+    if(thesis?.promoter.usosId === authContext.currentUser?.id) {
+      if(thesis?.promoterReview && thesis.actions.canEditReview) {
+        return reviewEditAction(thesis.promoterReview.guid!);
+      } else if(thesis.actions.canAddReview) {
+        return reviewAddAction;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  const getReviewerAction = () => {
+    if(thesis?.reviewer.usosId === authContext.currentUser?.id) {
+      if(thesis?.reviewerReview && thesis.actions.canEditReview) {
+        return reviewEditAction(thesis.reviewerReview.guid!);
+      } else if(thesis.actions.canAddReview) {
+        return reviewAddAction;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  const promoterReview = {
+    name: `${thesis?.promoter.firstName} ${thesis?.promoter.lastName}`,
+    grade: thesis?.promoterReview?.grade ?? "Brak oceny",
+    action: getPromoterAction(),
+    showModal: thesis.promoterReview ? () => setIsPromoterReviewVisible(true) : undefined
+  };
+
+  const reviewerReview = {
+    name: `${thesis?.reviewer.firstName} ${thesis?.reviewer.lastName}`,
+    grade: thesis?.reviewerReview?.grade ?? "Brak oceny",
+    action: getReviewerAction(),
+    showModal: thesis.reviewerReview ? () => setIsReviewerReviewVisible(true) : undefined
+  };
 
   const onRenderItemColumn = (
     item: any,
@@ -41,9 +111,13 @@ export const ThesisDetails: React.FC = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'action':
-        return <IconButton iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} href={RouteNames.review} />
+        return item.action
       case 'name':
-        return <Label>{item.name}</Label>
+        if(item.showModal) {
+          return <Link style={{fontSize: FontSizes.size14}} onClick={item.showModal}>{item.name}</Link>
+        } else {
+          return <Label>{item.name}</Label>
+        }
       case 'grade':
         return <Label>Ocena: {item.grade}</Label>
       default:
@@ -58,9 +132,39 @@ export const ThesisDetails: React.FC = (props) => {
     width: '100%'
   });
 
+  const rowStyles = mergeStyles({
+    alignItems: 'center'
+  });
+
+  const reviewModal = (name: string, isVisible: boolean, setIsVisible: (value: boolean) => void, guid?: string) => {
+    if(!guid) {
+      return null;
+    }
+    return (
+      <ReviewModal 
+        guid={guid}
+        person={name}
+        isModalVisible={isVisible}
+        setModalVisible={setIsVisible}
+      />
+    )
+  };
+
+  const gradeConflictMessageBar = (
+    <Stack tokens={stackTokens}>
+      <MessageBar messageBarType={MessageBarType.blocked} isMultiline>
+        Oceny wystawione w recenzjach nie pozwalają na wyliczenie średniej, która może zostać wpisana do systemu USOS.
+        Skontaktuj się z promotorem lub recenzentem i wspólnie ustalcie końcową ocenę pracy. 
+        Ostatecznie ocena musi zostać zatwierdzona w systemie przez promotora przy wykorzystaniu akcji 'wystaw ocenę'.
+      </MessageBar>
+    </Stack>
+  );
+
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
-      <Tile title='Tytuł pracy'>
+      <Tile title={thesis?.title}>
+        {thesis?.promoterReview?.grade && thesis?.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
+        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialog} setIsVisible={toggleConfirmDialog} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar
@@ -69,36 +173,47 @@ export const ThesisDetails: React.FC = (props) => {
           />
         </Stack>
         <Stack tokens={stackTokens}>
-          <Label>Dodana: 06.05.2021</Label>
-          <Label>Termin: 07.05.2021</Label>
-          <Label>Autor: Jan Kowalski</Label>
+          <Label>Dodana: {new Date(thesis?.createdAt!).toLocaleDateString()}</Label>
+          <Label>
+            {thesis?.thesisAuthors.length === 1 ? "Autor" : "Autorzy"}: {thesis?.thesisAuthors.map(p => `${p.firstName} ${p.lastName}`).join(', ')}
+          </Label>
         </Stack>
         <Stack tokens={stackTokens}>
           <Label style={{fontSize: FontSizes.size20}}>Abstrakt:</Label>
-          <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+          <p>{thesis?.abstract}</p>
           <Label style={{fontSize: FontSizes.size20}}>Słowa kluczowe:</Label>
-          <p>Słowo1, Słowo2, Słowo3, Słowo4, Słowo5, Słowo6</p>
+          <p>{thesis?.thesisKeywords.map(k => k.text).join(', ')}</p>
           <Label style={{fontSize: FontSizes.size20}}>Recenzja promotora:</Label>
           <DetailsRow 
+            className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
-            item={reviewP} 
+            item={promoterReview} 
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
+          {reviewModal(promoterReview.name, isPromoterReviewVisible, setIsPromoterReviewVisible, thesis.promoterReview?.guid)}
           <Label style={{fontSize: FontSizes.size20}}>Recenzja recenzenta:</Label>
           <DetailsRow 
+            className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
-            item={reviewR} 
+            item={reviewerReview} 
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
+          {reviewModal(reviewerReview.name, isReviewerReviewVisible, setIsReviewerReviewVisible, thesis.reviewerReview?.guid)}
+          <Label style={{fontSize: FontSizes.size20}}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
         </Stack>
       </Tile>
       <Stack horizontal tokens={stackTokens}>
         <StackItem>
-          <PrimaryButton href={RouteNames.root}>Powrót do listy prac</PrimaryButton>
+          <PrimaryButton 
+            //href={RouteNames.root} 
+            onClick={() => history.push(RouteNames.root)}
+            >
+              Powrót do listy prac
+            </PrimaryButton>
         </StackItem>
       </Stack>
     </Stack>

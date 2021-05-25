@@ -1,0 +1,22 @@
+import React from "react";
+import { Label, Stack, FontSizes, IStackTokens } from "@fluentui/react";
+
+export const Search: React.FC = () => {
+  const stackTokens: IStackTokens = { childrenGap: 15 };
+  return (
+    <Stack tokens={stackTokens}>
+      <Stack.Item align="center" tokens={stackTokens}>
+        <Label style={{ fontSize: FontSizes.size24 }}>
+          Trwają prace nad funkcjonalnością.
+        </Label>
+      </Stack.Item>
+      <Stack.Item align="center" tokens={stackTokens}>
+        <Label style={{ fontSize: FontSizes.size24 }}>
+          Wkrótce będzie dostępna! 😉 
+        </Label>
+      </Stack.Item>
+    </Stack>
+  );
+};
+
+export default Search;

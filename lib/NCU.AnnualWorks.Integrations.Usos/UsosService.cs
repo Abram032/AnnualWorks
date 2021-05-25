@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Constants;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
+using NCU.AnnualWorks.Core.Models.DbModels;
+using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Exceptions;
 using NCU.AnnualWorks.Integrations.Usos.Core.Extensions;
@@ -26,14 +28,16 @@ namespace NCU.AnnualWorks.Integrations.Usos
         private readonly UsosServiceOptions _options;
         private readonly IOAuthService _oauthService;
         private readonly ILogger _logger;
+        private readonly IAsyncRepository<Settings> _settingsRepository;
 
         public UsosService(IOptions<UsosServiceOptions> options, IOAuthService oauthService,
-            HttpClient client, ILogger<UsosService> logger)
+            HttpClient client, ILogger<UsosService> logger, IAsyncRepository<Settings> settingsRepository)
         {
             _logger = logger;
             _options = options.Value;
             _client = client;
             _oauthService = oauthService;
+            _settingsRepository = settingsRepository;
 
             _client.BaseAddress = new Uri(_options.BaseApiAddress);
             _client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
@@ -46,6 +50,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public Uri GetRedirectAddress(string token) =>
             new Uri(_client.BaseAddress, $"{_options.UsosEndpoints.Authorize}?{OAuthFields.OAuthToken}={token}");
         public Uri GetLogoutAddress() => new Uri(_options.LogoutAddress);
+        public string GetCourseCode() => _settingsRepository.GetAll().FirstOrDefault()?.CourseCode;
 
         private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
         {
@@ -73,14 +78,6 @@ namespace NCU.AnnualWorks.Integrations.Usos
             throw new UsosConnectionException("Could not connect to USOS.");
         }
 
-        private OAuthRequest GetBaseOAuthRequestFields() =>
-            new OAuthRequest
-            {
-                OAuthConsumerKey = _options.ConsumerKey,
-                OAuthConsumerSecret = _options.ConsumerSecret,
-                OAuthSignatureMethod = SignatureMethods.HMACSHA1
-            };
-
         private void AppendOAuthConsumer(OAuthRequest oauthRequest)
         {
             oauthRequest.OAuthConsumerKey = _options.ConsumerKey;
@@ -88,16 +85,20 @@ namespace NCU.AnnualWorks.Integrations.Usos
             oauthRequest.OAuthSignatureMethod = SignatureMethods.HMACSHA1;
         }
 
-        private HttpRequestMessage GetBaseRequest(string endpoint)
+        private HttpRequestMessage GetBaseRequest(OAuthRequest oauthRequest, string endpoint)
         {
             var address = new Uri(_client.BaseAddress, endpoint);
             var request = new HttpRequestMessage(HttpMethod.Post, address);
             request.Content = new StringContent(string.Empty);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+            AppendOAuthConsumer(oauthRequest);
+            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+
             return request;
         }
 
-        private async Task<IReadOnlyDictionary<string, string>> ParseTokenResponseAsync(HttpContent content)
+        private async Task<OAuthResponse> ParseTokenResponseAsync(HttpContent content)
         {
             var data = await content.ReadAsStringAsync();
             var keyValuePairs = data.Split('&');
@@ -110,25 +111,6 @@ namespace NCU.AnnualWorks.Integrations.Usos
                 parameters.Add(key, value);
             }
 
-            return parameters;
-        }
-
-        private async Task<OAuthResponse> ParseRequestTokenResponseAsync(HttpContent content)
-        {
-            var parameters = await ParseTokenResponseAsync(content);
-
-            return new OAuthResponse
-            {
-                OAuthToken = parameters.GetValueOrDefault(OAuthFields.OAuthToken),
-                OAuthTokenSecret = parameters.GetValueOrDefault(OAuthFields.OAuthTokenSecret),
-                OAuthCallbackConfirmed = bool.Parse(parameters.GetValueOrDefault(OAuthFields.OAuthCallbackConfirmed))
-            };
-        }
-
-        private async Task<OAuthResponse> ParseAccessTokenResponseAsync(HttpContent content)
-        {
-            var parameters = await ParseTokenResponseAsync(content);
-
             return new OAuthResponse
             {
                 OAuthToken = parameters.GetValueOrDefault(OAuthFields.OAuthToken),
@@ -139,54 +121,33 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<OAuthResponse> GetRequestTokenAsync(OAuthRequest oauthRequest)
         {
             var scopes = _options.DefaultScopes.ToScopes();
-            var request = GetBaseRequest($"{_options.UsosEndpoints.RequestToken}?scopes={scopes}");
-
-            AppendOAuthConsumer(oauthRequest);
-            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.RequestToken}?scopes={scopes}");
 
             var response = await SendRequestAsync(request);
 
-            return await ParseRequestTokenResponseAsync(response.Content);
+            return await ParseTokenResponseAsync(response.Content);
         }
 
         public async Task<OAuthResponse> GetAccessTokenAsync(OAuthRequest oauthRequest)
         {
-            var request = GetBaseRequest(_options.UsosEndpoints.AccessToken);
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            oauth.OAuthVerifier = oauthRequest.OAuthVerifier;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, _options.UsosEndpoints.AccessToken);
 
             var response = await SendRequestAsync(request);
 
-            return await ParseAccessTokenResponseAsync(response.Content);
+            return await ParseTokenResponseAsync(response.Content);
         }
 
         public async Task RevokeAccessTokenAsync(OAuthRequest oauthRequest)
         {
-            var request = GetBaseRequest(_options.UsosEndpoints.RevokeToken);
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, _options.UsosEndpoints.RevokeToken);
 
             await SendRequestAsync(request);
         }
 
         public async Task<UsosUser> GetCurrentUser(OAuthRequest oauthRequest)
         {
-            //var scopeArray = new[] { UserScopes.Id, UserScopes.FirstName, UserScopes.LastName, UserScopes.PhotoUrls };
             var fields = _options.UsosFields.Users.ToFields();
-            var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUser}?fields={fields}");
-
-            //TOOD: Figure out a way for adding headers in middleware/delegating handler
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.UsersUser}?fields={fields}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -198,10 +159,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<UsosUser> GetUser(OAuthRequest oauthRequest, string userId)
         {
             var fields = _options.UsosFields.Users.ToFields();
-            var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUser}?user_id={userId}&fields={fields}");
-
-            AppendOAuthConsumer(oauthRequest);
-            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.UsersUser}?user_id={userId}&fields={fields}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -213,10 +171,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<List<UsosUser>> GetUsers(OAuthRequest oauthRequest, IEnumerable<string> userIds)
         {
             var fields = _options.UsosFields.Users.ToFields();
-            var request = GetBaseRequest($"{_options.UsosEndpoints.UsersUsers}?user_ids={userIds.ToFields()}&fields={fields}");
-
-            AppendOAuthConsumer(oauthRequest);
-            _oauthService.AddOAuthAuthorizationHeader(request, oauthRequest);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.UsersUsers}?user_ids={userIds.ToFields()}&fields={fields}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -228,12 +183,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<List<UsosTerm>> GetTerms(OAuthRequest oauthRequest)
         {
             var today = DateTime.Today.ToString(_options.DateFormatPattern);
-            var request = GetBaseRequest($"{_options.UsosEndpoints.TermsSearch}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.TermsSearch}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -247,12 +197,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<UsosTerm> GetTerm(OAuthRequest oauthRequest, string termId)
         {
             var today = DateTime.Today.ToString(_options.DateFormatPattern);
-            var request = GetBaseRequest($"{_options.UsosEndpoints.TermsTerm}?term_id={termId}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.TermsTerm}?term_id={termId}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -264,12 +209,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
         public async Task<UsosTerm> GetCurrentTerm(OAuthRequest oauthRequest)
         {
             var today = DateTime.Today.ToString(_options.DateFormatPattern);
-            var request = GetBaseRequest($"{_options.UsosEndpoints.TermsSearch}?min_finish_date={today}&max_start_date={today}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.TermsSearch}?min_finish_date={today}&max_start_date={today}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -283,12 +223,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsParticipant}?course_id={_options.CourseCode}&term_id={termId}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsParticipant}?course_id={GetCourseCode()}&term_id={termId}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -298,12 +233,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsLecturer}?course_id={_options.CourseCode}&term_id={termId}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsLecturer}?course_id={GetCourseCode()}&term_id={termId}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -313,12 +243,8 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesIsCoordinator}?course_id={_options.CourseCode}&term_id={termId}");
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsCoordinator}?course_id={GetCourseCode()}&term_id={termId}");
 
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();
@@ -328,12 +254,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         private async Task<List<UsosUser>> GetCourseEditionUsers(OAuthRequest oauthRequest, string termId, string field)
         {
-            var request = GetBaseRequest($"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={_options.CourseCode}&term_id={termId}&fields={field}");
-
-            var oauth = GetBaseOAuthRequestFields();
-            oauth.OAuthToken = oauthRequest.OAuthToken;
-            oauth.OAuthTokenSecret = oauthRequest.OAuthTokenSecret;
-            _oauthService.AddOAuthAuthorizationHeader(request, oauth);
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={GetCourseCode()}&term_id={termId}&fields={field}");
 
             var response = await SendRequestAsync(request);
             var value = await response.Content.ReadAsStringAsync();

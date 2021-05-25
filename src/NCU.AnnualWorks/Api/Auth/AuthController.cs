@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Auth.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
-using NCU.AnnualWorks.Authentication.JWT.Core.Enums;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
@@ -20,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Auth
 {
-    [Authorize(AuthorizationPolicies.AtLeastUnknown)]
+    [Authorize(AuthorizationPolicies.AuthenticatedOnly)]
     public class AuthController : ApiControllerBase
     {
         private readonly IUsosService _usosService;
@@ -52,7 +51,6 @@ namespace NCU.AnnualWorks.Api.Auth
             var claims = new AuthClaims
             {
                 Id = string.Empty,
-                AccessType = AccessType.Unknown,
                 Token = response.OAuthToken,
                 TokenSecret = response.OAuthTokenSecret,
             };
@@ -69,62 +67,58 @@ namespace NCU.AnnualWorks.Api.Auth
         [HttpPost("Authorize")]
         public async Task<IActionResult> Authorize(AuthorizeRequest request)
         {
-            var oauthRequest = HttpContext.BuildOAuthRequest(token: request.OAuthToken, verifier: request.OAuthVerifier);
-            var accessTokenResponse = await _usosService.GetAccessTokenAsync(oauthRequest);
+            var accessTokenResponse = await _usosService.GetAccessTokenAsync(HttpContext.BuildOAuthRequest(token: request.OAuthToken, verifier: request.OAuthVerifier));
 
-            oauthRequest = HttpContext.BuildOAuthRequest(accessTokenResponse.OAuthToken, accessTokenResponse.OAuthTokenSecret);
+            var oauthRequest = HttpContext.BuildOAuthRequest(accessTokenResponse.OAuthToken, accessTokenResponse.OAuthTokenSecret);
 
             //TODO: Clean up with GetUserPermission and such
             var usosUser = await _usosService.GetCurrentUser(oauthRequest);
             var currentTerm = await _usosService.GetCurrentTerm(oauthRequest);
+
             //TODO: Run requests in parallel
             var isParticipant = await _usosService.IsCurrentUserCourseParticipant(oauthRequest, currentTerm.Id);
             var isLecturer = await _usosService.IsCurrentUserCourseLecturer(oauthRequest, currentTerm.Id);
+            var isAdmin = false;
 
             var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosUser.Id);
-            var accessType = AccessType.Unknown;
-            if (isLecturer)
-            {
-                accessType = AccessType.Employee;
-            }
-            else if (isParticipant)
-            {
-                accessType = AccessType.Default;
-            }
-
             if (usosUser.Id == _appOptions.DefaultAdministratorUsosId)
             {
-                accessType = AccessType.Admin;
-            }
+                isAdmin = true;
+            };
 
             if (user == null)
             {
                 user = _mapper.Map<UsosUser, User>(usosUser);
                 user.FirstLoginAt = DateTime.Now;
                 user.LastLoginAt = DateTime.Now;
-                user.AccessType = accessType;
+                user.AdminAccess = isAdmin;
                 await _userRepository.AddAsync(user);
             }
             else
             {
-                if (usosUser.Id == _appOptions.DefaultAdministratorUsosId || user.AccessType == AccessType.Admin)
+                if (!user.AdminAccess && isAdmin)
                 {
-                    accessType = AccessType.Admin;
+                    user.AdminAccess = isAdmin;
                 }
-                else if (user.CustomAccess)
-                {
-                    accessType = user.AccessType;
-                }
-
-                user.AccessType = accessType;
                 user.LastLoginAt = DateTime.Now;
                 await _userRepository.UpdateAsync(user);
+            }
+
+            //TODO: Remove
+            if (_appOptions.DebugMode)
+            {
+                isAdmin = true;
+                isParticipant = true;
+                isLecturer = true;
             }
 
             var authClaims = new AuthClaims
             {
                 Id = usosUser.Id,
-                AccessType = accessType,
+                IsParticipant = isParticipant,
+                IsLecturer = isLecturer,
+                IsAdmin = user.AdminAccess,
+                IsCustom = user.CustomAccess,
                 Token = accessTokenResponse.OAuthToken,
                 TokenSecret = accessTokenResponse.OAuthTokenSecret
             };
@@ -137,7 +131,10 @@ namespace NCU.AnnualWorks.Api.Auth
                 Name = $"{usosUser.FirstName} {usosUser.LastName}",
                 Email = usosUser.Email ?? string.Empty,
                 AvatarUrl = usosUser.PhotoUrls.FirstOrDefault().Value ?? string.Empty,
-                AccessType = accessType
+                IsParticipant = isParticipant,
+                IsLecturer = isLecturer,
+                IsAdmin = user.AdminAccess,
+                IsCustom = user.CustomAccess,
             };
             var userClaimsIdentity = _jwtService.GenerateClaimsIdentity(userClaims);
             var userJWT = _jwtService.GenerateJWS(userClaimsIdentity);
@@ -151,7 +148,6 @@ namespace NCU.AnnualWorks.Api.Auth
         }
 
         [HttpPost("SignOut")]
-        [Authorize(AuthorizationPolicies.AtLeastDefault)]
         public async Task<IActionResult> SignOut()
         {
             var oauthRequest = HttpContext.BuildOAuthRequest();

@@ -11,6 +11,7 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core
         Uri GetBaseAddress();
         Uri GetRedirectAddress(string token);
         Uri GetLogoutAddress();
+        string GetCourseCode();
         Task<OAuthResponse> GetRequestTokenAsync(OAuthRequest oauthRequest);
         Task<OAuthResponse> GetAccessTokenAsync(OAuthRequest oauthRequest);
         Task RevokeAccessTokenAsync(OAuthRequest oauthRequest);

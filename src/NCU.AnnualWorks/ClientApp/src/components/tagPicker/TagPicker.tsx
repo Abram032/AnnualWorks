@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { ITag, TagPicker as FluentTagPicker } from '@fluentui/react';
+import React from 'react';
+import { FontSizes, ITag, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme} from '@fluentui/react';
 
-interface TagPickerProps {
+export interface TagPickerProps {
+  name: string;
+  label: string;
   tags: ITag[];
   selectedTags: ITag[];
+  itemLimit: number;
   onChange: (tags?: ITag[]) => void;
+  onBlur?: () => void;
   separator?: string;
+  required?: boolean;
+  errorMessage?: string | JSX.Element;
+  defaultValue?: ITag[],
 }
 
 export const TagPicker: React.FC<TagPickerProps> = (props) => {
@@ -32,12 +39,27 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
     return props.tags.filter(t => !selectedItems?.includes(t));
   }
 
+  const theme = useTheme();
+  const validationErrorStyles = mergeStyles({
+    color: theme.semanticColors.errorText,
+    fontSize: FontSizes.size12,
+    marginTop: '5px'
+  });
+
   return (
-    <FluentTagPicker 
-      onEmptyResolveSuggestions={onEmptyFilter}
-      onResolveSuggestions={onFilterChanged}
-      onChange={props.onChange}
-    />
+    <>
+      <Label required={props.required}>{props.label}</Label>
+      <FluentTagPicker 
+        key={props.name}
+        itemLimit={props.itemLimit}
+        onEmptyResolveSuggestions={onEmptyFilter}
+        onResolveSuggestions={onFilterChanged}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+        defaultSelectedItems={props.defaultValue}
+      />
+      {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
+    </>
   )
 }
 

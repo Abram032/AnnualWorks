@@ -26,6 +26,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
                 .ThenInclude(p => p.File)
                 .Include(p => p.ThesisLogs)
                 .ThenInclude(p => p.User)
+                .Include(p => p.Reviews)
                 .AsQueryable();
 
         public Task<Thesis> GetAsync(Guid guid) =>

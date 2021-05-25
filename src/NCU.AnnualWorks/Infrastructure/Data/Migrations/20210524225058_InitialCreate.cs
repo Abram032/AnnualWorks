@@ -17,8 +17,8 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     UsosId = table.Column<string>(maxLength: 20, nullable: false),
                     FirstLoginAt = table.Column<DateTime>(nullable: true),
                     LastLoginAt = table.Column<DateTime>(nullable: true),
-                    AccessType = table.Column<int>(nullable: false),
-                    CustomAccess = table.Column<bool>(nullable: false)
+                    AdminAccess = table.Column<bool>(nullable: false, defaultValue: false),
+                    CustomAccess = table.Column<bool>(nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +32,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Text = table.Column<string>(maxLength: 2000, nullable: false),
+                    Text = table.Column<string>(maxLength: 2500, nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
@@ -135,8 +135,9 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
-                    CreatedById = table.Column<long>(nullable: false),
+                    CreatedById = table.Column<long>(nullable: true),
                     ModifiedById = table.Column<long>(nullable: true),
+                    IsRequired = table.Column<bool>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -147,7 +148,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Questions_Users_ModifiedById",
                         column: x => x.ModifiedById,
@@ -163,6 +164,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CourseCode = table.Column<string>(maxLength: 100, nullable: false),
+                    CourseUrl = table.Column<string>(maxLength: 500, nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     ModifiedById = table.Column<long>(nullable: true)
                 },
@@ -247,7 +249,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     CreatedById = table.Column<long>(nullable: false),
                     ModifiedById = table.Column<long>(nullable: true),
                     Grade = table.Column<string>(maxLength: 3, nullable: false),
-                    FileId = table.Column<long>(nullable: false),
+                    IsConfirmed = table.Column<bool>(nullable: false),
                     ThesisId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
@@ -258,12 +260,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         name: "FK_Reviews_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Reviews_Files_FileId",
-                        column: x => x.FileId,
-                        principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -467,12 +463,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                 name: "IX_Reviews_CreatedById",
                 table: "Reviews",
                 column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reviews_FileId",
-                table: "Reviews",
-                column: "FileId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ModifiedById",

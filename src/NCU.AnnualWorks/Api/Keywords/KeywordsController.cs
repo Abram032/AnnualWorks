@@ -7,7 +7,6 @@ using NCU.AnnualWorks.Core.Models.Dto.Keywords;
 using NCU.AnnualWorks.Core.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NCU.AnnualWorks.Api.Keywords
 {
@@ -23,7 +22,7 @@ namespace NCU.AnnualWorks.Api.Keywords
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetKeywords()
+        public IActionResult GetKeywords()
         {
             var keywords = _keywordRepository.GetAll().ToList();
 

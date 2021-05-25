@@ -9,7 +9,7 @@ using NCU.AnnualWorks.Infrastructure.Data;
 namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20210516012522_InitialCreate")]
+    [Migration("20210524225058_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,8 +41,8 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("varchar(2000) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2000);
+                        .HasColumnType("longtext CHARACTER SET utf8mb4")
+                        .HasMaxLength(2500);
 
                     b.HasKey("Id");
 
@@ -162,10 +162,13 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("CreatedById")
+                    b.Property<long?>("CreatedById")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsRequired")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -206,9 +209,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.Property<long>("CreatedById")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("FileId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Grade")
                         .IsRequired()
                         .HasColumnType("varchar(3) CHARACTER SET utf8mb4")
@@ -217,6 +217,9 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.Property<Guid>("Guid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
@@ -233,9 +236,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.HasAlternateKey("Guid");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FileId")
-                        .IsUnique();
 
                     b.HasIndex("ModifiedById");
 
@@ -275,6 +275,11 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
                         .HasMaxLength(100);
+
+                    b.Property<string>("CourseUrl")
+                        .IsRequired()
+                        .HasColumnType("varchar(500) CHARACTER SET utf8mb4")
+                        .HasMaxLength(500);
 
                     b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -443,11 +448,15 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<int>("AccessType")
-                        .HasColumnType("int");
+                    b.Property<bool>("AdminAccess")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("CustomAccess")
-                        .HasColumnType("tinyint(1)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("FirstLoginAt")
                         .HasColumnType("datetime(6)");
@@ -510,9 +519,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                 {
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "CreatedBy")
                         .WithMany("CreatedQuestions")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "ModifiedBy")
                         .WithMany("ModifiedQuestions")
@@ -524,12 +531,6 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "CreatedBy")
                         .WithMany("CreatedReviews")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.File", "File")
-                        .WithOne("Review")
-                        .HasForeignKey("NCU.AnnualWorks.Core.Models.DbModels.Review", "FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

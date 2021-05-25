@@ -1,15 +1,20 @@
-import { ActionButton, IconButton, PrimaryButton } from '@fluentui/react';
+import { ActionButton, FontSizes, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, Stack, StackItem, TextField, useTheme } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
 import FilePickerOptions from './filePickerOptions';
 
-interface FilePickerProps {
+export interface FilePickerProps {
   id: string;
+  name: string;
+  required: boolean;
+  value?: FileList | null;
   label?: string;
   icon?: string;
   iconOnly?: boolean;
   multiple?: boolean;
   options?: FilePickerOptions;
   onChange: (fileList: FileList | null) => void;
+  onBlur?: () => void;
+  errorMessage?: string | JSX.Element;
 }
 
 export const FilePicker: React.FC<FilePickerProps> = (props) => {
@@ -33,7 +38,7 @@ export const FilePicker: React.FC<FilePickerProps> = (props) => {
     <input 
       id={props.id}
       type='file' 
-      name={props.id}
+      name={props.name}
       accept={props.options?.allowedExtensions?.join(',') ?? '*'}
       multiple={props.multiple ?? false}
       aria-label="File picker"
@@ -81,5 +86,36 @@ export const FilePicker: React.FC<FilePickerProps> = (props) => {
 
   return !props.icon ? button : !props.iconOnly ? iconButton : iconOnlyButton;
 }
+
+export const StandardFilePicker: React.FC<FilePickerProps> = (props) => {
+  const stackTokens: IStackTokens = { childrenGap: 15 };
+  const theme = useTheme();
+  const validationErrorStyles = mergeStyles({
+    color: theme.semanticColors.errorText,
+    fontSize: FontSizes.size12,
+    marginTop: '5px'
+  });
+  return (
+    <>
+      <Label required={props.required}>{props.label}</Label>
+      <Stack horizontal tokens={stackTokens}>
+        <StackItem>
+          <FilePicker
+            {...props}
+          />
+        </StackItem>
+        <StackItem grow={2}>
+          <TextField
+            value={
+              props.value ? props.value[0]?.name : "Nie wybrano żadnego pliku"
+            }
+            readOnly
+          />
+        </StackItem>
+      </Stack>
+      {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
+    </>
+  );
+};
 
 export default FilePicker;

@@ -12,12 +12,12 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
             builder.HasAlternateKey(u => u.UsosId);
 
             builder.Property(p => p.UsosId).IsRequired().HasMaxLength(20);
-            builder.Property(p => p.AccessType).IsRequired();
 
             builder.Property(p => p.FirstLoginAt).IsRequired(false);
             builder.Property(p => p.LastLoginAt).IsRequired(false);
 
-            builder.Property(p => p.CustomAccess).IsRequired();
+            builder.Property(p => p.AdminAccess).HasDefaultValue(false);
+            builder.Property(p => p.CustomAccess).HasDefaultValue(false);
         }
     }
 }

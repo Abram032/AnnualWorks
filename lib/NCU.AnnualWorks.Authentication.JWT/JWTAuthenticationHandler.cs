@@ -55,6 +55,9 @@ namespace NCU.AnnualWorks.Authentication.JWT
 
             if (!_jwtService.TryValidateJWE(token, out var jwt))
             {
+                Response.Cookies.Delete(AuthenticationCookies.SecureAuth, _jwtService.GetAuthCookieOptions());
+                Response.Cookies.Delete(AuthenticationCookies.SecureUser, _jwtService.GetUserCookieOptions());
+                Response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
                 return AuthenticateResult.Fail("Invalid authorization token.");
             }
 

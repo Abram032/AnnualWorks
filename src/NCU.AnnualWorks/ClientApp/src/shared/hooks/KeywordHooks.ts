@@ -1,14 +1,15 @@
-import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import Api from '../api/Api';
+import { useEffect, useState} from 'react';
+import { useApi } from '../api/Api';
 import Keyword from '../models/Keyword';
 import { AppSettings } from '../../AppSettings';
 import { ITag } from '@fluentui/react';
 
 export const useKeywords = (): Keyword[] => {
+  const api = useApi();
   const [keywords, setKeywords] = useState<Keyword[]>([]);
 
   useEffect(() => {
-    Api.get<Keyword[]>(AppSettings.API.Keywords.Base)
+    api.get<Keyword[]>(AppSettings.API.Keywords.Base)
       .then(response => {
         setKeywords(response.data);
       })
