@@ -168,10 +168,23 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
     </MessageBar>
   )
 
+  const infoMessageBar = (
+    <StackItem>
+      <MessageBar messageBarType={MessageBarType.info}>W razie popełnienia błędu pracę można zedytować, do momentu zatwierdzenia przynajmniej jednej recenzji, przez promotora lub recenzenta.</MessageBar>
+    </StackItem>
+  );
+
+  const warningMessageBar = (
+    <StackItem>
+      <MessageBar messageBarType={MessageBarType.severeWarning}>UWAGA! Edycja pracy z zatwierdzoną recenzją lub recenzjami unieważni je!</MessageBar>
+    </StackItem>
+  );
+
   return (
     <Stack className={formStyles} tokens={stackTokens}>
       <Tile title="Wypełnij dane pracy">
         <Stack tokens={stackTokens}>
+          {props.thesis && (props.thesis.reviewerReview || props.thesis.promoterReview) ? warningMessageBar : infoMessageBar}
           <StackItem>
             {errorMessage ? errorMessageBar : null}
             {uploadSuccess ? successMessageBar : null}
@@ -207,10 +220,11 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
               control={control}
               name={"abstract"}
               rules={abstractRules}
+              multiline
             />
           </StackItem>
           <StackItem>
-            <MessageBar messageBarType={MessageBarType.info}>Słowa kluczowe oddzielane są średnikiem</MessageBar>
+            <MessageBar messageBarType={MessageBarType.info}>Słowa kluczowe oddzielane są średnikiem.</MessageBar>
           </StackItem>
           <StackItem>
             <ControlledTagPicker

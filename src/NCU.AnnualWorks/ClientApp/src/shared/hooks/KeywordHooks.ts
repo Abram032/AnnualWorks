@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState} from 'react';
 import { useApi } from '../api/Api';
 import Keyword from '../models/Keyword';
 import { AppSettings } from '../../AppSettings';

@@ -22,7 +22,6 @@ export const useApi = (): AxiosInstance => {
       case 404:
         throw error.response;
         //Only logging errors to show prompt to user.
-        return;
       // case 401:
       //   return history.push(RouteNames.signIn);
       // case 403:
@@ -46,5 +45,7 @@ export interface ThesisRequestData {
 
 export interface ReviewRequestData {
   thesisGuid: string,
-  review: Review
+  qnAs: Record<number, string>,
+  grade: string,
+  isConfirmed: boolean,
 }

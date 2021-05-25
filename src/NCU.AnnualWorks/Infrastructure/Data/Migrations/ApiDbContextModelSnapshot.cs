@@ -39,8 +39,8 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("varchar(2000) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2000);
+                        .HasColumnType("longtext CHARACTER SET utf8mb4")
+                        .HasMaxLength(2500);
 
                     b.HasKey("Id");
 
@@ -160,10 +160,13 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("CreatedById")
+                    b.Property<long?>("CreatedById")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsRequired")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -212,6 +215,9 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     b.Property<Guid>("Guid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnUpdate()
@@ -511,9 +517,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                 {
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "CreatedBy")
                         .WithMany("CreatedQuestions")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.HasOne("NCU.AnnualWorks.Core.Models.DbModels.User", "ModifiedBy")
                         .WithMany("ModifiedQuestions")

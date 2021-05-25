@@ -31,7 +31,8 @@ namespace NCU.AnnualWorks.Api.Questions
                 {
                     Id = q.Id,
                     Order = q.Order,
-                    Text = q.Text
+                    Text = q.Text,
+                    IsRequired = q.IsRequired,
                 }).ToList();
 
             return new OkObjectResult(questions);
@@ -47,7 +48,8 @@ namespace NCU.AnnualWorks.Api.Questions
                 {
                     Id = q.Id,
                     Order = q.Order,
-                    Text = q.Text
+                    Text = q.Text,
+                    IsRequired = q.IsRequired,
                 }).ToList();
 
             return new OkObjectResult(questions);
@@ -64,7 +66,8 @@ namespace NCU.AnnualWorks.Api.Questions
                 Text = request.Text,
                 Order = request.Order,
                 IsActive = true,
-                CreatedBy = user
+                CreatedBy = user,
+                IsRequired = request.IsRequired,
             };
 
             await _questionRepository.AddAsync(question);
@@ -88,6 +91,7 @@ namespace NCU.AnnualWorks.Api.Questions
             question.ModifiedAt = DateTime.Now;
             question.IsActive = request.IsActive;
             question.Order = request.Order;
+            question.IsRequired = request.IsRequired;
 
             await _questionRepository.UpdateAsync(question);
 

@@ -12,6 +12,7 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
         public User CreatedBy { get; set; }
         public User ModifiedBy { get; set; }
         public string Grade { get; set; }
+        public bool IsConfirmed { get; set; }
 
         public long ThesisId { get; set; }
         public Thesis Thesis { get; set; }

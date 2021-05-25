@@ -1,10 +1,18 @@
 import { RegisterOptions } from "react-hook-form";
 
-export const answerRules: RegisterOptions = {
+export const requiredAnswerRules: RegisterOptions = {
   required: "Odpowiedź jest wymagana.",
   validate: (value: string) => {
-    if (value.length > 2000) {
-      return "Maksymalna liczba znaków wynosi 2000.";
+    if (value.length > 2500) {
+      return "Maksymalna liczba znaków wynosi 2500.";
+    }
+  }
+};
+
+export const notRequiredAnswerRules: RegisterOptions = {
+  validate: (value: string) => {
+    if (value.length > 2500) {
+      return "Maksymalna liczba znaków wynosi 2500.";
     }
   }
 };

@@ -1,14 +1,14 @@
-import { CommandBar, DefaultButton, DetailsRow, FontSizes, ICellStyleProps, IColumn, ICommandBarItemProps, IconButton, IDetailsRowStyleProps, IStackTokens, Label, Link, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import React, { useContext, useEffect, useState } from 'react';
+import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import React, { useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import Loader from '../../components/loader/loader';
-import { addReviewAction, downloadAction, editAction, printAction, viewAction, editReviewAction, addActions } from '../../components/thesisActions/thesisActions';
+import { addActions } from '../../components/thesisActions/thesisActions';
 import Tile from '../../components/tile/tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
-import Review from '../../shared/models/Review';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import ReviewModal from '../../components/reviewModal/reviewModal';
+import { ThesisForm } from '../../components/thesisForm/thesisForm';
 
 interface ThesisDetailsProps {
   guid: string
@@ -33,7 +33,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
 
   const columns: IColumn[] = [
-    { key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
+    //{ key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
     { key: 'name', name: 'Imie i nazwisko', fieldName: 'name', minWidth: 200, maxWidth: 500 },
     { key: 'grade', name: 'Ocena', fieldName: 'grade', minWidth: 200, maxWidth: 500 },
   ];
@@ -58,20 +58,24 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
 
   const getPromoterAction = () => {
     if(thesis?.promoter.usosId === authContext.currentUser?.id) {
-      if(thesis?.promoterReview) {
+      if(thesis?.promoterReview && thesis.actions.canEditReview) {
         return reviewEditAction(thesis.promoterReview.guid!);
-      } else {
+      } else if(thesis.actions.canAddReview) {
         return reviewAddAction;
+      } else {
+        return null;
       }
     }
   }
 
   const getReviewerAction = () => {
     if(thesis?.reviewer.usosId === authContext.currentUser?.id) {
-      if(thesis?.reviewerReview) {
+      if(thesis?.reviewerReview && thesis.actions.canEditReview) {
         return reviewEditAction(thesis.reviewerReview.guid!);
-      } else {
+      } else if(thesis.actions.canAddReview) {
         return reviewAddAction;
+      } else {
+        return null;
       }
     }
   }
@@ -117,7 +121,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const containerStyles = mergeStyles({
     width: '100%'
   });
-  
+
   const rowStyles = mergeStyles({
     alignItems: 'center'
   });

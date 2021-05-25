@@ -8,7 +8,7 @@ import MeControl from "../meControl/meControl";
 import { AppSettings } from "../../AppSettings";
 import { RouteNames } from "../../shared/consts/RouteNames";
 import NavLinks from "./navLinks";
-import { Route, useHistory } from "react-router";
+import { useHistory } from "react-router";
 
 //TODO: Clean up, move to env addresses
 //TODO: Fix links and routes with useHistory()

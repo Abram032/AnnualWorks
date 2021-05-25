@@ -8,5 +8,6 @@ namespace NCU.AnnualWorks.Core.Models.Dto.Reviews
         public Guid Guid { get; set; }
         public List<ReviewQnADTO> QnAs { get; set; }
         public string Grade { get; set; }
+        public bool IsConfirmed { get; set; }
     }
 }

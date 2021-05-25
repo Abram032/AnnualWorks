@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ThesisRequestData, useApi } from '../api/Api';
+import { useApi } from '../api/Api';
 import Thesis from '../models/Thesis';
 import { AppSettings } from '../../AppSettings';
 

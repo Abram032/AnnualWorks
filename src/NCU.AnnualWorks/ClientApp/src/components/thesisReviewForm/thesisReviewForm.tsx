@@ -1,14 +1,14 @@
-import { CommandBar, Dropdown, IStackTokens, Label, Stack, StackItem, TextField, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType } from '@fluentui/react';
+import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
 import Tile from '../../components/tile/tile';
-import { viewAction, downloadAction, printAction, addActions } from '../../components/thesisActions/thesisActions';
+import { addActions } from '../../components/thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
-import { Review, Question, QnA } from '../../shared/models/Review';
+import { Review, Question } from '../../shared/models/Review';
 import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/controlledTextField';
 import ControlledDropdown from '../dropdown/controlledDropdown';
 import { useForm } from 'react-hook-form';
-import { answerRules, gradeRules } from './thesisReviewFormRules';
+import { gradeRules, notRequiredAnswerRules } from './thesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
 import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
@@ -22,6 +22,7 @@ interface ThesisReviewFormProps {
 
 export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const history = useHistory();
+  //const shouldValidate = useRef<boolean>(true);
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [isUploading, setIsUploading] = useState<boolean>();
@@ -46,32 +47,27 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     }
   }, [isUploading, uploadSuccess, errorMessage]);
 
-  const onSave = () => {
+  const onSave = (confirm: boolean) => {
+    debugger;
+    //shouldValidate.current = false;
     setErrorMessage(undefined);
     setUploadSuccess(false);
     setIsUploading(false);
     
     handleSubmit(
       (values) => {
+        debugger;
         setIsUploading(true);
         const questionIds = Object.keys(values)
           .filter(k => !isNaN(parseInt(k)))
           .map(k => parseInt(k));
-        const qnas = questionIds.map<QnA>(q => ({
-          question: {
-            id: q,
-            text: '',
-            order: 0
-          },
-          answer: values[q]
-        }));
-        const review: Review = {
-          qnAs: qnas,
-          grade: values["grade"]
-        };
+        const qnas: Record<number, string> = {};
+        questionIds.forEach(i => qnas[i] = values[i]);
         props.onSave({
           thesisGuid: props.thesis.guid,
-          review: review
+          qnAs: qnas,
+          grade: values["grade"],
+          isConfirmed: confirm
         }).then(result => {
           window.scrollTo(0,0);
           setUploadSuccess(true);
@@ -97,16 +93,17 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
 
   const stackTokens: IStackTokens = { childrenGap: 15 };
 
-  const buildFormQuestion = (index: number, id: number, question: string, answer?: string): React.ReactNode => {
+  const buildFormQuestion = (index: number, question: Question, answer?: string): React.ReactNode => {
     return (
-      <StackItem tokens={stackTokens}>
+      <StackItem key={index} tokens={stackTokens}>
         <ControlledTextField
           control={control}
-          name={id.toString()}
-          label={`${index + 1}. ${question}`}
-          rules={answerRules}
+          name={question.id.toString()}
+          label={`${index + 1}. ${question.text}`}
+          //rules={question.isRequired && shouldValidate.current ? requiredAnswerRules : notRequiredAnswerRules}
+          rules={notRequiredAnswerRules}
           defaultValue={answer ?? ""}
-          required
+          required={question.isRequired}
           multiline
         />
       </StackItem>
@@ -117,10 +114,10 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     const fields: React.ReactNode[] = [];
     if(!props.review) {
       props.questions.forEach((question, index) => 
-        fields.push(buildFormQuestion(index, question.id, question.text)));
+        fields.push(buildFormQuestion(index, question)));
     } else {
       props.review.qnAs.forEach((qna, index) => 
-        fields.push(buildFormQuestion(index, qna.question.id, qna.question.text, qna.answer)));
+        fields.push(buildFormQuestion(index, qna.question, qna.answer)));
     }
     
     return (
@@ -170,8 +167,11 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
         {buildForm()}
       </Tile>
       <Stack horizontalAlign='end' horizontal tokens={stackTokens}>
-        <StackItem styles={{root: { marginRight: 'auto'}}}>
-          <PrimaryButton onClick={onSave}>Zapisz recenzję</PrimaryButton>
+        <StackItem>
+          <PrimaryButton onClick={() => onSave(true)}>Zapisz i zatwierdź recenzję</PrimaryButton>
+        </StackItem>
+        <StackItem styles={{ root: { marginRight: "auto" } }}>
+          <DefaultButton onClick={() => onSave(false)}>Zapisz recenzję</DefaultButton>
         </StackItem>
         <StackItem>
           <DefaultButton 

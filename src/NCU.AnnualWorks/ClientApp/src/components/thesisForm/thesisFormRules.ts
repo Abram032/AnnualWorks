@@ -44,8 +44,8 @@ export const tagsRules: RegisterOptions = {
     if (value.some((p) => p.name.length > 255)) {
       return "Maksymalna długość słowa kluczowego to 255 znaków.";
     }
-    if (value.length > 50) {
-      return "Maksymalna liczba słów kluczowych to 50.";
+    if (value.length > 10) {
+      return "Maksymalna liczba słów kluczowych to 10.";
     }
     return true;
   },

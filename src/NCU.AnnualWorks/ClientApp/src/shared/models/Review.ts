@@ -2,6 +2,7 @@ export type Question = {
   id: number,
   text: string,
   order: number,
+  isRequired: boolean,
 };
 
 export type QnA = {
@@ -12,7 +13,8 @@ export type QnA = {
 export type Review = {
   guid?: string,
   qnAs: QnA[],
-  grade: string
+  grade: string,
+  isConfirmed: boolean,
 };
 
 export type ReviewActions = {

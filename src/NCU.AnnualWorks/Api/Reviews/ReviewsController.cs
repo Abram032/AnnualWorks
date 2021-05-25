@@ -85,15 +85,17 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             var result = new ReviewDTO
             {
-                Grade = review.Grade,
                 Guid = review.Guid,
+                Grade = review.Grade,
+                IsConfirmed = review.IsConfirmed,
                 QnAs = review.ReviewQnAs.Select(qna => new ReviewQnADTO
                 {
                     Question = new QuestionDTO
                     {
                         Id = qna.Question.Id,
                         Text = qna.Question.Text,
-                        Order = qna.Question.Order
+                        Order = qna.Question.Order,
+                        IsRequired = qna.Question.IsRequired
                     },
                     Answer = qna.Answer.Text
                 }).ToList()
@@ -124,28 +126,10 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             if (thesis.Reviews.Any(r => r.CreatedBy == currentUser))
             {
-                return new ConflictObjectResult("Recenzja dla tej pracy została już wystawiona.");
+                return new ConflictObjectResult("Recenzja dla tej pracy została już istnieje.");
             }
 
-            if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
-            {
-                var grade = request.Review.Grade;
-                var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
-                    .Select(r => r.Grade).ToList();
-                grades.Add(grade);
-
-                if (!TryGetAverageGrade(grades, out var average))
-                {
-                    var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                        $"którą można wpisać do systemu USOS (śr. {average}). " +
-                        $"Skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową, a następnie wprowadźcie oceny pozwalające na wyznaczenie średniej.");
-                }
-
-                thesis.Grade = average;
-            }
-
-            var questionIds = request.Review.QnAs.Select(qa => qa.Question.Id);
+            var questionIds = request.QnAs.Keys;
             var questions = _questionRepository.GetAll().Where(q => questionIds.Contains(q.Id)).ToList();
             var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
 
@@ -155,25 +139,54 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new BadRequestObjectResult("Nieprawidłowa lista pytań.");
             }
 
+            if (request.IsConfirmed)
+            {
+                var requiredQuestions = activeQuestions.Where(p => p.IsRequired).Select(p => p.Id).ToList();
+                if (requiredQuestions.Any(q => string.IsNullOrWhiteSpace(request.QnAs[q])))
+                {
+                    return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań");
+                }
+
+                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
+                {
+                    var grade = request.Grade;
+                    var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
+                        .Select(r => r.Grade).ToList();
+                    grades.Add(grade);
+
+                    if (!TryGetAverageGrade(grades, out var average))
+                    {
+                        var contactUser = isPromoter ? "recenzentem" : "promotorem";
+                        return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
+                            $"którą można wpisać do systemu USOS (śr. {average}). " +
+                            $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
+                            "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                    }
+
+                    thesis.Grade = average;
+                }
+            }
+
             var reviewGuid = Guid.NewGuid();
             var review = new Review
             {
                 Guid = reviewGuid,
                 Thesis = thesis,
                 CreatedBy = currentUser,
-                Grade = request.Review.Grade,
+                Grade = request.Grade,
+                IsConfirmed = request.IsConfirmed,
                 ReviewQnAs = new List<ReviewQnA>()
             };
 
-            foreach (var qna in request.Review.QnAs)
+            foreach (var qna in request.QnAs)
             {
                 review.ReviewQnAs.Add(new ReviewQnA
                 {
                     Review = review,
-                    Question = questions.First(q => q.Id == qna.Question.Id),
+                    Question = questions.First(q => q.Id == qna.Key),
                     Answer = new Answer
                     {
-                        Text = qna.Answer,
+                        Text = qna.Value,
                         CreatedBy = currentUser
                     }
                 });
@@ -183,6 +196,10 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             //Saving change to log
             thesis.LogChange(currentUser, ModificationType.ReviewAdded);
+            if (request.IsConfirmed)
+            {
+                thesis.LogChange(currentUser, ModificationType.ReviewConfirmed);
+            }
             await _thesisRepository.UpdateAsync(thesis);
 
             return new CreatedResult("/reviews", reviewGuid);
@@ -213,25 +230,12 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new ForbidResult();
             }
 
-            if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
+            if (review.IsConfirmed)
             {
-                var grade = request.Review.Grade;
-                var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
-                    .Select(r => r.Grade).ToList();
-                grades.Add(grade);
-
-                if (!TryGetAverageGrade(grades, out var average))
-                {
-                    var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                        $"którą można wpisać do systemu USOS (śr. {average}). " +
-                        $"Skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową, a następnie wprowadźcie oceny pozwalające na wyznaczenie średniej.");
-                }
-
-                thesis.Grade = average;
+                return new BadRequestObjectResult("Nie można edytować zatwierdzonej recenzji.");
             }
 
-            var questionIds = request.Review.QnAs.Select(qa => qa.Question.Id);
+            var questionIds = request.QnAs.Keys;
             var questions = _questionRepository.GetAll().Where(q => questionIds.Contains(q.Id)).ToList();
             var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
 
@@ -241,23 +245,52 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new BadRequestObjectResult("Nieprawidłowa lista pytań.");
             }
 
+            if (request.IsConfirmed)
+            {
+                var requiredQuestions = activeQuestions.Where(p => p.IsRequired).Select(p => p.Id).ToList();
+                if (requiredQuestions.Any(q => string.IsNullOrWhiteSpace(request.QnAs[q])))
+                {
+                    return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań.");
+                }
+
+                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser))
+                {
+                    var grade = request.Grade;
+                    var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
+                        .Select(r => r.Grade).ToList();
+                    grades.Add(grade);
+
+                    if (!TryGetAverageGrade(grades, out var average))
+                    {
+                        var contactUser = isPromoter ? "recenzentem" : "promotorem";
+                        return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
+                            $"którą można wpisać do systemu USOS (śr. {average}). " +
+                            $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
+                            "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
+                    }
+
+                    thesis.Grade = average;
+                }
+            }
+
             review.ModifiedAt = DateTime.Now;
             review.ModifiedBy = currentUser;
-            review.Grade = request.Review.Grade;
+            review.Grade = request.Grade;
+            review.IsConfirmed = request.IsConfirmed;
             //TODO: Generate new file and save it
             //Getting current answers for future removal
             var answersToRemove = review.ReviewQnAs.Select(a => a.Answer).ToList();
             review.ReviewQnAs.Clear();
 
-            foreach (var qna in request.Review.QnAs)
+            foreach (var qna in request.QnAs)
             {
                 review.ReviewQnAs.Add(new ReviewQnA
                 {
                     Review = review,
-                    Question = questions.First(q => q.Id == qna.Question.Id),
+                    Question = questions.First(q => q.Id == qna.Key),
                     Answer = new Answer
                     {
-                        Text = qna.Answer,
+                        Text = qna.Value,
                         CreatedBy = currentUser
                     }
                 });
@@ -268,6 +301,10 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             //Saving change to log
             thesis.LogChange(currentUser, ModificationType.ReviewChanged);
+            if (request.IsConfirmed)
+            {
+                thesis.LogChange(currentUser, ModificationType.ReviewConfirmed);
+            }
             await _thesisRepository.UpdateAsync(thesis);
 
             return new OkObjectResult(review.Guid);

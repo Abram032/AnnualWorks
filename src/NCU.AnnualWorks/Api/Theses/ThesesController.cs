@@ -74,11 +74,11 @@ namespace NCU.AnnualWorks.Api.Theses
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
-                        CanEdit = true,
+                        CanEdit = !p.Reviews.Any(r => r.IsConfirmed) || HttpContext.IsCurrentUserAdmin(),
                         CanPrint = true,
                         CanDownload = true,
                         CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser)
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed)
                     }
                 }).ToList();
 
@@ -103,11 +103,11 @@ namespace NCU.AnnualWorks.Api.Theses
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
-                        CanEdit = false,
+                        CanEdit = HttpContext.IsCurrentUserAdmin(),
                         CanPrint = true,
                         CanDownload = true,
                         CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser)
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed)
                     }
                 }).ToList();
 
@@ -162,11 +162,11 @@ namespace NCU.AnnualWorks.Api.Theses
                         CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanPrint = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanDownload = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanEdit = p.Promoter == currentUser,
+                        CanEdit = (p.Promoter == currentUser && !p.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin(),
                         CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
                             !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
                         CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
-                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed),
                     }
                 });
 
@@ -202,8 +202,8 @@ namespace NCU.AnnualWorks.Api.Theses
             var reviewer = await _usosService.GetUser(oauthRequest, thesis.Reviewer.UsosId);
             var authors = await _usosService.GetUsers(oauthRequest, thesis.ThesisAuthors.Select(p => p.Author.UsosId));
 
-            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter);
-            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer);
+            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter && p.IsConfirmed);
+            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer && p.IsConfirmed);
 
             //Mapping
             var thesisDto = _mapper.Map<ThesisDTO>(thesis);
@@ -227,9 +227,9 @@ namespace NCU.AnnualWorks.Api.Theses
                 //TODO: Check if review exists
                 CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy == currentUser),
                 CanDownload = true,
-                CanEdit = isPromoter,
+                CanEdit = (isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin(),
                 //TODO: Check if review exists
-                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser),
+                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed),
                 CanPrint = true,
                 CanView = true
             };
@@ -386,6 +386,11 @@ namespace NCU.AnnualWorks.Api.Theses
                 return new NotFoundResult();
             }
 
+            if (thesis.Reviews.Any(r => r.IsConfirmed) && !HttpContext.IsCurrentUserAdmin())
+            {
+                return new BadRequestObjectResult("Nie można edytować pracy z zatwierdzoną recenzją.");
+            }
+
             var currentUserUsosId = HttpContext.CurrentUserUsosId();
             var currentUser = await _userRepository.GetAsync(currentUserUsosId);
 
@@ -493,6 +498,14 @@ namespace NCU.AnnualWorks.Api.Theses
                 thesis.File.Checksum = fileChecksum;
 
                 await _fileService.SaveFile(request.ThesisFile.OpenReadStream(), thesis.Guid.ToString(), thesis.File.Guid.ToString());
+            }
+
+            if (thesis.Reviews.Any(r => r.IsConfirmed))
+            {
+                foreach (var review in thesis.Reviews)
+                {
+                    review.IsConfirmed = false;
+                }
             }
 
             thesis.ModifiedBy = currentUser;

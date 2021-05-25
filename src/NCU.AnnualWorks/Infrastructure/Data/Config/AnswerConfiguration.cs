@@ -9,7 +9,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
         public void Configure(EntityTypeBuilder<Answer> builder)
         {
             builder.HasKey(p => p.Id);
-            builder.Property(p => p.Text).HasMaxLength(2000).IsRequired();
+            builder.Property(p => p.Text).HasMaxLength(2500).IsRequired();
 
             builder.Property(p => p.CreatedAt).ValueGeneratedOnAdd();
             builder.Property(p => p.ModifiedAt).ValueGeneratedOnUpdate().IsRequired(false);

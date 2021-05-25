@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -79,14 +79,27 @@ namespace NCU.AnnualWorks
                 //Seeding
                 var appOptions = scope.ServiceProvider.GetRequiredService<IOptions<ApplicationOptions>>().Value;
                 var usosOptions = scope.ServiceProvider.GetRequiredService<IOptions<UsosServiceOptions>>().Value;
-                var currentSettings = await apiContext.Settings.FirstOrDefaultAsync();
-                if (currentSettings == null)
+                if (await apiContext.Settings.AnyAsync() == false)
                 {
                     await apiContext.Settings.AddAsync(new Settings
                     {
                         CourseCode = usosOptions.CourseCode,
                         CourseUrl = usosOptions.CourseUrl,
                     });
+                    await apiContext.SaveChangesAsync();
+                }
+
+                if (await apiContext.Questions.AnyAsync() == false)
+                {
+                    await apiContext.Questions.AddRangeAsync(
+                        new Question { Id = 1, Order = 1, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Czy treść pracy odpowiada tematowi określonemu w tytule?" },
+                        new Question { Id = 2, Order = 2, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Ocena układu pracy, podziału treści, kolejności rozdziałów, kompletności tez itp." },
+                        new Question { Id = 3, Order = 3, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Merytoryczna ocena" },
+                        new Question { Id = 4, Order = 4, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Czy i w jakim zakresie praca stanowi nowe ujęcie" },
+                        new Question { Id = 5, Order = 5, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Charakterystyka doboru i wykorzystania źródeł" },
+                        new Question { Id = 6, Order = 6, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Ocena formalnej strony pracy (poprawność języka, opanowanie techniki pisania pracy, spis rzeczy, odsyłacze)" },
+                        new Question { Id = 7, Order = 7, CreatedAt = DateTime.Now, IsActive = true, IsRequired = true, Text = "Sposób wykorzystania pracy (publikacja, udostpęnienie instytucjom, materiał źródłowy)" },
+                        new Question { Id = 8, Order = 8, CreatedAt = DateTime.Now, IsActive = true, IsRequired = false, Text = "Inne uwagi" });
                     await apiContext.SaveChangesAsync();
                 }
             }

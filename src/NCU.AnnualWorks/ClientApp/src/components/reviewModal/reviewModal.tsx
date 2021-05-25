@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useReview } from '../../shared/hooks/ReviewHooks';
-import { getTheme, IButtonStyles, IconButton, Modal, IIconProps, Stack, StackItem, Label, IStackStyles, FontSizes } from '@fluentui/react';
+import { getTheme, IButtonStyles, IconButton, Modal, IIconProps, Stack, StackItem, Label, IStackStyles, FontSizes, useTheme, IModalStyles, mergeStyles } from '@fluentui/react';
 import { Loader } from '../loader/loader';
 
 interface ReviewModalProps {
@@ -12,6 +12,7 @@ interface ReviewModalProps {
 
 export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
   const [review, isFetching] = useReview(props.guid);
+  const theme = useTheme();
 
   const loader = (
     <Loader label='Ładowanie...' size='medium' />
@@ -33,9 +34,28 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     )
   };
 
+  const cancelIcon: IIconProps = { iconName: 'Cancel' };
+  const iconButtonStyles: Partial<IButtonStyles> = {
+    root: {
+      color: theme.palette.neutralPrimary,
+    },
+    rootHovered: {
+      color: theme.palette.neutralDark,
+    },
+  };
+  const contentStyles: Partial<IStackStyles> = {
+    root: {
+      padding: '2em',
+    }
+  };
+  const scrollableContent = mergeStyles({
+    maxHeight: '100%',
+  });
+
   return (
     <Modal
         isOpen={props.isModalVisible}
+        className='review-modal'
       >
         <Stack horizontalAlign="end" horizontal>
           <StackItem styles={{ root: { marginLeft: "auto"} }}>
@@ -55,20 +75,3 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
 };
 
 export default ReviewModal;
-
-const theme = getTheme();
-
-const cancelIcon: IIconProps = { iconName: 'Cancel' };
-const iconButtonStyles: Partial<IButtonStyles> = {
-  root: {
-    color: theme.palette.neutralPrimary,
-  },
-  rootHovered: {
-    color: theme.palette.neutralDark,
-  },
-};
-const contentStyles: Partial<IStackStyles> = {
-  root: {
-    padding: '2em'
-  }
-};

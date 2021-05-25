@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FontSizes, FontWeights, ITag, ITagPickerProps, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme} from '@fluentui/react';
+import React from 'react';
+import { FontSizes, ITag, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme} from '@fluentui/react';
 
 export interface TagPickerProps {
   name: string;

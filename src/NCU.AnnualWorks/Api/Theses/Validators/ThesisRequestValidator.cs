@@ -29,8 +29,8 @@ namespace NCU.AnnualWorks.Api.Theses.Validators
                     c.RuleFor(p => p.Title).NotEmpty().MaximumLength(1000);
                     c.RuleFor(p => p.Abstract).NotEmpty().MaximumLength(4000);
                     c.RuleFor(p => p.Keywords).NotEmpty()
-                        .Must(p => p.Count <= 50)
-                        .WithMessage("No more than 50 keywords are allowed.")
+                        .Must(p => p.Count <= 10)
+                        .WithMessage("No more than 10 keywords are allowed.")
                         .ForEach(p => p.InjectValidator());
                     c.RuleFor(p => p.ReviewerUsosId).NotEmpty();
                     c.RuleFor(p => p.AuthorUsosIds).NotEmpty()
