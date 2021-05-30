@@ -16,7 +16,6 @@
         //Application properties
         public string CallbackEndpoint { get; set; }
         public string CourseCode { get; set; }
-        public string CourseUrl { get; set; }
 
         //Technical
         public string DateFormatPattern { get; set; }
@@ -37,6 +36,7 @@
         public string TermsSearch { get; set; }
         public string UsersUser { get; set; }
         public string UsersUsers { get; set; }
+        public string UsersSearch { get; set; }
         public string CoursesCourseEdition { get; set; }
         public string CoursesIsCoordinator { get; set; }
         public string CoursesIsLecturer { get; set; }

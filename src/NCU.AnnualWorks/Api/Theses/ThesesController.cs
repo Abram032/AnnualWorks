@@ -41,10 +41,12 @@ namespace NCU.AnnualWorks.Api.Theses
         private readonly IUserRepository _userRepository;
 
         private readonly IFileService _fileService;
+        private readonly ISettingsService _settingsService;
         public ThesesController(IUsosService usosService, IMapper mapper, IOptions<UsosServiceOptions> usosOptions,
             IOptions<ApplicationOptions> appOptions, IUserRepository userRepository,
             IThesisRepository thesisRepository, IAsyncRepository<Review> reviewRepository,
-            IAsyncRepository<Keyword> keywordRepository, IFileService fileService)
+            IAsyncRepository<Keyword> keywordRepository, IFileService fileService,
+            ISettingsService settingsService)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -55,12 +57,15 @@ namespace NCU.AnnualWorks.Api.Theses
             _keywordRepository = keywordRepository;
             _reviewRepository = reviewRepository;
             _fileService = fileService;
+            _settingsService = settingsService;
         }
 
         [HttpGet("promoted")]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> GetPromotedTheses()
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
 
@@ -75,7 +80,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
-                        CanEdit = !p.Reviews.Any(r => r.IsConfirmed) || HttpContext.IsCurrentUserAdmin(),
+                        CanEdit = (!p.Reviews.Any(r => r.IsConfirmed) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
                         CanPrint = true,
                         CanDownload = true,
                         CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
@@ -90,6 +95,8 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> GetReviewedTheses()
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
 
@@ -104,7 +111,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     Actions = new ThesisActionsDTO
                     {
                         CanView = true,
-                        CanEdit = HttpContext.IsCurrentUserAdmin(),
+                        CanEdit = HttpContext.IsCurrentUserAdmin() && DateTime.Now < deadline,
                         CanPrint = true,
                         CanDownload = true,
                         CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
@@ -146,6 +153,8 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetTheses()
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
             var isEmployee = HttpContext.IsCurrentUserEmployee();
@@ -163,7 +172,7 @@ namespace NCU.AnnualWorks.Api.Theses
                         CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanPrint = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanDownload = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanEdit = (p.Promoter == currentUser && !p.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin(),
+                        CanEdit = ((p.Promoter == currentUser && !p.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
                         CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
                             !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
                         CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
@@ -178,6 +187,8 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetThesis(Guid id)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+
             var thesis = await _thesisRepository.GetAsync(id);
 
             if (thesis == null)
@@ -228,12 +239,16 @@ namespace NCU.AnnualWorks.Api.Theses
                 //TODO: Check if review exists
                 CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy == currentUser),
                 CanDownload = true,
-                CanEdit = (isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin(),
+                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
                 //TODO: Check if review exists
                 CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed),
                 CanPrint = true,
                 CanView = true,
-                CanEditGrade = (isPromoter && thesis.Grade == null && thesis.Reviews.All(r => r.IsConfirmed))
+                CanEditGrade = isPromoter &&
+                    thesis.Grade == null &&
+                    thesis.Reviews.All(r => r.IsConfirmed) &&
+                    thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
+                    thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer)
             };
             foreach (var additionalFile in thesisDto.ThesisAdditionalFiles)
             {
@@ -264,6 +279,12 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> CreateThesis([FromForm] ThesisRequest request)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            if (DateTime.Now > deadline)
+            {
+                return new BadRequestObjectResult("Nie można dodać pracy po upływie terminu końcowego");
+            }
+
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
 
             var oauthRequest = HttpContext.BuildOAuthRequest();
@@ -380,6 +401,12 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> EditThesis(Guid id, [FromForm] ThesisRequest request)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            if (DateTime.Now > deadline)
+            {
+                return new BadRequestObjectResult("Nie można zaktualizować pracy po upływie terminu końcowego");
+            }
+
             var thesis = await _thesisRepository.GetAsync(id);
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
 

@@ -6,6 +6,7 @@ import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
+import Loader from '../../components/loader/loader';
 
 export const ThesisCreateForm: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
@@ -25,6 +26,10 @@ export const ThesisCreateForm: React.FC = () => {
     api.post(AppSettings.API.Theses.Base, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
+  if(!students || !employees) {
+    return <Loader />
+  }
 
   return (
     <ThesisForm 

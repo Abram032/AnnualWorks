@@ -16,6 +16,12 @@ import Error from '../pages/Error';
 import Privacy from '../pages/Privacy';
 import About from '../pages/About';
 import Search from '../pages/Search';
+import AdminPanel from '../pages/admin/AdminPanel';
+import AdminPanelAdministrators from '../pages/admin/AdminPanelAdministrators';
+import AdminPanelUsers from '../pages/admin/AdminPanelUsers';
+import AdminPanelDeadline from '../pages/admin/AdminPanelDeadline';
+import AdminPanelCourse from '../pages/admin/AdminPanelCourse';
+import AdminPanelExport from '../pages/admin/AdminPanelExport';
 
 export const Routes: React.FC = () => (
   <Switch>
@@ -36,6 +42,12 @@ export const Routes: React.FC = () => (
     <Route path={RouteNames.notFound} component={NotFound} />
     <Route path={RouteNames.privacy} component={Privacy} />
     <Route path={RouteNames.about} component={About} />
+    <Route exact path={RouteNames.adminPanel} component={AdminPanel} />
+    <Route exact path={RouteNames.adminPanelUsers} component={AdminPanelUsers} />
+    <Route exact path={RouteNames.adminPanelAdmins} component={AdminPanelAdministrators} />
+    <Route exact path={RouteNames.adminPanelDeadline} component={AdminPanelDeadline} />
+    <Route exact path={RouteNames.adminPanelCourse} component={AdminPanelCourse} />
+    <Route exact path={RouteNames.adminPanelExport} component={AdminPanelExport} />
     <Redirect to={RouteNames.notFound} />
   </Switch>
 );

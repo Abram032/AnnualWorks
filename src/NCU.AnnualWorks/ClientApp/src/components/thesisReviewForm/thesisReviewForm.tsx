@@ -1,5 +1,5 @@
 import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType, Dialog, DialogFooter, DialogType } from '@fluentui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Tile from '../../components/tile/tile';
 import { addActions } from '../../components/thesisActions/thesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
@@ -8,7 +8,7 @@ import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/controlledTextField';
 import ControlledDropdown from '../dropdown/controlledDropdown';
 import { useForm } from 'react-hook-form';
-import { gradeRules, notRequiredAnswerRules } from './thesisReviewFormRules';
+import { answerRules, gradeRules, notRequiredAnswerRules } from './thesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
 import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
@@ -23,7 +23,9 @@ interface ThesisReviewFormProps {
 
 export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const history = useHistory();
-  //const shouldValidate = useRef<boolean>(true);
+  const confirm = useRef<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  //const [shouldRequire, setShouldRequire] = useState<boolean>(true);
 
   const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
   const labelId: string = useId('confirmDialogLabelId');
@@ -43,6 +45,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
     [labelId, subTextId],
   );
 
+  //TODO: Should be removed
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [isUploading, setIsUploading] = useState<boolean>();
@@ -52,23 +55,13 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   });
 
   useEffect(() => {
-    if(isUploading === undefined) {
-      return;
+    if(isSubmitting) {
+      //onSave(confirm.current);
+      onSave();
     }
+  }, [isSubmitting]);//, confirm]);
 
-    if(!isUploading && uploadSuccess) {
-      //console.log("upload complete");
-      return;
-    }
-
-    if(!isUploading && !uploadSuccess) {
-      //console.error(errorMessage);
-      return;
-    }
-  }, [isUploading, uploadSuccess, errorMessage]);
-
-  const onSave = (confirm: boolean) => {
-    //shouldValidate.current = false;
+  const onSave = () => {//(confirm: boolean) => {
     setErrorMessage(undefined);
     setUploadSuccess(false);
     setIsUploading(false);
@@ -85,7 +78,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           thesisGuid: props.thesis.guid,
           qnAs: qnas,
           grade: values["grade"],
-          isConfirmed: confirm
+          isConfirmed: confirm.current
         }).then(result => {
           window.scrollTo(0,0);
           setUploadSuccess(true);
@@ -96,10 +89,12 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           setErrorMessage(error.data);
           setUploadSuccess(false);
           setIsUploading(false);
+          setIsSubmitting(false);
         })
       },
       (err) => {
-        console.log(err);
+        //console.log(err);
+        setIsSubmitting(false);
       }
     )();
   };
@@ -119,7 +114,18 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           name={question.id.toString()}
           label={`${index + 1}. ${question.text}`}
           //rules={question.isRequired && shouldValidate.current ? requiredAnswerRules : notRequiredAnswerRules}
-          rules={notRequiredAnswerRules}
+          //rules={answerRules(question.isRequired && shouldRequire.current)}
+          rules={{
+            required: {
+              value: confirm.current && question.isRequired,
+              message: "Odpowiedź jest wymagana"
+            },
+            validate: (value: string) => {
+              if (value.length > 2500) {
+                return "Maksymalna liczba znaków wynosi 2500.";
+              }
+            }
+          }}
           defaultValue={answer ?? ""}
           required={question.isRequired}
           multiline
@@ -146,7 +152,13 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
             control={control}
             name='grade'
             label='Ocena'
-            rules={gradeRules}
+            //rules={gradeRules}
+            rules={{
+              required: {
+                value: confirm.current,
+                message: "Ocena jest wymagana"
+              }
+            }}
             placeholder='Wybierz ocenę'
             options={grades}
             defaultValue={props.review?.grade ?? undefined}
@@ -189,7 +201,11 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
           <PrimaryButton onClick={toggleConfirmDialog}>Zapisz i zatwierdź recenzję</PrimaryButton>
         </StackItem>
         <StackItem styles={{ root: { marginRight: "auto" } }}>
-          <DefaultButton onClick={() => onSave(false)}>Zapisz recenzję</DefaultButton>
+          <DefaultButton onClick={() => {
+            confirm.current = false;
+            //onSave(false);
+            setIsSubmitting(true);
+          }}>Zapisz recenzję</DefaultButton>
         </StackItem>
         <StackItem>
           <DefaultButton 
@@ -208,12 +224,16 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
       >
         <DialogFooter>
           <PrimaryButton onClick={() => {
+            confirm.current = true;
             toggleConfirmDialog();
-            onSave(true);
+            //onSave(true);
+            setIsSubmitting(true);
           }} text="Zatwierdź" />
           <DefaultButton onClick={() => {
+            confirm.current = false;
             toggleConfirmDialog();
-            onSave(false);
+            //onSave(false);
+            setIsSubmitting(true);
           }} text="Zapisz" />
         </DialogFooter>
       </Dialog>

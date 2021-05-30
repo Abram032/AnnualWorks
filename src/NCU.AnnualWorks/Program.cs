@@ -83,8 +83,7 @@ namespace NCU.AnnualWorks
                 {
                     await apiContext.Settings.AddAsync(new Settings
                     {
-                        CourseCode = usosOptions.CourseCode,
-                        CourseUrl = usosOptions.CourseUrl,
+                        CourseCode = usosOptions.CourseCode
                     });
                     await apiContext.SaveChangesAsync();
                 }

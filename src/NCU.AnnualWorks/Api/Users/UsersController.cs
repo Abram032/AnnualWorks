@@ -22,10 +22,10 @@ namespace NCU.AnnualWorks.Api.Users
     {
         private readonly IUsosService _usosService;
         private readonly IMapper _mapper;
-        private readonly IAsyncRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ApplicationOptions _options;
         public UsersController(IUsosService usosService, IMapper mapper,
-            IAsyncRepository<User> userRepository, IOptions<ApplicationOptions> options)
+            IUserRepository userRepository, IOptions<ApplicationOptions> options)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -66,59 +66,49 @@ namespace NCU.AnnualWorks.Api.Users
             return new OkObjectResult(users);
         }
 
-        [HttpPost("Employees")]
+        [HttpGet("Custom")]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> AddCustomEmployee([FromBody] CreateUserRequest request)
+        public async Task<IActionResult> GetCustomUsers()
         {
-            //TODO: Add validation
-            if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
-            {
-                return new BadRequestObjectResult("Brak użytkownika");
-            }
+            var userIds = _userRepository.GetAll()
+                .Where(u => u.CustomAccess)
+                .Select(u => u.UsosId)
+                .ToList();
 
-            var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
+            var usosUsers = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), userIds);
+            var users = _mapper.Map<List<UsosUser>, List<UserDTO>>(usosUsers);
 
-            if (user == null)
-            {
-                await _userRepository.AddAsync(new User
-                {
-                    UsosId = request.UsosId,
-                    CustomAccess = true,
-                });
-
-                return new OkResult();
-            }
-
-            user.CustomAccess = true;
-            await _userRepository.UpdateAsync(user);
-            return new OkResult();
+            return new OkObjectResult(users);
         }
 
-        [HttpDelete("Employees/{usosId}")]
+        [HttpPut("Custom")]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> RemoveCustomEmployee(string usosId)
+        public async Task<IActionResult> UpdateCustomUsers([FromBody] UpdateCustomUsersRequest request)
         {
-            //TODO: Add validation
-            if (string.IsNullOrWhiteSpace(usosId))
+            var currentCustomUsers = _userRepository.GetAll().Where(u => u.CustomAccess);
+            //var newAdmins = _userRepository.GetAll().Where(u => request.UserIds.Contains(u.UsosId));
+
+            foreach (var user in currentCustomUsers)
             {
-                return new BadRequestObjectResult("Brak użytkownika");
+                user.CustomAccess = false;
+            }
+            var newUsers = new List<User>();
+            foreach (var userId in request.UserIds)
+            {
+                var user = await _userRepository.GetAsync(userId);
+                if (user == null)
+                {
+                    var usosUser = await _usosService.GetUser(HttpContext.BuildOAuthRequest(), userId);
+                    user = _mapper.Map<UsosUser, User>(usosUser);
+                    await _userRepository.AddAsync(user);
+                }
+                user.CustomAccess = true;
+                newUsers.Add(user);
             }
 
-            var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
+            await _userRepository.UpdateRangeAsync(currentCustomUsers);
+            await _userRepository.UpdateRangeAsync(newUsers);
 
-            if (user == null)
-            {
-                return new NotFoundResult();
-            }
-
-            if (!user.CustomAccess)
-            {
-                return new ConflictObjectResult("Użytkownik nie posiada już dostępu.");
-            }
-
-            user.CustomAccess = false;
-
-            await _userRepository.UpdateAsync(user);
             return new OkResult();
         }
 
@@ -141,74 +131,58 @@ namespace NCU.AnnualWorks.Api.Users
             return new OkObjectResult(users);
         }
 
-        [HttpPost("Admins")]
+        [HttpGet("Admins/Default")]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> AddAdmin([FromBody] CreateUserRequest request)
+        public async Task<IActionResult> GetDefaultAdmin()
         {
-            //TODO: Add validation
-            if (request == null || string.IsNullOrWhiteSpace(request.UsosId))
+            var usosUser = await _usosService.GetUser(HttpContext.BuildOAuthRequest(), _options.DefaultAdministratorUsosId);
+            var user = _mapper.Map<UsosUser, UserDTO>(usosUser);
+
+            return new OkObjectResult(user);
+        }
+
+        [HttpPut("Admins")]
+        [Authorize(AuthorizationPolicies.AdminOnly)]
+        public async Task<IActionResult> UpdateAdmins([FromBody] UpdateAdminsRequest request)
+        {
+            //Removing default administrator from list if added
+            request.UserIds.Remove(_options.DefaultAdministratorUsosId);
+
+            var currentAdmins = _userRepository.GetAll().Where(u => u.AdminAccess && u.UsosId != _options.DefaultAdministratorUsosId);
+            //var newAdmins = _userRepository.GetAll().Where(u => request.UserIds.Contains(u.UsosId));
+
+            foreach (var admin in currentAdmins)
             {
-                return new BadRequestObjectResult("Brak użytkownika");
+                admin.AdminAccess = false;
             }
-
-            if (request.UsosId == _options.DefaultAdministratorUsosId)
+            var newAdmins = new List<User>();
+            foreach (var userId in request.UserIds)
             {
-                return new ConflictObjectResult("Główny administrator jest już administratorem.");
-            }
-
-            var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == request.UsosId);
-
-            if (user == null)
-            {
-                await _userRepository.AddAsync(new User
+                var user = await _userRepository.GetAsync(userId);
+                if (user == null)
                 {
-                    UsosId = request.UsosId,
-                    AdminAccess = true,
-                });
-
-                return new OkResult();
+                    var usosUser = await _usosService.GetUser(HttpContext.BuildOAuthRequest(), userId);
+                    user = _mapper.Map<UsosUser, User>(usosUser);
+                    await _userRepository.AddAsync(user);
+                }
+                user.AdminAccess = true;
+                newAdmins.Add(user);
             }
 
-            if (user.AdminAccess)
-            {
-                return new ConflictObjectResult("Użytkownik jest już administratorem");
-            }
+            await _userRepository.UpdateRangeAsync(currentAdmins);
+            await _userRepository.UpdateRangeAsync(newAdmins);
 
-            user.AdminAccess = true;
-            await _userRepository.UpdateAsync(user);
             return new OkResult();
         }
 
-        [HttpDelete("Admins/{usosId}")]
+        [HttpGet]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> RemoveAdmin(string usosId)
+        public async Task<IActionResult> SearchUser([FromQuery] string search)
         {
-            //TODO: Add validation
-            if (string.IsNullOrWhiteSpace(usosId))
-            {
-                return new BadRequestObjectResult("Brak użytkownika");
-            }
+            var usosUsers = await _usosService.SearchUsers(HttpContext.BuildOAuthRequest(), search);
+            var users = _mapper.Map<List<UsosUser>, List<UserDTO>>(usosUsers);
 
-            if (usosId == _options.DefaultAdministratorUsosId)
-            {
-                return new ConflictObjectResult("Nie można usunąć głównego administratora.");
-            }
-
-            var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosId);
-
-            if (user == null)
-            {
-                return new NotFoundResult();
-            }
-
-            if (!user.AdminAccess)
-            {
-                return new ConflictObjectResult("Użytkownik nie jest administratorem");
-            }
-
-            user.AdminAccess = false;
-            await _userRepository.UpdateAsync(user);
-            return new OkResult();
+            return new OkObjectResult(users);
         }
     }
 }

@@ -53,3 +53,19 @@ export interface ReviewRequestData {
 export interface ConfirmGradeRequestData {
   grade: string
 }
+
+export interface SetDeadlineRequestData {
+  deadline: string
+}
+
+export interface SetCourseRequestData {
+  courseCode: string
+}
+
+export interface SetAdminsRequestData {
+  userIds: string[]
+}
+
+export interface SetCustomUsersRequestData {
+  userIds: string[]
+}

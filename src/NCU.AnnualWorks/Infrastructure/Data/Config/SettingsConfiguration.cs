@@ -10,7 +10,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
         {
             builder.HasKey(p => p.Id);
             builder.Property(p => p.CourseCode).IsRequired().HasMaxLength(100);
-            builder.Property(p => p.CourseUrl).IsRequired().HasMaxLength(500);
+            builder.Property(p => p.Deadline).IsRequired(false);
 
             builder.Property(p => p.ModifiedAt).ValueGeneratedOnAddOrUpdate().IsRequired(false);
 

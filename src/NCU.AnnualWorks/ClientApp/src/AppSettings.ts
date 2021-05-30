@@ -18,9 +18,14 @@ export namespace AppSettings {
       Current: process.env.REACT_APP_API_TERMS_CURRENT!
     },
     Users: {
+      Base: process.env.REACT_APP_API_USERS_BASE!,
       Students: process.env.REACT_APP_API_USERS_STUDENTS!,
       Employees: process.env.REACT_APP_API_USERS_EMPLOYEES!,
-      Admins: process.env.REACT_APP_API_USERS_ADMINS!,
+      Custom: process.env.REACT_APP_API_USERS_CUSTOM!,
+      Admins: {
+        Base: process.env.REACT_APP_API_USERS_ADMINS!,
+        Default: process.env.REACT_APP_API_USERS_ADMINS_DEFAULT!,
+      }
     },
     Theses: {
       Base: process.env.REACT_APP_API_THESES!,
@@ -38,6 +43,12 @@ export namespace AppSettings {
     },
     Files: {
       Base: process.env.REACT_APP_API_FILES!
+    },
+    Deadline: {
+      Base: process.env.REACT_APP_API_DEADLINE!
+    },
+    Course: {
+      Base: process.env.REACT_APP_API_COURSE!
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;

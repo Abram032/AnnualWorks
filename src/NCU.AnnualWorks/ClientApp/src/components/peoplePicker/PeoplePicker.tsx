@@ -6,24 +6,27 @@ export interface PeoplePickerProps {
   label: string,
   people: IPersonaProps[],
   selectedPeople: IPersonaProps[],
-  onChange: (people?: IPersonaProps[]) => void, 
+  onChange?: (people?: IPersonaProps[]) => void, 
   onBlur?: () => void,
   peopleLimit?: number,
   maxSuggestions?: number,
   required?: boolean,
   errorMessage?: string | JSX.Element,
   defaultValue?: IPersonaProps[],
+  resolveDelay?: number,
+  onInputChange?: (string: string) => string,
+  onFilterChanged?: (filter: string, selectedItems?: IPersonaProps[]) => IPersonaProps[] | Promise<IPersonaProps[]>
 };
 
 export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
   const suggestionProps: IBasePickerSuggestionsProps = {
-    suggestionsHeaderText: 'Suggested People',
-    mostRecentlyUsedHeaderText: 'Suggested Contacts',
-    noResultsFoundText: 'No results found',
-    loadingText: 'Loading',
+    suggestionsHeaderText: 'Sugerowane osoby',
+    mostRecentlyUsedHeaderText: 'Sugerowane osoby',
+    noResultsFoundText: 'Brak wyników',
+    loadingText: 'Ładowanie',
     showRemoveButtons: true,
-    suggestionsAvailableAlertText: 'People Picker Suggestions available',
-    suggestionsContainerAriaLabel: 'Suggested contacts',
+    suggestionsAvailableAlertText: 'Sugerowane osoby',
+    suggestionsContainerAriaLabel: 'Sugerowane osoby',
   };
 
   const onFilterChanged = (
@@ -62,12 +65,14 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
         key={props.name}
         className='people-picker'
         onEmptyResolveSuggestions={onEmptyFilter}
-        onResolveSuggestions={onFilterChanged}
+        onResolveSuggestions={props.onFilterChanged ?? onFilterChanged}
         pickerSuggestionsProps={suggestionProps}
         itemLimit={props.peopleLimit}
         onChange={props.onChange}
         onBlur={props.onBlur}
         defaultSelectedItems={props.defaultValue}
+        resolveDelay={props.resolveDelay ?? 500}
+        onInputChange={props.onInputChange}
       />
       {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
     </>

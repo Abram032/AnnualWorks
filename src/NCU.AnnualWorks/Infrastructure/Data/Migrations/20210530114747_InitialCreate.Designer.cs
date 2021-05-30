@@ -9,7 +9,7 @@ using NCU.AnnualWorks.Infrastructure.Data;
 namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20210524225058_InitialCreate")]
+    [Migration("20210530114747_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -276,10 +276,8 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                         .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
                         .HasMaxLength(100);
 
-                    b.Property<string>("CourseUrl")
-                        .IsRequired()
-                        .HasColumnType("varchar(500) CHARACTER SET utf8mb4")
-                        .HasMaxLength(500);
+                    b.Property<DateTime?>("Deadline")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .ValueGeneratedOnAddOrUpdate()
