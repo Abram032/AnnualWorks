@@ -1,9 +1,9 @@
 import React from "react";
 import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
-import { useHistory } from "react-router";
+import { useCourse } from "../../shared/hooks/CourseHooks";
 
 export const HomeSignUp: React.FC = () => {
-  const history = useHistory();
+  const course = useCourse();
 
   return (
     <Stack>
@@ -14,7 +14,7 @@ export const HomeSignUp: React.FC = () => {
       </Stack.Item>
       <Stack.Item align="center">
         {/* //TODO: Get url to course code from backend or get the course code and build url to it */}
-        <PrimaryButton href="#" onClick={() => history.push('/')}>Zarejestruj się</PrimaryButton>
+        <PrimaryButton href={course?.courseUrl}>Zarejestruj się</PrimaryButton>
       </Stack.Item>
     </Stack>
   );

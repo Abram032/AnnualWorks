@@ -28,11 +28,13 @@ namespace NCU.AnnualWorks.Api.Reviews
         private readonly IAsyncRepository<ThesisLog> _thesisLogRepository;
         private readonly IAsyncRepository<Answer> _answerRepository;
         private readonly IFileService _fileService;
+        private readonly ISettingsService _settingsService;
         public ReviewsController(IReviewRepository reviewRepository,
             IThesisRepository thesisRepository, IUserRepository userRepository,
             IAsyncRepository<Question> questionRepository,
             IAsyncRepository<ThesisLog> thesisLogRepository,
-            IFileService fileService, IAsyncRepository<Answer> answerRepository)
+            IFileService fileService, IAsyncRepository<Answer> answerRepository,
+            ISettingsService settingsService)
         {
             _reviewRepository = reviewRepository;
             _thesisRepository = thesisRepository;
@@ -41,6 +43,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             _thesisLogRepository = thesisLogRepository;
             _answerRepository = answerRepository;
             _fileService = fileService;
+            _settingsService = settingsService;
         }
 
         private bool TryGetAverageGrade(IEnumerable<string> grades, out string average)
@@ -108,6 +111,12 @@ namespace NCU.AnnualWorks.Api.Reviews
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> CreateReview([FromBody] ReviewRequest request)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            if (DateTime.Now > deadline)
+            {
+                return new BadRequestObjectResult("Nie można dodać recenzji po upływie terminu końcowego.");
+            }
+
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
 
@@ -158,17 +167,6 @@ namespace NCU.AnnualWorks.Api.Reviews
                     {
                         thesis.Grade = average;
                     }
-
-                    //if (!TryGetAverageGrade(grades, out var average))
-                    //{
-                    //    var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                    //    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                    //        $"którą można wpisać do systemu USOS (śr. {average}). " +
-                    //        $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
-                    //        "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
-                    //}
-
-                    //thesis.Grade = average;
                 }
             }
 
@@ -214,6 +212,12 @@ namespace NCU.AnnualWorks.Api.Reviews
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> UpdateReview(Guid id, ReviewRequest request)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            if (DateTime.Now > deadline)
+            {
+                return new BadRequestObjectResult("Nie można zaktualizować recenzji po upływie terminu końcowego.");
+            }
+
             var review = await _reviewRepository.GetAsync(id);
             if (review == null)
             {
@@ -269,17 +273,6 @@ namespace NCU.AnnualWorks.Api.Reviews
                     {
                         thesis.Grade = average;
                     }
-
-                    //if (!TryGetAverageGrade(grades, out var average))
-                    //{
-                    //    var contactUser = isPromoter ? "recenzentem" : "promotorem";
-                    //    return new ConflictObjectResult($"Wystawienie recenzji z oceną {grade} nie pozwoli na wyliczenie średniej ocen, " +
-                    //        $"którą można wpisać do systemu USOS (śr. {average}). " +
-                    //        $"Zmień ocenę lub skontaktuj się z {contactUser} pracy i wspólnie ustalcie ocenę końcową. " +
-                    //        "Ocena musi być ostatecznie zatwierdzona przez promotora na formularzu pracy. ");
-                    //}
-
-                    //thesis.Grade = average;
                 }
             }
 

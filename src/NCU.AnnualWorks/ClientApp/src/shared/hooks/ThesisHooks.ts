@@ -1,14 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import Thesis from '../models/Thesis';
 import { AppSettings } from '../../AppSettings';
+import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
   const [thesis, setThesis] = useState<Thesis>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const api = useApi();
+  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
+    if(!authContext.isAuthenticated) {
+      setIsFetching(false);
+      return;
+    }
+
     setIsFetching(true);
     api.get<Thesis>(`${AppSettings.API.Theses.Base}/${guid}`)
       .then(response => {
@@ -19,7 +26,7 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, []);
+  }, [authContext.isAuthenticated]);
 
   return [thesis, isFetching];
 };
@@ -28,8 +35,14 @@ const useTheses = (endpoint: string): [Thesis[], boolean] => {
   const [thesis, setThesis] = useState<Thesis[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const api = useApi();
+  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
+    if(!authContext.isAuthenticated) {
+      setIsFetching(false);
+      return;
+    }
+
     setIsFetching(true);
     api.get<Thesis[]>(endpoint)
       .then(response => {

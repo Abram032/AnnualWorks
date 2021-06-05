@@ -34,7 +34,11 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
     });
 
   if(isFetching && !thesis) {
-    return <Loader label='Ładowanie...' size='medium' />
+    return <Loader />
+  }
+
+  if(!students || !employees) {
+    return <Loader />
   }
 
   return (

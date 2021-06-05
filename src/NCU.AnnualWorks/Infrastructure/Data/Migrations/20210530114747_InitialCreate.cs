@@ -164,7 +164,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CourseCode = table.Column<string>(maxLength: 100, nullable: false),
-                    CourseUrl = table.Column<string>(maxLength: 500, nullable: false),
+                    Deadline = table.Column<DateTime>(nullable: true),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     ModifiedById = table.Column<long>(nullable: true)
                 },

@@ -12,14 +12,14 @@ export const HomeContainer: React.FC = () => {
     currentUser?.isLecturer || 
     currentUser?.isAdmin || 
     currentUser?.isAdmin;
-
+    
   if(authContext.isFetching) {
     return <Loader label={'Ładowanie...'} size='medium' />
   } 
   else if(!authContext.isAuthenticated) {
     return <HomeSignIn />
   }
-  else if(authContext.isAuthenticated && !hasAccess) {
+  else if(!hasAccess || !authContext.isAuthenticated) {
     return <HomeSignUp />
   }
   else {

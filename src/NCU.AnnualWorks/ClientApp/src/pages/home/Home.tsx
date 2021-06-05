@@ -7,9 +7,13 @@ import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentThes
 import Loader from "../../components/loader/loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
 import { Redirect, useHistory } from "react-router";
+import { useDeadline } from "../../shared/hooks/DeadlineHooks";
+import { useCurrentTerm } from "../../shared/hooks/TermsHooks";
 
 export const Home: React.FC = () => {
   const history = useHistory();
+  const deadline = useDeadline();
+  const term = useCurrentTerm();
   const authContext =  useContext(AuthenticationContext);
   const currentUser = authContext.currentUser;
   const [currentTheses, curentThesesFetching] = useCurrentTheses();
@@ -17,13 +21,14 @@ export const Home: React.FC = () => {
   const [promotedTheses, promotedThesesFetching] = usePromotedTheses();
   const [reviewedTheses, reviewedThesesFetching] = useReviewedTheses();
 
-  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching) {
+  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || !deadline || !term) {
     return <Loader size='medium' label='Ładowanie...' />
-  } else {
-    if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
-      return <Redirect to={RouteNames.error} />
-    }
-  }
+  } 
+  // else {
+  //   if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
+  //     return <Redirect to={RouteNames.error} />
+  //   }
+  // }
 
   const stackTokens: IStackTokens = { childrenGap: 25 }
 
@@ -49,7 +54,7 @@ export const Home: React.FC = () => {
   };
 
   const addThesis = (): React.ReactNode => {
-    if(!currentUser?.isLecturer) {
+    if(!currentUser?.isLecturer || deadline < new Date()) {
       return null;
     }
     return <PrimaryButton 
@@ -64,12 +69,12 @@ export const Home: React.FC = () => {
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
         {addThesis()}
-        <Label>Termin końcowy: 20.09.2021</Label>
+        <Label>{`Termin końcowy: ${deadline.toLocaleDateString()}`}</Label>
       </Stack>
       {authoredList()}
       {promotedList()}
       {reviewedList()} 
-      <ThesisList title='Semestr letni 2020/2021' items={currentTheses} />
+      <ThesisList title={term.names.pl} items={currentTheses} />
     </Tile>
   );
 };

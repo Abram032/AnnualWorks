@@ -29,7 +29,7 @@ export const useApi = (): AxiosInstance => {
       // case 404:
       //   return history.push(RouteNames.notFound);
       default:
-        return history.push(RouteNames.error);
+        //return history.push(RouteNames.error);
     }
   });
 
@@ -52,4 +52,20 @@ export interface ReviewRequestData {
 
 export interface ConfirmGradeRequestData {
   grade: string
+}
+
+export interface SetDeadlineRequestData {
+  deadline: string
+}
+
+export interface SetCourseRequestData {
+  courseCode: string
+}
+
+export interface SetAdminsRequestData {
+  userIds: string[]
+}
+
+export interface SetCustomUsersRequestData {
+  userIds: string[]
 }

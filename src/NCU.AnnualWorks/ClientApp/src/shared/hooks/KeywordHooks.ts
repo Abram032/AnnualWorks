@@ -1,14 +1,21 @@
-import { useEffect, useState} from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import Keyword from '../models/Keyword';
 import { AppSettings } from '../../AppSettings';
 import { ITag } from '@fluentui/react';
+import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 export const useKeywords = (): Keyword[] => {
   const api = useApi();
   const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const authContext = useContext(AuthenticationContext);
+  
 
   useEffect(() => {
+    if(!authContext.isAuthenticated) {
+      return;
+    }
+
     api.get<Keyword[]>(AppSettings.API.Keywords.Base)
       .then(response => {
         setKeywords(response.data);
@@ -16,7 +23,7 @@ export const useKeywords = (): Keyword[] => {
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, [authContext.isAuthenticated]);
 
   return keywords
 };

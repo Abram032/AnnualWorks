@@ -277,5 +277,45 @@ namespace NCU.AnnualWorks.Integrations.Usos
         {
             return GetCourseEditionUsers(oauthRequest, termId, "coordinators");
         }
+
+        public async Task<bool> CourseExists(OAuthRequest oauthRequest, string courseId, string termId)
+        {
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={courseId}&term_id={termId}");
+            //Custom call in case of bad request => course doesn't exist
+            var response = await _client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId, string termId)
+        {
+            var field = "profile_url";
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={courseId}&term_id={termId}&fields={field}");
+            var response = await SendRequestAsync(request);
+
+            var data = await response.Content.ReadAsStringAsync();
+            var url = JsonConvert.DeserializeObject<Dictionary<string, string>>(data).GetValueOrDefault(field);
+
+            return url;
+        }
+
+        public async Task<List<UsosUser>> SearchUsers(OAuthRequest oauthRequest, string userQuery)
+        {
+            var fields = "items[user[id]]";
+            var searchRequest = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.UsersSearch}?lang=pl&fields={fields}&query={userQuery}");
+            var searchResponse = await SendRequestAsync(searchRequest);
+
+            var searchData = await searchResponse.Content.ReadAsStringAsync();
+            var userIds = JsonConvert.DeserializeObject<UsosUserSearchResponse>(searchData).Items.Select(i => i.User.Id).ToList();
+
+            var users = await GetUsers(oauthRequest, userIds);
+
+            return users;
+        }
     }
 }
