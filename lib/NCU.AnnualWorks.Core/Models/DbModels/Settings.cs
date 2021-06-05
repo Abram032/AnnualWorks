@@ -6,7 +6,7 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
     public class Settings : Entity
     {
         public string CourseCode { get; set; }
-        public string CourseUrl { get; set; }
+        public DateTime? Deadline { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public User ModifiedBy { get; set; }
     }

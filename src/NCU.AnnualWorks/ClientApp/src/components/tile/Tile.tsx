@@ -6,6 +6,7 @@ interface TileProps {
   titleSize?: string;
   elevation?: 4 | 8 | 16 | 64;
   childrenGap?: number;
+  padding?: string;
 }
 
 export const Tile: React.FC<TileProps> = (props) => {
@@ -25,7 +26,7 @@ export const Tile: React.FC<TileProps> = (props) => {
   });
 
   const tileStyles = mergeStyles({
-    padding: '2em',
+    padding: props.padding ?? '2em',
     backgroundColor: theme.palette.white,
     boxShadow: elevation[props.elevation ?? 4]
   })

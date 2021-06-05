@@ -27,5 +27,8 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core
         Task<List<UsosUser>> GetCourseEditionParticipants(OAuthRequest oauthRequest, string termId);
         Task<List<UsosUser>> GetCourseEditionLecturers(OAuthRequest oauthRequest, string termId);
         Task<List<UsosUser>> GetCourseEditionCoordinators(OAuthRequest oauthRequest, string termId);
+        Task<bool> CourseExists(OAuthRequest oauthRequest, string courseId, string termId);
+        Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId, string termId);
+        Task<List<UsosUser>> SearchUsers(OAuthRequest oauthRequest, string userQuery);
     }
 }

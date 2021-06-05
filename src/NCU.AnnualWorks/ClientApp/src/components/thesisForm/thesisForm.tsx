@@ -158,7 +158,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             }
           }).catch(error => {
             window.scrollTo(0,0);
-            //setErrorMessage(error.data);
+            setErrorMessage(error.data);
             setUploadSuccess(false);
             setIsUploading(false);
           });

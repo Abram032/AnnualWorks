@@ -1,28 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import User from '../../shared/models/User';
 import { IPersonaProps } from '@fluentui/react';
+import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
-const useUsers = (endpoint: string) => {
+const useUsers = <T>(endpoint: string, query?: string) => {
   const api = useApi();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<T>();
+  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    api.get<User[]>(endpoint)
+    if(!authContext.isAuthenticated) {
+      return;
+    }
+
+    api.get<T>(endpoint)
       .then(response => {
         setUsers(response.data);
       })
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, [authContext.isAuthenticated]);
 
   return users;
 };
 
-export const useStudents = () => useUsers(AppSettings.API.Users.Students);
-export const useEmployees = () => useUsers(AppSettings.API.Users.Employees);
+export const useStudents = () => useUsers<User[]>(AppSettings.API.Users.Students);
+export const useEmployees = () => useUsers<User[]>(AppSettings.API.Users.Employees);
+export const useAdmins = () => useUsers<User[]>(AppSettings.API.Users.Admins.Base);
+export const useDefaultAdmin = () => useUsers<User>(AppSettings.API.Users.Admins.Default);
+export const useCustomUsers = () => useUsers<User[]>(AppSettings.API.Users.Custom);
 
 export const usePeoplePicker = (users: User[], excludedIds?: any[]): [IPersonaProps[], IPersonaProps[], (people?: IPersonaProps[]) => void] => {
   const [people, setPeople] = useState<IPersonaProps[]>([]);

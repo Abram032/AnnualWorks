@@ -93,6 +93,7 @@ namespace NCU.AnnualWorks
             });
 
             services.AddSingleton<IFileService, FileService>();
+            services.AddScoped<ISettingsService, SettingsService>();
 
             //TODO: Figure out a way to move repositories to external assembly
             services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();
@@ -109,6 +110,7 @@ namespace NCU.AnnualWorks
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReviewRepository, ReviewRepository>();
             services.AddTransient<IFileRepository, FileRepository>();
+
 
             services.AddSwaggerGen();
         }

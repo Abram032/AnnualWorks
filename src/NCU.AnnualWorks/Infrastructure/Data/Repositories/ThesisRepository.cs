@@ -32,5 +32,10 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
         public Task<Thesis> GetAsync(Guid guid) =>
             GetIncludes(_entities)
             .SingleOrDefaultAsync(p => p.Guid == guid);
+
+        public override IQueryable<Thesis> GetAll()
+        {
+            return GetIncludes(_entities).AsQueryable();
+        }
     }
 }

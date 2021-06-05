@@ -6,6 +6,7 @@ using NCU.AnnualWorks.Api.Auth.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
+using NCU.AnnualWorks.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
@@ -40,6 +41,7 @@ namespace NCU.AnnualWorks.Api.Auth
             _mapper = mapper;
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("Authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate()
@@ -60,11 +62,15 @@ namespace NCU.AnnualWorks.Api.Auth
             HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureToken, jwt, _jwtService.GetTokenCookieOptions());
             HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureAuth, _jwtService.GetAuthCookieOptions());
             HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureUser, _jwtService.GetUserCookieOptions());
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.CookieName);
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.FormCookieName);
 
             return new OkObjectResult(_usosService.GetRedirectAddress(response.OAuthToken).ToString());
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("Authorize")]
+        [AllowAnonymous]
         public async Task<IActionResult> Authorize(AuthorizeRequest request)
         {
             var accessTokenResponse = await _usosService.GetAccessTokenAsync(HttpContext.BuildOAuthRequest(token: request.OAuthToken, verifier: request.OAuthVerifier));
@@ -105,12 +111,12 @@ namespace NCU.AnnualWorks.Api.Auth
             }
 
             //TODO: Remove
-            if (_appOptions.DebugMode)
-            {
-                isAdmin = true;
-                isParticipant = true;
-                isLecturer = true;
-            }
+            //if (_appOptions.DebugMode)
+            //{
+            //    isAdmin = true;
+            //    isParticipant = true;
+            //    isLecturer = true;
+            //}
 
             var authClaims = new AuthClaims
             {
@@ -139,14 +145,17 @@ namespace NCU.AnnualWorks.Api.Auth
             var userClaimsIdentity = _jwtService.GenerateClaimsIdentity(userClaims);
             var userJWT = _jwtService.GenerateJWS(userClaimsIdentity);
 
-            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
             HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureAuth, authJWT, _jwtService.GetAuthCookieOptions());
             HttpContext.Response.Cookies.Append(AuthenticationCookies.SecureUser, userJWT, _jwtService.GetUserCookieOptions());
+            HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.CookieName);
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.FormCookieName);
 
             //TODO: Redirect user somewhere
             return new OkResult();
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("SignOut")]
         public async Task<IActionResult> SignOut()
         {
@@ -156,6 +165,8 @@ namespace NCU.AnnualWorks.Api.Auth
             HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
             HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureAuth, _jwtService.GetAuthCookieOptions());
             HttpContext.Response.Cookies.Delete(AuthenticationCookies.SecureUser, _jwtService.GetUserCookieOptions());
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.CookieName);
+            HttpContext.Response.Cookies.Delete(AntiforgeryConsts.FormCookieName);
 
             var callback = $"?url={HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
             var redirectUri = new Uri(_usosService.GetLogoutAddress(), callback).ToString();
