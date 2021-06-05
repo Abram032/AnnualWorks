@@ -1,14 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import User from '../../shared/models/User';
 import { IPersonaProps } from '@fluentui/react';
+import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 const useUsers = <T>(endpoint: string, query?: string) => {
   const api = useApi();
   const [users, setUsers] = useState<T>();
+  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
+    if(!authContext.isAuthenticated) {
+      return;
+    }
+
     api.get<T>(endpoint)
       .then(response => {
         setUsers(response.data);
@@ -16,7 +22,7 @@ const useUsers = <T>(endpoint: string, query?: string) => {
       .catch(error => {
         console.error(error);
       });
-  }, []);
+  }, [authContext.isAuthenticated]);
 
   return users;
 };

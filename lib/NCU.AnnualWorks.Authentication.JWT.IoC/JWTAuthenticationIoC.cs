@@ -22,7 +22,9 @@ namespace NCU.AnnualWorks.Authentication.JWT.IoC
             services.AddAuthorizationCore(options =>
             {
                 //Used during login process or for non-registered users
-                options.AddPolicy(AuthorizationPolicies.AuthenticatedOnly, policy => policy.RequireAuthenticatedUser());
+                options.AddPolicy(AuthorizationPolicies.AuthenticatedOnly, policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(claim => claim.Type == nameof(AuthClaims.Id) && !string.IsNullOrEmpty(claim.Value))));
                 //Current participants of the course, lecturers, administrators and custom added users
                 options.AddPolicy(AuthorizationPolicies.AtLeastStudent,
                     policy => policy.RequireAssertion(context =>

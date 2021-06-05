@@ -49,6 +49,10 @@ export namespace AppSettings {
     },
     Course: {
       Base: process.env.REACT_APP_API_COURSE!
+    },
+    Export: {
+      Base: process.env.REACT_APP_API_EXPORT!,
+      State: process.env.REACT_APP_API_EXPORT_STATE!,
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;

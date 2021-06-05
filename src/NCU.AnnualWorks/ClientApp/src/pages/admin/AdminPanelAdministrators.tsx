@@ -72,13 +72,11 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   };
 
   const onSave = () => {
-    debugger;
     setIsSuccess(false);
     setErrorMessage(undefined);
     
     handleSubmit(
       (values) => {
-        debugger;
         const request: SetAdminsRequestData = {
           userIds: values.administrators.map<string>(u => u.key!.toString())
         }

@@ -18,10 +18,6 @@ export const Nav: React.FC = () => {
   const history = useHistory();
   const deadline = useDeadline();
 
-  if(!deadline) {
-    return null;
-  }
-
   const actions =
     !authContext.isAuthenticated || !authContext.currentUser ? (
       <NavLink label="Zaloguj się" href={RouteNames.signIn} onClick={() => history.push(RouteNames.signIn)}/>
@@ -33,7 +29,10 @@ export const Nav: React.FC = () => {
     !authContext.isAuthenticated || !authContext.currentUser ? null : (
         <NavLink label="Wyszukiwanie prac" href={RouteNames.search} onClick={() => history.push(RouteNames.search)} />
     );
-  const addThesis = !authContext.isAuthenticated || !authContext.currentUser || !authContext.currentUser.isLecturer || deadline < new Date() ? null : (
+  const addThesis = !authContext.isAuthenticated || 
+    !authContext.currentUser || 
+    !authContext.currentUser.isLecturer || 
+    (deadline && deadline < new Date()) ? null : (
     <NavLink label="Dodaj pracę" href={RouteNames.addThesis} onClick={() => history.push(RouteNames.addThesis)} />
   )
   const adminPanel = !authContext.isAuthenticated || !authContext.currentUser || !authContext.currentUser.isAdmin ? null : (

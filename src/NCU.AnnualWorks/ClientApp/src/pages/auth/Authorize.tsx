@@ -24,7 +24,7 @@ export const Authorize: React.FC = () =>
         })
         .catch(error => {
             console.error(error);
-            history.push(RouteNames.error);
+            //history.push(RouteNames.error);
         });
     }, [])
 

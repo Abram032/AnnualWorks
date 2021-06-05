@@ -37,7 +37,7 @@ export const AuthenticationProvider: React.FC = (props) => {
         isCustom: (userClaims.IsCustom .toLowerCase()=== 'true'),
         email: userClaims.Email,
       });
-      setIsAuthenticated(true);
+      setIsAuthenticated(!!userClaims.Id);
       setIsFetching(false);
     }
     catch

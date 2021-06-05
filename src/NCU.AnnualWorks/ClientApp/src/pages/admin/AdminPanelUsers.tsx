@@ -74,7 +74,6 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
     
     handleSubmit(
       (values) => {
-        debugger;
         const request: SetCustomUsersRequestData = {
           userIds: values.users.map<string>(u => u.key!.toString())
         }

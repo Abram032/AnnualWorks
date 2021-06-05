@@ -23,11 +23,12 @@ export const Home: React.FC = () => {
 
   if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || !deadline || !term) {
     return <Loader size='medium' label='Ładowanie...' />
-  } else {
-    if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
-      return <Redirect to={RouteNames.error} />
-    }
-  }
+  } 
+  // else {
+  //   if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
+  //     return <Redirect to={RouteNames.error} />
+  //   }
+  // }
 
   const stackTokens: IStackTokens = { childrenGap: 25 }
 

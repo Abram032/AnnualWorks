@@ -83,8 +83,8 @@ namespace NCU.AnnualWorks.Api.Theses
                         CanEdit = (!p.Reviews.Any(r => r.IsConfirmed) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
                         CanPrint = true,
                         CanDownload = true,
-                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed)
+                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) && DateTime.Now < deadline,
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) && DateTime.Now < deadline
                     }
                 }).ToList();
 
@@ -114,8 +114,8 @@ namespace NCU.AnnualWorks.Api.Theses
                         CanEdit = HttpContext.IsCurrentUserAdmin() && DateTime.Now < deadline,
                         CanPrint = true,
                         CanDownload = true,
-                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed)
+                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) && DateTime.Now < deadline,
+                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) && DateTime.Now < deadline
                     }
                 }).ToList();
 
@@ -174,9 +174,11 @@ namespace NCU.AnnualWorks.Api.Theses
                         CanDownload = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
                         CanEdit = ((p.Promoter == currentUser && !p.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
                         CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
-                            !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser),
+                            !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) &&
+                            DateTime.Now < deadline,
                         CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
-                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed),
+                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) &&
+                            DateTime.Now < deadline,
                     }
                 });
 
@@ -237,18 +239,24 @@ namespace NCU.AnnualWorks.Api.Theses
             thesisDto.Actions = new ThesisActionsDTO
             {
                 //TODO: Check if review exists
-                CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy == currentUser),
+                CanAddReview = (isPromoter || isReviewer) &&
+                    !thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
+                    DateTime.Now < deadline,
                 CanDownload = true,
-                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
+                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) &&
+                    DateTime.Now < deadline,
                 //TODO: Check if review exists
-                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed),
+                CanEditReview = (isPromoter || isReviewer) &&
+                    thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed) &&
+                    DateTime.Now < deadline,
                 CanPrint = true,
                 CanView = true,
                 CanEditGrade = isPromoter &&
                     thesis.Grade == null &&
                     thesis.Reviews.All(r => r.IsConfirmed) &&
                     thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
-                    thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer)
+                    thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer) &&
+                    DateTime.Now < deadline
             };
             foreach (var additionalFile in thesisDto.ThesisAdditionalFiles)
             {
@@ -282,7 +290,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             if (DateTime.Now > deadline)
             {
-                return new BadRequestObjectResult("Nie można dodać pracy po upływie terminu końcowego");
+                return new BadRequestObjectResult("Nie można dodać pracy po upływie terminu końcowego.");
             }
 
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
@@ -404,7 +412,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             if (DateTime.Now > deadline)
             {
-                return new BadRequestObjectResult("Nie można zaktualizować pracy po upływie terminu końcowego");
+                return new BadRequestObjectResult("Nie można zaktualizować pracy po upływie terminu końcowego.");
             }
 
             var thesis = await _thesisRepository.GetAsync(id);
@@ -555,6 +563,12 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> ConfirmGrade(Guid id, [FromBody] ConfirmGradeRequest request)
         {
+            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            if (DateTime.Now > deadline)
+            {
+                return new BadRequestObjectResult("Nie wystawić oceny po upływie terminu końcowego.");
+            }
+
             var thesis = await _thesisRepository.GetAsync(id);
             var currentUserUsosId = HttpContext.CurrentUserUsosId();
             var currentUser = await _userRepository.GetAsync(currentUserUsosId);

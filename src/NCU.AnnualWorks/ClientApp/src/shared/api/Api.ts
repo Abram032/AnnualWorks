@@ -29,7 +29,7 @@ export const useApi = (): AxiosInstance => {
       // case 404:
       //   return history.push(RouteNames.notFound);
       default:
-        return history.push(RouteNames.error);
+        //return history.push(RouteNames.error);
     }
   });
 

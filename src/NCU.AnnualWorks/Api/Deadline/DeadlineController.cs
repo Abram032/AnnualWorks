@@ -18,6 +18,7 @@ namespace NCU.AnnualWorks.Api.Deadline
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCurrentDeadline()
             => new OkObjectResult(await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest()));
 

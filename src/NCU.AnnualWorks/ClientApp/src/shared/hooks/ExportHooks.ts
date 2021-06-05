@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
-export const useDeadline = (): Date | undefined => {
+export const useExportState = (termId: string | undefined): boolean | undefined => {
   const api = useApi();
-  const [date, setDate] = useState<Date>();
+  const [valid, setValid] = useState<boolean>();
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
@@ -13,14 +13,16 @@ export const useDeadline = (): Date | undefined => {
       return;
     }
 
-    api.get<Date>(AppSettings.API.Deadline.Base)
+    if(termId) {
+      api.get<boolean>(`${AppSettings.API.Export.State}?termId=${termId}`)
       .then(response => {
-        setDate(new Date(response.data));
+        setValid(response.data);
       })
       .catch(error => {
         //console.error(error);
       });
-  }, [authContext.isAuthenticated]);
+    }
+  }, [termId, authContext.isAuthenticated]);
 
-  return date;
+  return valid;
 };
