@@ -33,11 +33,7 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-  if(isFetching && !thesis) {
-    return <Loader />
-  }
-
-  if(!students || !employees) {
+  if(isFetching || !thesis || !students || !employees) {
     return <Loader />
   }
 

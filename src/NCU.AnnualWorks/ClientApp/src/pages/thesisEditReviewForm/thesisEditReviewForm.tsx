@@ -20,13 +20,14 @@ export const ThesisEditReviewForm: React.FC<ThesisEditReviewFormProps> = (props)
   const [review, isReviewFetching] = useReview(props.reviewGuid);
   const api = useApi();
 
-  if(isThesisFetching || isReviewFetching) {
+  if(isThesisFetching || isReviewFetching || !thesis || !review) {
     return <Loader label='Ładowanie...' size='medium' />
-  } else {
-    if(!thesis || !review) {
-      return <Redirect to={RouteNames.error} />
-    }
-  }
+  } 
+  // else {
+  //   if(!thesis || !review) {
+  //     return <Redirect to={RouteNames.error} />
+  //   }
+  // }
 
   //TODO: Implement saving reviews
   const onSave = (data: ReviewRequestData) => 

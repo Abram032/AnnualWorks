@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -43,14 +42,14 @@ namespace NCU.AnnualWorks
                         logging.AddFile("/app/logs/log-{Date}.log", fileSizeLimitBytes: 10000000, retainedFileCountLimit: 128);
                     }
                 })
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
-                    if (!env.IsDevelopment())
-                    {
-                        config.AddJsonFile("/run/secrets/secrets.json", optional: false);
-                    }
-                })
+                //.ConfigureAppConfiguration((hostingContext, config) =>
+                //{
+                //    var env = hostingContext.HostingEnvironment;
+                //    if (!env.IsDevelopment())
+                //    {
+                //        config.AddJsonFile("/run/secrets/secrets.json", optional: false);
+                //    }
+                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

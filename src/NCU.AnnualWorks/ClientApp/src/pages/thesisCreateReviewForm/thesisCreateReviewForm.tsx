@@ -17,13 +17,14 @@ export const ThesisCreateReviewForm: React.FC<ThesisCreateReviewFormProps> = (pr
   const questions = useActiveQuestions();
   const [thesis, isThesisFetching] = useThesis(props.thesisGuid);
 
-  if(isThesisFetching) {
+  if(isThesisFetching || !thesis) {
     return <Loader label='Ładowanie...' size='medium' />
-  } else {
-    if(!thesis) {
-      return <Redirect to={RouteNames.error} />
-    }
-  }
+  } 
+  // else {
+  //   if(!thesis) {
+  //     return <Redirect to={RouteNames.error} />
+  //   }
+  // }
 
   //TODO: Implement saving reviews
   const onSave = (data: ReviewRequestData) => 

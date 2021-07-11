@@ -25,13 +25,14 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [isReviewerReviewVisible, setIsReviewerReviewVisible] = useState<boolean>(false);
   const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
 
-  if(isFetching) {
+  if(isFetching || !thesis) {
     return <Loader size='medium' label={"Ładowanie..."} />
-  } else {
-    if(!thesis) {
-      return <Redirect to={RouteNames.error} />
-    }
-  }
+  } 
+  // else {
+  //   if(!thesis) {
+  //     return <Redirect to={RouteNames.error} />
+  //   }
+  // }
   
   //Adding available actions
   const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
