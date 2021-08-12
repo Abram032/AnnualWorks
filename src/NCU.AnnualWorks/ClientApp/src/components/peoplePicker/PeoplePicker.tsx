@@ -35,8 +35,8 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
   ): IPersonaProps[] | Promise<IPersonaProps[]> => {
     
     return props.people.filter(p => (
-      p.text?.toLowerCase().startsWith(filter.toLowerCase()) || 
-      p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
+      p.text?.toLowerCase().includes(filter.toLowerCase()) || 
+      p.secondaryText?.toLowerCase().includes(filter.toLowerCase())
     ) && !selectedItems?.includes(p))
     .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
     .slice(0, props.maxSuggestions);

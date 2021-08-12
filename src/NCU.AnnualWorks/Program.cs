@@ -48,7 +48,7 @@ namespace NCU.AnnualWorks
                     var env = hostingContext.HostingEnvironment;
                     if (!env.IsDevelopment())
                     {
-                        config.AddJsonFile("/run/secrets/secrets.json", optional: false);
+                        config.AddJsonFile("/app/secrets/secrets.json", optional: false);
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

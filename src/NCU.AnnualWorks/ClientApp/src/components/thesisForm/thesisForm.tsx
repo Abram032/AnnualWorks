@@ -192,7 +192,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
 
   const infoMessageBar = (
     <StackItem>
-      <MessageBar messageBarType={MessageBarType.info}>W razie popełnienia błędu pracę można zedytować, do momentu zatwierdzenia przynajmniej jednej recenzji, przez promotora lub recenzenta.</MessageBar>
+      <MessageBar messageBarType={MessageBarType.info}>W razie popełnienia błędu pracę lub jej dane można z edytować, do momentu zatwierdzenia przynajmniej jednej recenzji przez promotora lub recenzenta.</MessageBar>
     </StackItem>
   );
 
@@ -246,7 +246,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             />
           </StackItem>
           <StackItem>
-            <MessageBar messageBarType={MessageBarType.info}>Słowa kluczowe oddzielane są średnikiem.</MessageBar>
+            <MessageBar messageBarType={MessageBarType.info}>Nowe słowa kluczowe oddzielane są średnikiem, a następnie wybierane z listy.</MessageBar>
           </StackItem>
           <StackItem>
             <ControlledTagPicker
