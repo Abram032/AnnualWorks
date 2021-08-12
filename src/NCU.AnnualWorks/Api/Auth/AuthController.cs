@@ -111,12 +111,12 @@ namespace NCU.AnnualWorks.Api.Auth
             }
 
             //TODO: Remove
-            //if (_appOptions.DebugMode)
-            //{
-            //    isAdmin = true;
-            //    isParticipant = true;
-            //    isLecturer = true;
-            //}
+            if (_appOptions.DebugMode)
+            {
+                isAdmin = true;
+                isParticipant = true;
+                isLecturer = true;
+            }
 
             var authClaims = new AuthClaims
             {
