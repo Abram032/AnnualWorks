@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import AdminPanel from './AdminPanel';
 import { RouteNames } from "../../shared/consts/RouteNames";
-import { mapUsersToPersona } from "../../shared/utils/mappers";
+import { mapUsersToPersona } from "../../shared/utils/Mappers";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
-import ControlledPeoplePicker from '../../components/peoplePicker/controlledPeoplePicker';
+import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeoplePicker';
 import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/hooks/UserHooks';
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import User from "../../shared/models/User";
-import Loader from "../../components/loader/loader";
+import Loader from "../../components/loader/Loader";
 
 export const AdminPanelAdministrators: React.FC = () => {
   const admins = useAdmins();

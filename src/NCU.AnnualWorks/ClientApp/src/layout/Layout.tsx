@@ -1,7 +1,7 @@
 import React from "react";
-import Nav from "../components/nav/nav";
-import Main from "../components/main/main";
-import Footer from "../components/footer/footer";
+import Nav from "../components/nav/Nav";
+import Main from "../components/main/Main";
+import Footer from "../components/footer/Footer";
 import { mergeStyles } from "@fluentui/merge-styles";
 
 export const Layout: React.FC = (props) => {

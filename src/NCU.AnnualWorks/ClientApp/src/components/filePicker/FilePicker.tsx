@@ -1,6 +1,6 @@
 import { ActionButton, FontSizes, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, Stack, StackItem, TextField, useTheme } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
-import FilePickerOptions from './filePickerOptions';
+import FilePickerOptions from './FilePickerOptions';
 
 export interface FilePickerProps {
   id: string;

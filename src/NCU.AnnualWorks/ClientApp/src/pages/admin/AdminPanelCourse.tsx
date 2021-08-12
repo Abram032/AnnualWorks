@@ -5,7 +5,7 @@ import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } fr
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";
 import { useCourse } from '../../shared/hooks/CourseHooks';
-import ControlledTextField from "../../components/textField/controlledTextField";
+import ControlledTextField from "../../components/textField/ControlledTextField";
 import { useForm } from "react-hook-form";
 
 interface Form {

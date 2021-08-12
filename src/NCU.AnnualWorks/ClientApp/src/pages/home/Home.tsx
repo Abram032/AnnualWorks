@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
-import Tile from '../../components/tile/tile';
-import ThesisList from '../../components/thesisList/thesisList';
+import Tile from '../../components/tile/Tile';
+import ThesisList from '../../components/thesisList/ThesisList';
 import { RouteNames } from "../../shared/consts/RouteNames";
 import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses } from "../../shared/hooks/ThesisHooks";
-import Loader from "../../components/loader/loader";
+import Loader from "../../components/loader/Loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
 import { Redirect, useHistory } from "react-router";
 import { useDeadline } from "../../shared/hooks/DeadlineHooks";

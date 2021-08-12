@@ -5,7 +5,6 @@ import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, StackIt
 import { useExportState } from '../../shared/hooks/ExportHooks';
 import { useCurrentTerm } from "../../shared/hooks/TermsHooks";
 import { AppSettings } from "../../AppSettings";
-import Loader from "../../components/loader/loader";
 
 export const AdminPanelExport: React.FC = () => {
   const term = useCurrentTerm();

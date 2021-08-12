@@ -2,7 +2,7 @@ import React from "react";
 import { IStackTokens, Label, Link, mergeStyles, Stack } from "@fluentui/react";
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
-import ThemePicker from "../themePicker/themePicker";
+import ThemePicker from "../themePicker/ThemePicker";
 
 export const Footer: React.FC = () => {
   const stackTokens: IStackTokens = { childrenGap: 50 }

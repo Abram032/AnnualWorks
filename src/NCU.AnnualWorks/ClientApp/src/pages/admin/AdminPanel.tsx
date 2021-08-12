@@ -1,7 +1,7 @@
 import React from "react";
-import Tile from "../../components/tile/tile";
+import Tile from "../../components/tile/Tile";
 import { Stack, IStackTokens, IStackStyles } from "@fluentui/react";
-import AdminNav from '../../components/adminNav/adminNav';
+import AdminNav from '../../components/adminNav/AdminNav';
 
 interface AdminPanelProps {
   currentRoute: string;

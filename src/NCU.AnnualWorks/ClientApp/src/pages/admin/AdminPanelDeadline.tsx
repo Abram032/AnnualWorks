@@ -4,7 +4,7 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
 import { useCurrentTerm } from '../../shared/hooks/TermsHooks';
 import { useDeadline } from '../../shared/hooks/DeadlineHooks'; 
-import ControlledDatePicker from '../../components/datePicker/controlledDatePicker';
+import ControlledDatePicker from '../../components/datePicker/ControlledDatePicker';
 import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 
