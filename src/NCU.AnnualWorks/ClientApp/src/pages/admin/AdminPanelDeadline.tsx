@@ -4,7 +4,7 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
 import { useCurrentTerm } from '../../shared/hooks/TermsHooks';
 import { useDeadline } from '../../shared/hooks/DeadlineHooks'; 
-import ControlledDatePicker from '../../components/datePicker/ControlledDatePicker';
+import { DatePicker } from '../../components/DatePicker';
 import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 
@@ -68,12 +68,12 @@ export const AdminPanelDeadline: React.FC = () => {
   const tokens: IStackTokens = { childrenGap: 15 };
 
   return (
-    <AdminPanel currentRoute={RouteNames.adminPanelDeadline}>
+    <AdminPanel>
       {warningMessageBar}
       {success ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
       <StackItem tokens={tokens }>
-        <ControlledDatePicker 
+        <DatePicker 
           label="Wybierz termin końcowy"
           placeholder="Wybierz..."
           aria-placeholder="Wybierz datę..."

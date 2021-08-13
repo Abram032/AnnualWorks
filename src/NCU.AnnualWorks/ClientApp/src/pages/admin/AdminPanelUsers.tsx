@@ -106,7 +106,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   const tokens: IStackTokens = { childrenGap: 15 };
 
   return (
-    <AdminPanel currentRoute={RouteNames.adminPanelAdmins}>
+    <AdminPanel>
       {errorMessage ? errorMessageBar : null}
       {success ? successMessageBar : null}
       <StackItem tokens={tokens}>

@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import Loader from '../../components/loader/Loader';
 import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
-import Tile from '../../components/tile/Tile';
+import Tile from '../../components/Tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';

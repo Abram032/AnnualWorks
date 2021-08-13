@@ -21,8 +21,8 @@ export namespace RouteNames {
   export const search = '/search';
   export const adminPanel = '/admin-panel';
   export const adminPanelAdmins = `${adminPanel}/administrators`;
-  export const adminPanelDeadline = `${adminPanel}/deadline`;
   export const adminPanelUsers = `${adminPanel}/users`;
+  export const adminPanelDeadline = `${adminPanel}/deadline`;
   export const adminPanelExport = `${adminPanel}/export-grades`;
   export const adminPanelCourse = `${adminPanel}/course`;
 };

@@ -74,7 +74,7 @@ export const AdminPanelCourse: React.FC = () => {
   const tokens: IStackTokens = { childrenGap: 15 };
 
   return (
-    <AdminPanel currentRoute={RouteNames.adminPanelCourse}>
+    <AdminPanel>
       {warningMessageBar}
       {success ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}

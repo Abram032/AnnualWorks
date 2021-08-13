@@ -1,6 +1,6 @@
 import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType, Dialog, DialogFooter, DialogType } from '@fluentui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import Tile from '../../components/tile/Tile';
+import Tile from '../Tile';
 import { addActions } from '../../components/thesisActions/ThesisActions';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { Review, Question } from '../../shared/models/Review';

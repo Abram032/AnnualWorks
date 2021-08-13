@@ -16,7 +16,7 @@ import {
 } from "@fluentui/react";
 import React, { useEffect, useState } from "react";
 import FilePickerOptions from "../../components/filePicker/FilePickerOptions";
-import Tile from "../../components/tile/Tile";
+import Tile from "../Tile";
 import { RouteNames } from "../../shared/consts/RouteNames";
 import {  useTagPicker } from "../../shared/hooks/KeywordHooks";
 import { usePeoplePicker } from "../../shared/hooks/UserHooks";

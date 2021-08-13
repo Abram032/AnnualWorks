@@ -1,5 +1,5 @@
-import { FontSizes, IStackTokens, Label, mergeStyles, Stack, useTheme } from "@fluentui/react";
 import React from "react";
+import { FontSizes, IStackTokens, Label, mergeStyles, Stack, useTheme } from "@fluentui/react";
 
 interface TileProps {
   title?: string;
@@ -19,6 +19,7 @@ export const Tile: React.FC<TileProps> = (props) => {
     64: theme.effects.elevation64,
   };
 
+  //#region Styles
   const stackTokens: IStackTokens = { childrenGap: props.childrenGap ?? 15 };
 
   const containerStyles = mergeStyles({
@@ -30,6 +31,7 @@ export const Tile: React.FC<TileProps> = (props) => {
     backgroundColor: theme.palette.white,
     boxShadow: elevation[props.elevation ?? 4]
   })
+  //#endregion
 
   return (
     <Stack className={containerStyles} tokens={stackTokens}>

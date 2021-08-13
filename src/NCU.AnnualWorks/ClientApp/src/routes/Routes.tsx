@@ -37,14 +37,14 @@ export const Routes: React.FC = () => (
       render={props => <ThesisEditReviewForm thesisGuid={props.match.params.thesisGuid} reviewGuid={props.match.params.reviewGuid} />} 
     />
     <Route path={RouteNames.search} component={Search} />
-    <Route path={RouteNames.error} component={Error} />
-    <Route path={RouteNames.forbidden} component={Forbidden} />
-    <Route path={RouteNames.notFound} component={NotFound} />
-    <Route path={RouteNames.privacy} component={Privacy} />
-    <Route path={RouteNames.about} component={About} />
+    <Route exact path={RouteNames.error} component={Error} />
+    <Route exact path={RouteNames.forbidden} component={Forbidden} />
+    <Route exact path={RouteNames.notFound} component={NotFound} />
+    <Route exact path={RouteNames.privacy} component={Privacy} />
+    <Route exact path={RouteNames.about} component={About} />
     <Route exact path={RouteNames.adminPanel} component={AdminPanel} />
-    <Route exact path={RouteNames.adminPanelUsers} component={AdminPanelUsers} />
     <Route exact path={RouteNames.adminPanelAdmins} component={AdminPanelAdministrators} />
+    <Route exact path={RouteNames.adminPanelUsers} component={AdminPanelUsers} />
     <Route exact path={RouteNames.adminPanelDeadline} component={AdminPanelDeadline} />
     <Route exact path={RouteNames.adminPanelCourse} component={AdminPanelCourse} />
     <Route exact path={RouteNames.adminPanelExport} component={AdminPanelExport} />

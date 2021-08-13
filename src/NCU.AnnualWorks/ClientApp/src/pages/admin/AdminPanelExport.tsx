@@ -21,7 +21,7 @@ export const AdminPanelExport: React.FC = () => {
   const tokens: IStackTokens = { childrenGap: 15 };
   
   return (
-    <AdminPanel currentRoute={RouteNames.adminPanelExport}>
+    <AdminPanel>
       {!thesesState ? warningMessageBar : null}
       <StackItem tokens={tokens}>
         <Label>Eksport ocen - {term?.names.pl}</Label>

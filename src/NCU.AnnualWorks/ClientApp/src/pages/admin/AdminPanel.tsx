@@ -1,24 +1,17 @@
 import React from "react";
-import Tile from "../../components/tile/Tile";
-import { Stack, IStackTokens, IStackStyles } from "@fluentui/react";
-import AdminNav from '../../components/adminNav/AdminNav';
+import Tile from "../../components/Tile";
+import { Stack, IStackTokens, IStackStyles, INavLinkGroup } from "@fluentui/react";
+import AdminNav from '../../components/AdminNav';
+import { RouteNames } from "../../shared/consts/RouteNames";
+import { useHistory } from "react-router-dom";
 
-interface AdminPanelProps {
-  currentRoute: string;
-}
+export const AdminPanel: React.FC = (props) => {
+  const history = useHistory();
 
-export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
-  const contentStyles: Partial<IStackStyles> = {
-    root: {
-      padding: '2em'
-    }
-  };
-
-  const stackTokens: IStackTokens = { childrenGap: 15 };
   return (
     <Tile title='Panel administracyjny' padding='0'>
       <Stack horizontal>
-        <AdminNav currentRoute={props.currentRoute}></AdminNav>
+        <AdminNav selectedKey={history.location.pathname} groups={groups} />
         <Stack styles={contentStyles} tokens={stackTokens}>
           {props.children}
         </Stack>
@@ -28,3 +21,52 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 };
 
 export default AdminPanel;
+
+//#region Nav Groups
+const groups: INavLinkGroup[] = [
+  {
+    links: [
+      {
+        name: 'Administratorzy',
+        url: RouteNames.adminPanelAdmins,
+        key: RouteNames.adminPanelAdmins,
+        icon: 'SecurityGroup'
+      },
+      {
+        name: 'Pracownicy',
+        url: RouteNames.adminPanelUsers,
+        key: RouteNames.adminPanelUsers,
+        icon: 'People'
+      },
+      {
+        name: 'Termin końcowy',
+        url: RouteNames.adminPanelDeadline,
+        key: RouteNames.adminPanelDeadline,
+        icon: 'CalendarSettings'
+      },
+      {
+        name: 'Kurs',
+        url: RouteNames.adminPanelCourse,
+        key: RouteNames.adminPanelCourse,
+        icon: 'Education'
+      },
+      {
+        name: 'Eksport ocen',
+        url: RouteNames.adminPanelExport,
+        key: RouteNames.adminPanelExport,
+        icon: 'Export',
+      },
+    ],
+  },
+];
+//#endregion
+
+//#region Styles
+const stackTokens: IStackTokens = { childrenGap: 15 };
+
+const contentStyles: Partial<IStackStyles> = {
+  root: {
+    padding: '2em'
+  }
+};
+//#endregion
