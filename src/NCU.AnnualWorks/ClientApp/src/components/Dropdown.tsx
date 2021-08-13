@@ -1,9 +1,9 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { Dropdown, IDropdownProps } from "@fluentui/react";
-import { HookFormProps } from "../../shared/Models";
+import { Dropdown as FluentDropdown, IDropdownProps } from "@fluentui/react";
+import { HookFormProps } from "../shared/Models";
 
-export const ControlledDropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props) => {
+export const Dropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props) => {
   return (
     <Controller
       name={props.name}
@@ -14,7 +14,7 @@ export const ControlledDropdown: React.FC<HookFormProps<string> & IDropdownProps
         field: { onChange, onBlur, name: fieldName, value },
         fieldState: { error }
       }) => (
-        <Dropdown
+        <FluentDropdown
           {...props}
           onChange={(e, option) => {
             onChange(option?.key);
@@ -29,4 +29,4 @@ export const ControlledDropdown: React.FC<HookFormProps<string> & IDropdownProps
   );
 };
 
-export default ControlledDropdown;
+export default Dropdown;

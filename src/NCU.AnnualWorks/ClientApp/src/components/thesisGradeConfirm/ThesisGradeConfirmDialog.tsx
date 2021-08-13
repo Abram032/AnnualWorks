@@ -6,7 +6,7 @@ import { useHistory } from 'react-router';
 import { AppSettings } from '../../AppSettings';
 import { ConfirmGradeRequestData, useApi } from '../../shared/api/Api';
 import { RouteNames } from '../../shared/Consts';
-import { ControlledDropdown } from '../dropdown/ControlledDropdown';
+import { Dropdown } from '../Dropdown';
 
 interface Form {
   grade: string
@@ -95,7 +95,7 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
       <MessageBar messageBarType={MessageBarType.severeWarning}>
         Po wystawieniu oceny nie ma możliwości jej zmiany.
       </MessageBar>
-      <ControlledDropdown
+      <Dropdown
         control={control}
         name='grade'
         label='Ocena'

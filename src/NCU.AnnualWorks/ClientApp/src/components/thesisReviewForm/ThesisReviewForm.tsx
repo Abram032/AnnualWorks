@@ -6,7 +6,7 @@ import { RouteNames } from '../../shared/Consts';
 import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/ControlledTextField';
-import ControlledDropdown from '../dropdown/ControlledDropdown';
+import { Dropdown } from '../Dropdown';
 import { useForm } from 'react-hook-form';
 import { answerRules, gradeRules, notRequiredAnswerRules } from './ThesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
@@ -147,7 +147,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
       <Stack tokens={stackTokens}>
         {fields}
         <StackItem tokens={stackTokens}>
-          <ControlledDropdown
+          <Dropdown
             control={control}
             name='grade'
             label='Ocena'
