@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { TagPicker, TagPickerProps } from "./TagPicker"
-import { HookFormProps } from "../../shared/components/models/HookFormProps";
+import { HookFormProps } from "../../shared/models/components/HookFormProps";
 import { ITag } from "@fluentui/react";
 
 export const ControlledTagPicker: React.FC<HookFormProps<ITag[]> & TagPickerProps> = (props) => {

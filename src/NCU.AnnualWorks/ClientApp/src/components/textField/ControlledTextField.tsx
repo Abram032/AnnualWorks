@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { ITextFieldProps, TextField } from "@fluentui/react";
-import { HookFormProps } from "../../shared/components/models/HookFormProps";
+import { HookFormProps } from "../../shared/models/components/HookFormProps";
 
 export const ControlledTextField: React.FC<HookFormProps<string> & ITextFieldProps> = (props) => {
   return (
