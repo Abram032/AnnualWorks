@@ -6,7 +6,7 @@ import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/Loader';
 
 export const ThesisCreateForm: React.FC = () => {
   const authContext = useContext(AuthenticationContext);

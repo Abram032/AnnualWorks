@@ -1,5 +1,5 @@
-import { Spinner, Stack } from "@fluentui/react";
 import React from "react";
+import { Spinner, Stack } from "@fluentui/react";
 
 interface LoaderProps {
   label?: string;

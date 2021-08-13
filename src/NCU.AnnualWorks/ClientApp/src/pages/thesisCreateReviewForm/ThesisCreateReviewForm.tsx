@@ -4,7 +4,7 @@ import { useActiveQuestions } from '../../shared/hooks/QuestionHooks';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/Loader';
 import { Redirect } from 'react-router';
 import { RouteNames } from '../../shared/consts/RouteNames';
 

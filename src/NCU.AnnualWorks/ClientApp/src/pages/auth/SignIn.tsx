@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/Loader';
 import { AppSettings } from '../../AppSettings';
 import { useApi } from '../../shared/api/Api';
 

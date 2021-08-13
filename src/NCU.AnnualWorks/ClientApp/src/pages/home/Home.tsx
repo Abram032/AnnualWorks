@@ -4,7 +4,7 @@ import Tile from '../../components/Tile';
 import ThesisList from '../../components/thesisList/ThesisList';
 import { RouteNames } from "../../shared/consts/RouteNames";
 import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses } from "../../shared/hooks/ThesisHooks";
-import Loader from "../../components/loader/Loader";
+import Loader from "../../components/Loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
 import { Redirect, useHistory } from "react-router";
 import { useDeadline } from "../../shared/hooks/DeadlineHooks";

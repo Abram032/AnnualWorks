@@ -9,7 +9,7 @@ import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/hooks/
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import User from "../../shared/models/User";
-import Loader from "../../components/loader/Loader";
+import Loader from "../../components/Loader";
 
 export const AdminPanelAdministrators: React.FC = () => {
   const admins = useAdmins();

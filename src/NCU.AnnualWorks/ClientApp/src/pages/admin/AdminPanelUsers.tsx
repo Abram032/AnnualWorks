@@ -9,7 +9,7 @@ import { useCustomUsers, usePeoplePicker } from '../../shared/hooks/UserHooks';
 import { SetCustomUsersRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import User from "../../shared/models/User";
-import Loader from "../../components/loader/Loader";
+import Loader from "../../components/Loader";
 
 export const AdminPanelUsers: React.FC = () => {
   const customUsers = useCustomUsers();

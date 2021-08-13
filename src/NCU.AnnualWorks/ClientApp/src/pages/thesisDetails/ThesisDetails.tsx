@@ -1,7 +1,7 @@
 import { ComboBox, CommandBar, DefaultButton, DetailsRow, Dialog, DialogFooter, FontSizes, IColumn, ICommandBarItemProps, IconButton, IDropdownOption, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React, { useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import Loader from '../../components/loader/Loader';
+import Loader from '../../components/Loader';
 import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
 import Tile from '../../components/Tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
