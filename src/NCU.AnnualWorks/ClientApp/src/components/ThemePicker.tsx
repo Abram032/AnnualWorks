@@ -1,7 +1,8 @@
 import { Dropdown, FontSizes, Icon, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
-import { ThemeNames, ThemeName } from '../../shared/Consts';
+import { PersonalizationContext } from "../shared/providers/PersonalizationProvider";
+import { ThemeNames, ThemeName } from '../shared/Consts';
+import { getThemeName } from '../themes/Themes';
 
 interface ThemePickerProps {
   useDropdown?: boolean;
@@ -9,7 +10,7 @@ interface ThemePickerProps {
 
 export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
   const context = useContext(PersonalizationContext);
-  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(
     context.themeName === ThemeNames.dark || 
     context.themeName === ThemeNames.darkHighContrast
   );
@@ -18,54 +19,16 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
     context.themeName === ThemeNames.darkHighContrast
   );
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(context.themeName);
-  const stackTokens: IStackTokens = { childrenGap: 10 };
-
-  const getThemeName = (): ThemeName => {
-    if(isDarkTheme && isHighContrast) {
-      return ThemeNames.darkHighContrast;
-    }
-    else if(!isDarkTheme && isHighContrast) {
-      return ThemeNames.lightHighContrast;
-    }
-    else if(isDarkTheme && !isHighContrast) {
-      return ThemeNames.dark;
-    }
-    else {
-      return ThemeNames.light;
-    }
-  };
 
   useEffect(() => {
-    const themeName = getThemeName();
+    const themeName = getThemeName(isDarkMode, isHighContrast);
     setCurrentTheme(themeName);
-  }, [isDarkTheme, isHighContrast]);
+  }, [isDarkMode, isHighContrast]);
 
   useEffect(() => {
     context.switchTheme(currentTheme);
   }, [currentTheme]);
 
-  const dropdownOptions: IDropdownOption<ThemeName>[] = [
-    {
-      key: ThemeNames.light,
-      text: 'Jasny motyw',
-      data: ThemeNames.light
-    },
-    {
-      key: ThemeNames.dark,
-      text: 'Ciemny motyw',
-      data: ThemeNames.dark
-    },
-    {
-      key: ThemeNames.lightHighContrast,
-      text: 'Jasny motyw (wysoki kontrast)',
-      data: ThemeNames.lightHighContrast
-    },
-    {
-      key: ThemeNames.darkHighContrast,
-      text: 'Ciemny motyw (wysoki kontrast)',
-      data: ThemeNames.darkHighContrast
-    },
-  ]  
   
   if(props.useDropdown)
   {
@@ -82,14 +45,6 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
     )
   }
 
-  const iconStyles = mergeStyles({
-    fontSize: FontSizes.size18
-  });
-
-  const toggleStyles = mergeStyles({
-    margin: 0
-  });
-
   return (
     <Stack tokens={stackTokens}>
       <Stack verticalAlign='center' tokens={stackTokens} horizontal>
@@ -97,8 +52,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
         <Icon className={iconStyles} iconName='Sunny'/>
         <Toggle 
           className={toggleStyles} 
-          defaultChecked={isDarkTheme} 
-          onClick={() => setIsDarkTheme(!isDarkTheme)} 
+          defaultChecked={isDarkMode} 
+          onClick={() => setIsDarkMode(!isDarkMode)} 
         />
         <Icon className={iconStyles} iconName='ClearNight'/>
       </Stack>
@@ -117,3 +72,46 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
 };
 
 export default ThemePicker;
+
+
+//#region Theme options
+
+const dropdownOptions: IDropdownOption<ThemeName>[] = [
+  {
+    key: ThemeNames.light,
+    text: 'Jasny motyw',
+    data: ThemeNames.light
+  },
+  {
+    key: ThemeNames.dark,
+    text: 'Ciemny motyw',
+    data: ThemeNames.dark
+  },
+  {
+    key: ThemeNames.lightHighContrast,
+    text: 'Jasny motyw (wysoki kontrast)',
+    data: ThemeNames.lightHighContrast
+  },
+  {
+    key: ThemeNames.darkHighContrast,
+    text: 'Ciemny motyw (wysoki kontrast)',
+    data: ThemeNames.darkHighContrast
+  },
+];
+
+//#endregion
+
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 10 };
+
+const iconStyles = mergeStyles({
+  fontSize: FontSizes.size18
+});
+
+const toggleStyles = mergeStyles({
+  margin: 0
+});
+
+//#endregion

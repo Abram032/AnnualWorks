@@ -1,7 +1,7 @@
 import { Dropdown, Icon, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
-import { LanguageName, LanguageNames } from "../../shared/Consts";
+import { PersonalizationContext } from "../shared/providers/PersonalizationProvider";
+import { LanguageName, LanguageNames } from "../shared/Consts";
 import { useTranslation } from "react-i18next";
 
 interface LanguagePickerProps {
@@ -23,21 +23,7 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
     context.switchLanguage(language);
   }, [language]);
 
-  const stackTokens: IStackTokens = { childrenGap: 10 };
-
-  const dropdownOptions: IDropdownOption<LanguageName>[] = [
-    {
-      key: LanguageNames.Polish,
-      text: 'Polski',
-      data: LanguageNames.Polish
-    },
-    {
-      key: LanguageNames.English,
-      text: 'English',
-      data: LanguageNames.English,
-    }
-  ];
-
+  
   if(props.useDropdown) {
     return (
       <Stack horizontal verticalAlign='center' tokens={stackTokens}>
@@ -53,10 +39,6 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
       </Stack>
     );
   }
-
-  const toggleStyles = mergeStyles({
-    margin: 0
-  });
 
   return (
     <Stack tokens={stackTokens}>
@@ -75,3 +57,31 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
 };
 
 export default LanguagePicker;
+
+
+//#region Language options
+
+const dropdownOptions: IDropdownOption<LanguageName>[] = [
+  {
+    key: LanguageNames.Polish,
+    text: 'Polski',
+    data: LanguageNames.Polish
+  },
+  {
+    key: LanguageNames.English,
+    text: 'English',
+    data: LanguageNames.English,
+  }
+];
+
+//#endregion
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 10 };
+
+const toggleStyles = mergeStyles({
+  margin: 0
+});
+
+//#endregion

@@ -1,5 +1,5 @@
 import { PartialTheme } from "@fluentui/react";
-import { ThemeNames } from '../shared/Consts';
+import { ThemeNames, ThemeName } from '../shared/Consts';
 
 export const lightTheme: PartialTheme = {
   palette: {
@@ -114,4 +114,19 @@ export const AvailableThemes = {
   [ThemeNames.dark]: darkTheme,
   [ThemeNames.lightHighContrast]: highContrastLightTheme,
   [ThemeNames.darkHighContrast]: highContrastDarkTheme
+};
+
+export const getThemeName = (isDarkMode: boolean, isHighContrast: boolean): ThemeName => {
+  if(isDarkMode && isHighContrast) {
+    return ThemeNames.darkHighContrast;
+  }
+  else if(!isDarkMode && isHighContrast) {
+    return ThemeNames.lightHighContrast;
+  }
+  else if(isDarkMode && !isHighContrast) {
+    return ThemeNames.dark;
+  }
+  else {
+    return ThemeNames.light;
+  }
 };

@@ -59,13 +59,20 @@ export default FilePicker;
 //#region Custom file picker implementation
 
 const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
-  const stackTokens: IStackTokens = { childrenGap: 15 };
   const theme = useTheme();
+  
+  //#region Styles
+  
+  const stackTokens: IStackTokens = { childrenGap: 15 };
+
   const validationErrorStyles = mergeStyles({
     color: theme.semanticColors.errorText,
     fontSize: FontSizes.size12,
     marginTop: '5px'
   });
+
+  //#endregion
+
   return (
     <>
       <Label required={props.required}>{props.label}</Label>
