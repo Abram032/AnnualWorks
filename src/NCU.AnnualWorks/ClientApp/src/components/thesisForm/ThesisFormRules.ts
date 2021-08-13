@@ -1,6 +1,6 @@
 import { IPersonaProps, ITag } from "@fluentui/react";
 import { RegisterOptions } from "react-hook-form";
-import FilePickerOptions from "../filePicker/FilePickerOptions";
+import { FilePickerOptions } from "../../shared/Models";
 import mime from "mime-types";
 
 export const titleRules: RegisterOptions = {

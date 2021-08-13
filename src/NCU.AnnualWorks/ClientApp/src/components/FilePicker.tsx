@@ -1,6 +1,19 @@
-import { ActionButton, FontSizes, IconButton, IStackTokens, Label, mergeStyles, PrimaryButton, Stack, StackItem, TextField, useTheme } from '@fluentui/react';
+import { 
+  ActionButton, 
+  FontSizes, 
+  IconButton, 
+  IStackTokens, 
+  Label, 
+  mergeStyles, 
+  PrimaryButton, 
+  Stack, 
+  StackItem, 
+  TextField, 
+  useTheme
+} from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
-import FilePickerOptions from './FilePickerOptions';
+import { FilePickerOptions, HookFormProps } from '../shared/Models';
+import { Controller } from "react-hook-form";
 
 export interface FilePickerProps {
   id: string;
@@ -17,7 +30,66 @@ export interface FilePickerProps {
   errorMessage?: string | JSX.Element;
 }
 
-export const FilePicker: React.FC<FilePickerProps> = (props) => {
+export const FilePicker: React.FC<HookFormProps<FileList> & FilePickerProps> = (props) => {
+  return (
+    <Controller
+      name={props.name}
+      control={props.control}
+      rules={props.rules}
+      defaultValue={props.defaultValue}
+      render={({
+        field: { onChange, onBlur, name: fieldName, value },
+        fieldState: { error }
+      }) => (
+        <CustomFilePickerWrapper
+          {...props}
+          name={fieldName}
+          onChange={(fileList) => onChange(fileList)}
+          onBlur={onBlur}
+          value={value}
+          errorMessage={error && error.message}
+        />
+      )}
+    />
+  );
+};
+
+export default FilePicker;
+
+//#region Custom file picker implementation
+
+const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
+  const stackTokens: IStackTokens = { childrenGap: 15 };
+  const theme = useTheme();
+  const validationErrorStyles = mergeStyles({
+    color: theme.semanticColors.errorText,
+    fontSize: FontSizes.size12,
+    marginTop: '5px'
+  });
+  return (
+    <>
+      <Label required={props.required}>{props.label}</Label>
+      <Stack horizontal tokens={stackTokens}>
+        <StackItem>
+          <CustomFilePicker
+            {...props}
+          />
+        </StackItem>
+        <StackItem grow={2}>
+          <TextField
+            value={
+              props.value ? props.value[0]?.name : "Nie wybrano żadnego pliku"
+            }
+            readOnly
+          />
+        </StackItem>
+      </Stack>
+      {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
+    </>
+  );
+};
+
+const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   const [inputElement, setInputElement] = useState<HTMLElement | null>(null);
   
   //Set input element after first render
@@ -87,35 +159,4 @@ export const FilePicker: React.FC<FilePickerProps> = (props) => {
   return !props.icon ? button : !props.iconOnly ? iconButton : iconOnlyButton;
 }
 
-export const StandardFilePicker: React.FC<FilePickerProps> = (props) => {
-  const stackTokens: IStackTokens = { childrenGap: 15 };
-  const theme = useTheme();
-  const validationErrorStyles = mergeStyles({
-    color: theme.semanticColors.errorText,
-    fontSize: FontSizes.size12,
-    marginTop: '5px'
-  });
-  return (
-    <>
-      <Label required={props.required}>{props.label}</Label>
-      <Stack horizontal tokens={stackTokens}>
-        <StackItem>
-          <FilePicker
-            {...props}
-          />
-        </StackItem>
-        <StackItem grow={2}>
-          <TextField
-            value={
-              props.value ? props.value[0]?.name : "Nie wybrano żadnego pliku"
-            }
-            readOnly
-          />
-        </StackItem>
-      </Stack>
-      {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
-    </>
-  );
-};
-
-export default FilePicker;
+//#endregion

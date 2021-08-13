@@ -15,7 +15,7 @@ import {
   StackItem,
 } from "@fluentui/react";
 import React, { useEffect, useState } from "react";
-import FilePickerOptions from "../../components/filePicker/FilePickerOptions";
+import { FilePickerOptions } from "../../shared/Models";
 import Tile from "../Tile";
 import { RouteNames } from "../../shared/Consts";
 import { useTagPicker, usePeoplePicker } from "../../shared/Hooks";
@@ -23,7 +23,7 @@ import { DeepMap, FieldError, useForm } from "react-hook-form";
 import ControlledTextField from "../../components/textField/ControlledTextField";
 import ControlledTagPicker from "../../components/tagPicker/ControlledTagPicker";
 import ControlledPeoplePicker from "../../components/peoplePicker/ControlledPeoplePicker";
-import ControlledFilePicker from "../../components/filePicker/ControlledFilePicker";
+import { FilePicker } from "../FilePicker";
 import { ThesisRequestData } from '../../shared/api/Api';
 import { Keyword, Thesis, User } from "../../shared/Models";
 import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
@@ -276,7 +276,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             />
           </StackItem>
           <StackItem>
-            <ControlledFilePicker 
+            <FilePicker 
               id="thesisFile"
               name="thesisFile"
               label="Dodaj plik z pracą (.pdf)"

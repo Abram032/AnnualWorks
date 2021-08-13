@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FilePickerOptions } from '../../components/filePicker/FilePickerOptions';
+import { FilePickerOptions } from '../../shared/Models';
 import { ThesisForm } from '../../components/thesisForm/ThesisForm';
 import { useThesis, useKeywords,useEmployees, useStudents } from '../../shared/Hooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';

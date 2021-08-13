@@ -9,4 +9,5 @@ export type { User } from './models/User';
 export type { AccessType, AccessTypes } from './models/Auth/AccessType';
 export type { CurrentUser } from './models/Auth/CurrentUser';
 export type { UserClaims } from './models/Auth/UserClaims';
-export type { HookFormProps } from './models/components/HookFormProps';
+export type { HookFormProps } from './models/components/HookForm';
+export type { FilePickerOptions } from './models/components/FilePicker';
