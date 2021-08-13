@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AdminPanel from './AdminPanel';
-import { mapUsersToPersona } from "../../shared/utils/Mappers";
+import { mapUsersToPersona } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
 import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeoplePicker';

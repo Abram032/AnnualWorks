@@ -28,7 +28,7 @@ import { ThesisRequestData } from '../../shared/api/Api';
 import { Keyword, Thesis, User } from "../../shared/Models";
 import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
 import { AxiosResponse } from "axios";
-import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/Mappers";
+import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/Utils";
 import { useHistory } from "react-router";
 import { useBoolean, useId } from "@fluentui/react-hooks";
 
