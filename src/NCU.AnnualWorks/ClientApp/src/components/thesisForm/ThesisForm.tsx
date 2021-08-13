@@ -15,23 +15,23 @@ import {
   StackItem,
 } from "@fluentui/react";
 import React, { useEffect, useState } from "react";
-import FilePickerOptions from "../../components/filePicker/filePickerOptions";
-import Tile from "../../components/tile/tile";
+import FilePickerOptions from "../../components/filePicker/FilePickerOptions";
+import Tile from "../../components/tile/Tile";
 import { RouteNames } from "../../shared/consts/RouteNames";
 import {  useTagPicker } from "../../shared/hooks/KeywordHooks";
 import { usePeoplePicker } from "../../shared/hooks/UserHooks";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
-import ControlledTextField from "../../components/textField/controlledTextField";
-import ControlledTagPicker from "../../components/tagPicker/controlledTagPicker";
-import ControlledPeoplePicker from "../../components/peoplePicker/controlledPeoplePicker";
-import ControlledFilePicker from "../../components/filePicker/controlledFilePicker";
+import ControlledTextField from "../../components/textField/ControlledTextField";
+import ControlledTagPicker from "../../components/tagPicker/ControlledTagPicker";
+import ControlledPeoplePicker from "../../components/peoplePicker/ControlledPeoplePicker";
+import ControlledFilePicker from "../../components/filePicker/ControlledFilePicker";
 import { ThesisRequestData } from '../../shared/api/Api';
 import Keyword from "../../shared/models/Keyword";
 import Thesis from "../../shared/models/Thesis";
 import User from "../../shared/models/User";
-import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './thesisFormRules';
+import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
 import { AxiosResponse } from "axios";
-import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/mappers";
+import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/Mappers";
 import { useHistory } from "react-router";
 import { useBoolean, useId } from "@fluentui/react-hooks";
 

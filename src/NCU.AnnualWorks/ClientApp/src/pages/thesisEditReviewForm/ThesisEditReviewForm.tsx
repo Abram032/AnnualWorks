@@ -1,10 +1,10 @@
 import React from 'react';
-import { ThesisReviewForm } from '../../components/thesisReviewForm/thesisReviewForm';
+import { ThesisReviewForm } from '../../components/thesisReviewForm/ThesisReviewForm';
 import { useActiveQuestions } from '../../shared/hooks/QuestionHooks';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
-import Loader from '../../components/loader/loader';
+import Loader from '../../components/loader/Loader';
 import { useReview } from '../../shared/hooks/ReviewHooks';
 import { Redirect } from 'react-router';
 import { RouteNames } from '../../shared/consts/RouteNames';

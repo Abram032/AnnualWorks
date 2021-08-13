@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
-import { FilePickerOptions } from '../../components/filePicker/filePickerOptions';
-import { ThesisForm } from '../../components/thesisForm/thesisForm';
+import { FilePickerOptions } from '../../components/filePicker/FilePickerOptions';
+import { ThesisForm } from '../../components/thesisForm/ThesisForm';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
 import { useKeywords } from '../../shared/hooks/KeywordHooks';
 import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
-import { Loader } from '../../components/loader/loader';
+import { Loader } from '../../components/loader/Loader';
 
 interface ThesisEditFormProps {
   guid: string

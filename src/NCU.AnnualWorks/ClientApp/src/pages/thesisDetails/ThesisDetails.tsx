@@ -1,13 +1,13 @@
 import { ComboBox, CommandBar, DefaultButton, DetailsRow, Dialog, DialogFooter, FontSizes, IColumn, ICommandBarItemProps, IconButton, IDropdownOption, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React, { useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import Loader from '../../components/loader/loader';
-import { addActions, editGradeAction } from '../../components/thesisActions/thesisActions';
-import Tile from '../../components/tile/tile';
+import Loader from '../../components/loader/Loader';
+import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
+import Tile from '../../components/tile/Tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useThesis } from '../../shared/hooks/ThesisHooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import ReviewModal from '../../components/reviewModal/reviewModal';
+import ReviewModal from '../../components/reviewModal/ReviewModal';
 import { useApi } from '../../shared/api/Api';
 import ThesisGradeConfirmDialog from '../../components/thesisGradeConfirm/ThesisGradeConfirmDialog';
 import { useBoolean } from '@fluentui/react-hooks';

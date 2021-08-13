@@ -1,5 +1,5 @@
 import React from "react";
-import Tile from "../../components/tile/tile";
+import Tile from "../../components/tile/Tile";
 import { Label, Stack, FontSizes, IStackTokens, Nav, INavLink, INavStyles, INavLinkGroup, useTheme } from "@fluentui/react";
 import { RouteNames } from '../../shared/consts/RouteNames';
 import { useHistory } from "react-router";

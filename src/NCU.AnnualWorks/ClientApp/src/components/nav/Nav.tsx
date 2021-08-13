@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { Stack } from "@fluentui/react";
-import NavHeader from "./navHeader";
-import NavActions from "./navActions";
-import NavLink from "./navLink";
+import NavHeader from "./NavHeader";
+import NavActions from "./NavActions";
+import NavLink from "./NavLink";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import MeControl from "../meControl/meControl";
+import MeControl from "../meControl/MeControl";
 import { AppSettings } from "../../AppSettings";
 import { RouteNames } from "../../shared/consts/RouteNames";
-import NavLinks from "./navLinks";
+import NavLinks from "./NavLinks";
 import { Route, useHistory } from "react-router";
 import { useDeadline } from "../../shared/hooks/DeadlineHooks";
 

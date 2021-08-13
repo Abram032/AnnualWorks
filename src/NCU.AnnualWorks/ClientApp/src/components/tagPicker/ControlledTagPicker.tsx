@@ -1,6 +1,6 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { TagPicker, TagPickerProps } from "./tagPicker"
+import { TagPicker, TagPickerProps } from "./TagPicker"
 import { HookFormProps } from "../../shared/components/models/HookFormProps";
 import { ITag } from "@fluentui/react";
 

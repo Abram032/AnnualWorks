@@ -1,6 +1,6 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { PeoplePicker, PeoplePickerProps } from "./peoplePicker"
+import { PeoplePicker, PeoplePickerProps } from "./PeoplePicker"
 import { HookFormProps } from "../../shared/components/models/HookFormProps";
 import { IPersonaProps } from "@fluentui/react";
 

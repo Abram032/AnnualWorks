@@ -12,7 +12,7 @@ import {
 import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
 import CurrentUser from "../../shared/models/Auth/CurrentUser";
-import ThemePicker from '../themePicker/themePicker';
+import ThemePicker from '../themePicker/ThemePicker';
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/consts/RouteNames';
 

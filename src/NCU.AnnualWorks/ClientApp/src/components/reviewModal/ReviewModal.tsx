@@ -1,7 +1,7 @@
 import React from 'react';
 import { useReview } from '../../shared/hooks/ReviewHooks';
 import { getTheme, IButtonStyles, IconButton, Modal, IIconProps, Stack, StackItem, Label, IStackStyles, FontSizes, useTheme, IModalStyles, mergeStyles } from '@fluentui/react';
-import { Loader } from '../loader/loader';
+import { Loader } from '../loader/Loader';
 
 interface ReviewModalProps {
   guid: string,

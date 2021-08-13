@@ -1,7 +1,7 @@
 import { Stack, StackItem } from "@fluentui/react";
 import React from "react";
-import NavSeparator from "./navSeparator";
-import NavHeaderLink from "./navHeaderLink";
+import NavSeparator from "./NavSeparator";
+import NavHeaderLink from "./NavHeaderLink";
 
 interface NavHeaderProps {
   primaryLabel: string;

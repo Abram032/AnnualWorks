@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import HomeSignIn from "./homeSignIn";
-import HomeSignUp from "./homeSignUp";
-import Home from "./home";
-import Loader from "../../components/loader/loader";
+import HomeSignIn from "./HomeSignIn";
+import HomeSignUp from "./HomeSignUp";
+import Home from "./Home";
+import Loader from "../../components/loader/Loader";
 
 export const HomeContainer: React.FC = () => {
   const authContext = useContext(AuthenticationContext);
