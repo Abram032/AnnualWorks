@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { useHistory } from 'react-router';
-import { CsrfNames } from '../consts/CsrfNames';
-import { RouteNames } from '../consts/RouteNames';
+import { CsrfNames } from '../Consts';
+import { RouteNames } from '../Consts';
 import Keyword from '../models/Keyword';
 import Review from '../models/Review';
 

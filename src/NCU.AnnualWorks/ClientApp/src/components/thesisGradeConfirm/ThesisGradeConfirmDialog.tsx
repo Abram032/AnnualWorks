@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { AppSettings } from '../../AppSettings';
 import { ConfirmGradeRequestData, useApi } from '../../shared/api/Api';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 import { ControlledDropdown } from '../dropdown/ControlledDropdown';
 
 interface Form {

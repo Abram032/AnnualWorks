@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { CookieNames } from "../consts/CookieNames";
+import { CookieNames } from "../Consts";
 import { useCookies } from "react-cookie";
 import { ThemeProvider } from "@fluentui/react";
 import { AvailableThemes } from "../../themes/Themes";
-import { ThemeNames, ThemeName } from "../consts/ThemeNames";
-import { LanguageNames, LanguageName } from "../consts/LanguageNames";
+import { ThemeNames, ThemeName } from "../Consts";
+import { LanguageNames, LanguageName } from "../Consts";
 import { useTranslation } from "react-i18next";
 
 interface IPersonalizationContext {

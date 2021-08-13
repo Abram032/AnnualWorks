@@ -17,7 +17,7 @@ import {
 import React, { useEffect, useState } from "react";
 import FilePickerOptions from "../../components/filePicker/FilePickerOptions";
 import Tile from "../Tile";
-import { RouteNames } from "../../shared/consts/RouteNames";
+import { RouteNames } from "../../shared/Consts";
 import { useTagPicker, usePeoplePicker } from "../../shared/Hooks";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
 import ControlledTextField from "../../components/textField/ControlledTextField";

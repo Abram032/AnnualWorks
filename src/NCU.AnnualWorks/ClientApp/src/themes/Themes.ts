@@ -1,5 +1,5 @@
 import { PartialTheme } from "@fluentui/react";
-import { ThemeNames } from '../shared/consts/ThemeNames';
+import { ThemeNames } from '../shared/Consts';
 
 export const lightTheme: PartialTheme = {
   palette: {

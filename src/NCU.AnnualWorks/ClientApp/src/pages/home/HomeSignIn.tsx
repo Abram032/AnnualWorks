@@ -1,6 +1,6 @@
 import React from "react";
 import { Label, PrimaryButton, Stack, FontSizes, IStackTokens } from "@fluentui/react";
-import { RouteNames } from "../../shared/consts/RouteNames";
+import { RouteNames } from "../../shared/Consts";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { IStackTokens, Label, Link, mergeStyles, Stack } from "@fluentui/react";
 import { AppSettings } from '../AppSettings';
-import { RouteNames } from '../shared/consts/RouteNames';
+import { RouteNames } from '../shared/Consts';
 import ThemePicker from "../components/themePicker/ThemePicker";
 
 export const Footer: React.FC = () => {

@@ -2,7 +2,7 @@ import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryBut
 import React, { useEffect, useRef, useState } from 'react';
 import Tile from '../Tile';
 import { addActions } from '../../components/thesisActions/ThesisActions';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 import { Review, Question } from '../../shared/models/Review';
 import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/ControlledTextField';

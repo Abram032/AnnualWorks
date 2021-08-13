@@ -3,7 +3,7 @@ import Loader from '../../components/Loader';
 import { AppSettings } from '../../AppSettings';
 import { useApi } from '../../shared/api/Api';
 import { useHistory } from "react-router-dom";
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 
 export const Authorize: React.FC = () =>
 {

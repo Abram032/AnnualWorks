@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { RouteNames } from '../shared/consts/RouteNames';
+import { RouteNames } from '../shared/Consts';
 import HomeContainer from '../pages/home/HomeContainer';
 import SignIn from '../pages/auth/SignIn';
 import SignOut from '../pages/auth/SignOut';

@@ -1,7 +1,7 @@
 import { Dropdown, Icon, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
 import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
-import { LanguageName, LanguageNames } from "../../shared/consts/LanguageNames";
+import { LanguageName, LanguageNames } from "../../shared/Consts";
 import { useTranslation } from "react-i18next";
 
 interface LanguagePickerProps {

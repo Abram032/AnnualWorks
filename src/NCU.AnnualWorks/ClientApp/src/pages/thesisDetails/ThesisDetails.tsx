@@ -4,7 +4,7 @@ import { Redirect, useHistory } from 'react-router';
 import Loader from '../../components/Loader';
 import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
 import Tile from '../../components/Tile';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 import { useThesis } from '../../shared/Hooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import ReviewModal from '../../components/reviewModal/ReviewModal';

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import AdminPanel from './AdminPanel';
-import { RouteNames } from "../../shared/consts/RouteNames";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";

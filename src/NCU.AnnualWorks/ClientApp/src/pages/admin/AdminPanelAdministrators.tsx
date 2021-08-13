@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import AdminPanel from './AdminPanel';
-import { RouteNames } from "../../shared/consts/RouteNames";
 import { mapUsersToPersona } from "../../shared/utils/Mappers";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";

@@ -5,7 +5,7 @@ import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import Loader from '../../components/Loader';
 import { Redirect } from 'react-router';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 
 interface ThesisEditReviewFormProps {
   thesisGuid: string,

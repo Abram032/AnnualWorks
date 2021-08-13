@@ -1,7 +1,7 @@
 import React from 'react';
 import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, Link, SelectionMode } from '@fluentui/react';
 import { addActions } from '../thesisActions/ThesisActions';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
 

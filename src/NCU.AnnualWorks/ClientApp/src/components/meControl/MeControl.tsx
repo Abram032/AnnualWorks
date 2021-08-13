@@ -14,7 +14,7 @@ import React from "react";
 import CurrentUser from "../../shared/models/Auth/CurrentUser";
 import ThemePicker from '../themePicker/ThemePicker';
 import { AppSettings } from '../../AppSettings';
-import { RouteNames } from '../../shared/consts/RouteNames';
+import { RouteNames } from '../../shared/Consts';
 
 interface MeControlProps {
   user: CurrentUser;

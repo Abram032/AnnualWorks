@@ -6,7 +6,7 @@ import NavLink from "../components/nav/NavLink";
 import { AuthenticationContext } from "../shared/providers/AuthenticationProvider";
 import MeControl from "../components/meControl/MeControl";
 import { AppSettings } from "../AppSettings";
-import { RouteNames } from "../shared/consts/RouteNames";
+import { RouteNames } from "../shared/Consts";
 import NavLinks from "../components/nav/NavLinks";
 import { Route, useHistory } from "react-router";
 import { useDeadline } from "../shared/Hooks";

@@ -1,6 +1,6 @@
 import { ICommandBarItemProps, mergeStyles } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
-import { RouteNames } from "../../shared/consts/RouteNames";
+import { RouteNames } from "../../shared/Consts";
 import Thesis from "../../shared/models/Thesis";
 
 interface ActionProps {

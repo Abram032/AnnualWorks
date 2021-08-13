@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CurrentUser from '../models/Auth/CurrentUser';
 import UserClaims from '../models/Auth/UserClaims';
-import { CookieNames } from '../consts/CookieNames';
+import { CookieNames } from '../Consts';
 import { useCookies } from 'react-cookie';
 import jwtDecode from 'jwt-decode';
 
