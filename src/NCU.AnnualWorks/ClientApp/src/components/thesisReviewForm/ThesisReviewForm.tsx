@@ -5,7 +5,7 @@ import { addActions } from '../../components/thesisActions/ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
-import ControlledTextField from '../textField/ControlledTextField';
+import { TextField } from '../TextField';
 import { Dropdown } from '../Dropdown';
 import { useForm } from 'react-hook-form';
 import { answerRules, gradeRules, notRequiredAnswerRules } from './ThesisReviewFormRules';
@@ -108,7 +108,7 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   const buildFormQuestion = (index: number, question: Question, answer?: string): React.ReactNode => {
     return (
       <StackItem key={index} tokens={stackTokens}>
-        <ControlledTextField
+        <TextField
           control={control}
           name={question.id.toString()}
           label={`${index + 1}. ${question.text}`}

@@ -20,7 +20,7 @@ import Tile from "../Tile";
 import { RouteNames } from "../../shared/Consts";
 import { useTagPicker, usePeoplePicker } from "../../shared/Hooks";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
-import ControlledTextField from "../../components/textField/ControlledTextField";
+import { TextField } from "../TextField";
 import ControlledTagPicker from "../../components/tagPicker/ControlledTagPicker";
 import ControlledPeoplePicker from "../../components/peoplePicker/ControlledPeoplePicker";
 import { FilePicker } from "../FilePicker";
@@ -209,7 +209,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             {uploadSuccess ? successMessageBar : null}
           </StackItem>
           <StackItem>
-            <ControlledTextField
+            <TextField
               required={true}
               label="Tytuł pracy"
               control={control}
@@ -233,7 +233,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             />
           </StackItem>
           <StackItem>
-            <ControlledTextField
+            <TextField
               required={true}
               label="Abstrakt"
               control={control}

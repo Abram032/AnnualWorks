@@ -4,7 +4,7 @@ import NavHeader from "../components/nav/NavHeader";
 import NavActions from "../components/nav/NavActions";
 import NavLink from "../components/nav/NavLink";
 import { AuthenticationContext } from "../shared/providers/AuthenticationProvider";
-import MeControl from "../components/meControl/MeControl";
+import MeControl from "../components/MeControl";
 import { AppSettings } from "../AppSettings";
 import { RouteNames } from "../shared/Consts";
 import NavLinks from "../components/nav/NavLinks";

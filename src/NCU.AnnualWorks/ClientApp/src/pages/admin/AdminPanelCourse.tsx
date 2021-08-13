@@ -4,7 +4,7 @@ import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } fr
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";
 import { useCourse } from '../../shared/Hooks';
-import ControlledTextField from "../../components/textField/ControlledTextField";
+import { TextField } from "../../components/TextField";
 import { useForm } from "react-hook-form";
 
 interface Form {
@@ -78,7 +78,7 @@ export const AdminPanelCourse: React.FC = () => {
       {success ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
       <StackItem tokens={tokens}>
-        <ControlledTextField
+        <TextField
           control={control}
           name="courseCode"
           label="Podaj kod kursu"

@@ -1,9 +1,9 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { ITextFieldProps, TextField } from "@fluentui/react";
-import { HookFormProps } from "../../shared/Models";
+import { ITextFieldProps, TextField as FluentTextField } from "@fluentui/react";
+import { HookFormProps } from "../shared/Models";
 
-export const ControlledTextField: React.FC<HookFormProps<string> & ITextFieldProps> = (props) => {
+export const TextField: React.FC<HookFormProps<string> & ITextFieldProps> = (props) => {
   return (
     <Controller
       name={props.name}
@@ -14,7 +14,7 @@ export const ControlledTextField: React.FC<HookFormProps<string> & ITextFieldPro
         field: { onChange, onBlur, name: fieldName, value },
         fieldState: { error }
       }) => (
-        <TextField
+        <FluentTextField
           {...props}
           onChange={onChange}
           value={value}
@@ -28,4 +28,4 @@ export const ControlledTextField: React.FC<HookFormProps<string> & ITextFieldPro
   );
 };
 
-export default ControlledTextField;
+export default TextField;

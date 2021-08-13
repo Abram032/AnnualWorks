@@ -11,10 +11,10 @@ import {
 } from "@fluentui/react";
 import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
-import { CurrentUser } from "../../shared/Models";
-import { ThemePicker } from '../ThemePicker';
-import { AppSettings } from '../../AppSettings';
-import { RouteNames } from '../../shared/Consts';
+import { CurrentUser } from "../shared/Models";
+import { ThemePicker } from './ThemePicker';
+import { AppSettings } from '../AppSettings';
+import { RouteNames } from '../shared/Consts';
 
 interface MeControlProps {
   user: CurrentUser;
@@ -23,8 +23,6 @@ interface MeControlProps {
 export const MeControl: React.FC<MeControlProps> = (props) => {
   const [isCalloutVisible, { toggle: toggleCalloutIsVisible }] = useBoolean(false);
   const meButtonId = useId('me-button-id');
-
-  const stackTokens: IStackTokens = { childrenGap: 15 };
 
   const calloutButton = (
     <DefaultButton 
@@ -100,3 +98,10 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
 };
 
 export default MeControl;
+
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion
