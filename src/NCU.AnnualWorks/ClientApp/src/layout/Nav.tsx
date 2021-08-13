@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
 import { Stack } from "@fluentui/react";
-import NavHeader from "./NavHeader";
-import NavActions from "./NavActions";
-import NavLink from "./NavLink";
-import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import MeControl from "../meControl/MeControl";
-import { AppSettings } from "../../AppSettings";
-import { RouteNames } from "../../shared/consts/RouteNames";
-import NavLinks from "./NavLinks";
+import NavHeader from "../components/nav/NavHeader";
+import NavActions from "../components/nav/NavActions";
+import NavLink from "../components/nav/NavLink";
+import { AuthenticationContext } from "../shared/providers/AuthenticationProvider";
+import MeControl from "../components/meControl/MeControl";
+import { AppSettings } from "../AppSettings";
+import { RouteNames } from "../shared/consts/RouteNames";
+import NavLinks from "../components/nav/NavLinks";
 import { Route, useHistory } from "react-router";
-import { useDeadline } from "../../shared/hooks/DeadlineHooks";
+import { useDeadline } from "../shared/hooks/DeadlineHooks";
 
 //TODO: Clean up, move to env addresses
 //TODO: Fix links and routes with useHistory()
