@@ -1,32 +1,32 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { PeoplePicker, PeoplePickerProps } from "./PeoplePicker"
+import { Dropdown as FluentDropdown, IDropdownProps } from "@fluentui/react";
 import { HookFormProps } from "../../shared/Models";
-import { IPersonaProps } from "@fluentui/react";
 
-export const ControlledTagPicker: React.FC<HookFormProps<IPersonaProps[]> & PeoplePickerProps> = (props) => {
+export const Dropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props) => {
   return (
     <Controller
       name={props.name}
       control={props.control}
       rules={props.rules}
-      defaultValue={props.defaultValue || []}
+      defaultValue={props.defaultValue || ""}
       render={({
         field: { onChange, onBlur, name: fieldName, value },
         fieldState: { error }
       }) => (
-        <PeoplePicker
+        <FluentDropdown
           {...props}
-          name={fieldName}
-          onChange={(people) => onChange(people)}
+          onChange={(e, option) => {
+            onChange(option?.key);
+          }}
+          selectedKey={value}
           onBlur={onBlur}
-          selectedPeople={value}
+          key={fieldName}
           errorMessage={error && error.message}
-          defaultValue={props.defaultValue}
         />
       )}
     />
   );
 };
 
-export default ControlledTagPicker;
+export default Dropdown;

@@ -1,7 +1,9 @@
 import React from 'react';
 import { FontSizes, ITag, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme} from '@fluentui/react';
+import { Controller } from "react-hook-form";
+import { HookFormProps } from "../../shared/Models";
 
-export interface TagPickerProps {
+interface TagPickerProps {
   name: string;
   label: string;
   tags: ITag[];
@@ -15,7 +17,36 @@ export interface TagPickerProps {
   defaultValue?: ITag[],
 }
 
-export const TagPicker: React.FC<TagPickerProps> = (props) => {
+export const TagPicker: React.FC<HookFormProps<ITag[]> & TagPickerProps> = (props) => {
+  return (
+    <Controller
+      name={props.name}
+      control={props.control}
+      rules={props.rules}
+      defaultValue={props.defaultValue || []}
+      render={({
+        field: { onChange, onBlur, name: fieldName, value },
+        fieldState: { error }
+      }) => (
+        <TagPickerWrapper
+          {...props}
+          name={fieldName}
+          onChange={(tags) => onChange(tags)}
+          onBlur={onBlur}
+          selectedTags={value}
+          errorMessage={error && error.message}
+          defaultValue={props.defaultValue}
+        />
+      )}
+    />
+  );
+};
+
+export default TagPicker;
+
+//#region TagPickerWrapper
+
+export const TagPickerWrapper: React.FC<TagPickerProps> = (props) => {
   const onFilterChanged = (
     filter: string,
     selectedItems?: ITag[]
@@ -39,12 +70,16 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
     return props.tags.filter(t => !selectedItems?.includes(t));
   }
 
+  //#region Styles
+
   const theme = useTheme();
   const validationErrorStyles = mergeStyles({
     color: theme.semanticColors.errorText,
     fontSize: FontSizes.size12,
     marginTop: '5px'
   });
+
+  //#endregion
 
   return (
     <>
@@ -63,4 +98,4 @@ export const TagPicker: React.FC<TagPickerProps> = (props) => {
   )
 }
 
-export default TagPicker;
+//#endregion

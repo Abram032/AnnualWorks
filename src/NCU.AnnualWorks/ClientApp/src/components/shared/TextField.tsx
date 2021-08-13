@@ -1,9 +1,9 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { Dropdown as FluentDropdown, IDropdownProps } from "@fluentui/react";
-import { HookFormProps } from "../shared/Models";
+import { ITextFieldProps, TextField as FluentTextField } from "@fluentui/react";
+import { HookFormProps } from "../../shared/Models";
 
-export const Dropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props) => {
+export const TextField: React.FC<HookFormProps<string> & ITextFieldProps> = (props) => {
   return (
     <Controller
       name={props.name}
@@ -14,19 +14,18 @@ export const Dropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props
         field: { onChange, onBlur, name: fieldName, value },
         fieldState: { error }
       }) => (
-        <FluentDropdown
+        <FluentTextField
           {...props}
-          onChange={(e, option) => {
-            onChange(option?.key);
-          }}
-          selectedKey={value}
+          onChange={onChange}
+          value={value}
           onBlur={onBlur}
-          key={fieldName}
+          name={fieldName}
           errorMessage={error && error.message}
+          defaultValue={""}
         />
       )}
     />
   );
 };
 
-export default Dropdown;
+export default TextField;

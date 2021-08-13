@@ -1,12 +1,10 @@
 import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType, Dialog, DialogFooter, DialogType } from '@fluentui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import Tile from '../Tile';
 import { addActions } from '../../components/thesisActions/ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
-import { TextField } from '../TextField';
-import { Dropdown } from '../Dropdown';
+import { TextField, Dropdown, Tile } from '../../Components';
 import { useForm } from 'react-hook-form';
 import { answerRules, gradeRules, notRequiredAnswerRules } from './ThesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';

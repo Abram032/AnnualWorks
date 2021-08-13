@@ -1,7 +1,9 @@
+import React from "react";
+import { Controller } from "react-hook-form";
+import { HookFormProps } from "../../shared/Models";
 import { FontSizes, IBasePickerSuggestionsProps, IPersonaProps, Label, mergeStyles, NormalPeoplePicker, useTheme } from '@fluentui/react';
-import React from 'react';
 
-export interface PeoplePickerProps {
+interface PeoplePickerProps {
   name: string,
   label: string,
   people: IPersonaProps[],
@@ -18,16 +20,38 @@ export interface PeoplePickerProps {
   onFilterChanged?: (filter: string, selectedItems?: IPersonaProps[]) => IPersonaProps[] | Promise<IPersonaProps[]>
 };
 
-export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
-  const suggestionProps: IBasePickerSuggestionsProps = {
-    suggestionsHeaderText: 'Sugerowane osoby',
-    mostRecentlyUsedHeaderText: 'Sugerowane osoby',
-    noResultsFoundText: 'Brak wyników',
-    loadingText: 'Ładowanie',
-    showRemoveButtons: true,
-    suggestionsAvailableAlertText: 'Sugerowane osoby',
-    suggestionsContainerAriaLabel: 'Sugerowane osoby',
-  };
+
+export const PeoplePicker: React.FC<HookFormProps<IPersonaProps[]> & PeoplePickerProps> = (props) => {
+  return (
+    <Controller
+      name={props.name}
+      control={props.control}
+      rules={props.rules}
+      defaultValue={props.defaultValue || []}
+      render={({
+        field: { onChange, onBlur, name: fieldName, value },
+        fieldState: { error }
+      }) => (
+        <PeoplePickerWrapper
+          {...props}
+          name={fieldName}
+          onChange={(people) => onChange(people)}
+          onBlur={onBlur}
+          selectedPeople={value}
+          errorMessage={error && error.message}
+          defaultValue={props.defaultValue}
+        />
+      )}
+    />
+  );
+};
+
+export default PeoplePicker;
+
+
+//#region PeoplePickerWrapper
+
+const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
 
   const onFilterChanged = (
     filter: string,
@@ -51,12 +75,16 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
       .slice(0, props.maxSuggestions);
   }
 
+  //#region Styles
+
   const theme = useTheme();
   const validationErrorStyles = mergeStyles({
     color: theme.semanticColors.errorText,
     fontSize: FontSizes.size12,
     marginTop: '5px'
   });
+
+  //#endregion
 
   return (
     <>
@@ -79,4 +107,19 @@ export const PeoplePicker: React.FC<PeoplePickerProps> = (props) => {
   );
 }
 
-export default PeoplePicker;
+//#endregion
+
+
+//#region Suggestions
+
+const suggestionProps: IBasePickerSuggestionsProps = {
+  suggestionsHeaderText: 'Sugerowane osoby',
+  mostRecentlyUsedHeaderText: 'Sugerowane osoby',
+  noResultsFoundText: 'Brak wyników',
+  loadingText: 'Ładowanie',
+  showRemoveButtons: true,
+  suggestionsAvailableAlertText: 'Sugerowane osoby',
+  suggestionsContainerAriaLabel: 'Sugerowane osoby',
+};
+
+//#endregion

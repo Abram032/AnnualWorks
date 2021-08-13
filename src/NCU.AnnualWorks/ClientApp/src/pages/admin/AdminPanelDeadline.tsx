@@ -3,7 +3,7 @@ import AdminPanel from './AdminPanel';
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
 import { useCurrentTerm } from '../../shared/Hooks';
 import { useDeadline } from '../../shared/Hooks'; 
-import { DatePicker } from '../../components/DatePicker';
+import { DatePicker } from '../../components/shared/DatePicker';
 import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 

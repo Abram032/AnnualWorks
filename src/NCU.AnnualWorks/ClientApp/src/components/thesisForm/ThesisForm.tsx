@@ -16,14 +16,10 @@ import {
 } from "@fluentui/react";
 import React, { useEffect, useState } from "react";
 import { FilePickerOptions } from "../../shared/Models";
-import Tile from "../Tile";
 import { RouteNames } from "../../shared/Consts";
 import { useTagPicker, usePeoplePicker } from "../../shared/Hooks";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
-import { TextField } from "../TextField";
-import ControlledTagPicker from "../../components/tagPicker/ControlledTagPicker";
-import ControlledPeoplePicker from "../../components/peoplePicker/ControlledPeoplePicker";
-import { FilePicker } from "../FilePicker";
+import { TextField, TagPicker, PeoplePicker, FilePicker, Tile } from "../../Components";
 import { ThesisRequestData } from '../../shared/api/Api';
 import { Keyword, Thesis, User } from "../../shared/Models";
 import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
@@ -218,7 +214,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             />
           </StackItem>
           <StackItem>
-            <ControlledPeoplePicker
+            <PeoplePicker
               required={true}
               label="Autorzy"
               name="authors"
@@ -246,7 +242,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             <MessageBar messageBarType={MessageBarType.info}>Nowe słowa kluczowe oddzielane są średnikiem, a następnie wybierane z listy.</MessageBar>
           </StackItem>
           <StackItem>
-            <ControlledTagPicker
+            <TagPicker
               required={true}
               label="Słowa kluczowe"
               name={"tags"}
@@ -261,7 +257,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             />
           </StackItem>
           <StackItem>
-            <ControlledPeoplePicker
+            <PeoplePicker
               required={true}
               label="Recenzent"
               name="reviewer"

@@ -11,10 +11,10 @@ import {
 } from "@fluentui/react";
 import { useBoolean, useId } from "@fluentui/react-hooks";
 import React from "react";
-import { CurrentUser } from "../shared/Models";
+import { CurrentUser } from "../../shared/Models";
 import { ThemePicker } from './ThemePicker';
-import { AppSettings } from '../AppSettings';
-import { RouteNames } from '../shared/Consts';
+import { AppSettings } from '../../AppSettings';
+import { RouteNames } from '../../shared/Consts';
 
 interface MeControlProps {
   user: CurrentUser;

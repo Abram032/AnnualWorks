@@ -12,10 +12,10 @@ import {
   useTheme
 } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
-import { FilePickerOptions, HookFormProps } from '../shared/Models';
+import { FilePickerOptions, HookFormProps } from '../../shared/Models';
 import { Controller } from "react-hook-form";
 
-export interface FilePickerProps {
+interface FilePickerProps {
   id: string;
   name: string;
   required: boolean;
@@ -62,7 +62,7 @@ const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
   const theme = useTheme();
   
   //#region Styles
-  
+
   const stackTokens: IStackTokens = { childrenGap: 15 };
 
   const validationErrorStyles = mergeStyles({

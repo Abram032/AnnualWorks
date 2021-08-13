@@ -1,8 +1,8 @@
 import { Dropdown, FontSizes, Icon, IDropdownOption, IStackTokens, Label, mergeStyles, Stack, Toggle } from "@fluentui/react";
 import React, { useContext, useEffect, useState } from "react";
-import { PersonalizationContext } from "../shared/providers/PersonalizationProvider";
-import { ThemeNames, ThemeName } from '../shared/Consts';
-import { getThemeName } from '../themes/Themes';
+import { PersonalizationContext } from "../../shared/providers/PersonalizationProvider";
+import { ThemeNames, ThemeName } from '../../shared/Consts';
+import { getThemeName } from '../../themes/Themes';
 
 interface ThemePickerProps {
   useDropdown?: boolean;
