@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import User from '../../shared/models/User';
+import { User } from '../../shared/Models';
 import { IPersonaProps } from '@fluentui/react';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 

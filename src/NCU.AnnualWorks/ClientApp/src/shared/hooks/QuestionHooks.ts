@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import { Question } from '../models/Review';
+import { Question } from '../Models';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 export const useActiveQuestions = (): Question[] => {

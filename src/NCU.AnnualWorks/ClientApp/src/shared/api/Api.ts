@@ -2,8 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { useHistory } from 'react-router';
 import { CsrfNames } from '../Consts';
 import { RouteNames } from '../Consts';
-import Keyword from '../models/Keyword';
-import Review from '../models/Review';
+import { Keyword, Review } from '../Models';
 
 export const useApi = (): AxiosInstance => {
   const history = useHistory();

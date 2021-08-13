@@ -7,7 +7,7 @@ import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeop
 import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/Hooks';
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
-import User from "../../shared/models/User";
+import { User } from "../../shared/Models";
 import Loader from "../../components/Loader";
 
 export const AdminPanelAdministrators: React.FC = () => {

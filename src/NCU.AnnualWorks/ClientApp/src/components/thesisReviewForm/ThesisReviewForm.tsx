@@ -3,14 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import Tile from '../Tile';
 import { addActions } from '../../components/thesisActions/ThesisActions';
 import { RouteNames } from '../../shared/Consts';
-import { Review, Question } from '../../shared/models/Review';
+import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
 import ControlledTextField from '../textField/ControlledTextField';
 import ControlledDropdown from '../dropdown/ControlledDropdown';
 import { useForm } from 'react-hook-form';
 import { answerRules, gradeRules, notRequiredAnswerRules } from './ThesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
-import Thesis from '../../shared/models/Thesis';
 import { useHistory } from 'react-router-dom';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import { Course } from '../models/Course';
+import { Course } from '../Models';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 export const useCourse = (): Course | undefined => {

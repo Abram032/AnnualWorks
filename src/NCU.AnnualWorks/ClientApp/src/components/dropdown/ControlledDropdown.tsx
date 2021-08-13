@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { Dropdown, IDropdownProps } from "@fluentui/react";
-import { HookFormProps } from "../../shared/models/components/HookFormProps";
+import { HookFormProps } from "../../shared/Models";
 
 export const ControlledDropdown: React.FC<HookFormProps<string> & IDropdownProps> = (props) => {
   return (

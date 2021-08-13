@@ -25,9 +25,7 @@ import ControlledTagPicker from "../../components/tagPicker/ControlledTagPicker"
 import ControlledPeoplePicker from "../../components/peoplePicker/ControlledPeoplePicker";
 import ControlledFilePicker from "../../components/filePicker/ControlledFilePicker";
 import { ThesisRequestData } from '../../shared/api/Api';
-import Keyword from "../../shared/models/Keyword";
-import Thesis from "../../shared/models/Thesis";
-import User from "../../shared/models/User";
+import { Keyword, Thesis, User } from "../../shared/Models";
 import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
 import { AxiosResponse } from "axios";
 import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/utils/Mappers";

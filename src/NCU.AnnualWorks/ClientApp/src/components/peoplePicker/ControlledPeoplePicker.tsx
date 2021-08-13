@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { PeoplePicker, PeoplePickerProps } from "./PeoplePicker"
-import { HookFormProps } from "../../shared/models/components/HookFormProps";
+import { HookFormProps } from "../../shared/Models";
 import { IPersonaProps } from "@fluentui/react";
 
 export const ControlledTagPicker: React.FC<HookFormProps<IPersonaProps[]> & PeoplePickerProps> = (props) => {

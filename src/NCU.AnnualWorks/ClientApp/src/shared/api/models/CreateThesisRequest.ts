@@ -1,4 +1,4 @@
-import Keyword from '../../../shared/models/Keyword';
+import { Keyword } from '../../../shared/Models';
 
 export type CreateThesisRequest = {
   title: string,

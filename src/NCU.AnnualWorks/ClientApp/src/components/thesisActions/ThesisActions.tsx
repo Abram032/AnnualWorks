@@ -1,7 +1,7 @@
 import { ICommandBarItemProps, mergeStyles } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
 import { RouteNames } from "../../shared/Consts";
-import Thesis from "../../shared/models/Thesis";
+import { Thesis } from "../../shared/Models";
 
 interface ActionProps {
   iconOnly?: boolean;

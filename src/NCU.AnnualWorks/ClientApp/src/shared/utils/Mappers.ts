@@ -1,6 +1,5 @@
 import { IPersonaProps, ITag } from "@fluentui/react";
-import Keyword from "../models/Keyword";
-import User from "../models/User";
+import { Keyword, User } from "../Models";
 
 export const mapUserToPersona = (user: User): IPersonaProps => ({
   key: user.usosId,

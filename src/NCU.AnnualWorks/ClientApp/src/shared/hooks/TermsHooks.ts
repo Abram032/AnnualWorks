@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
-import Term from '../models/Term';
+import { Term } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 

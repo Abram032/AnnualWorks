@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
-import Keyword from '../models/Keyword';
+import { Keyword } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { ITag } from '@fluentui/react';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';

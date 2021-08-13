@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import Review from '../models/Review';
+import { Review } from '../Models';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
 export const useReview = (guid: string): [Review | undefined, boolean] => {

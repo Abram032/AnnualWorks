@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { StandardFilePicker, FilePickerProps } from "./FilePicker"
-import { HookFormProps } from "../../shared/models/components/HookFormProps";
+import { HookFormProps } from "../../shared/Models";
 
 export const ControlledFilePicker: React.FC<HookFormProps<FileList> & FilePickerProps> = (props) => {
   return (

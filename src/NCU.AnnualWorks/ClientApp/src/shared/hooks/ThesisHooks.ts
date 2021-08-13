@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useApi } from '../api/Api';
-import Thesis from '../models/Thesis';
+import { Thesis } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { AuthenticationContext } from '../providers/AuthenticationProvider';
 
