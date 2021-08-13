@@ -3,12 +3,10 @@ import { IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
 import Tile from '../../components/Tile';
 import ThesisList from '../../components/thesisList/ThesisList';
 import { RouteNames } from "../../shared/consts/RouteNames";
-import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses } from "../../shared/hooks/ThesisHooks";
+import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses, useDeadline, useCurrentTerm } from "../../shared/Hooks";
 import Loader from "../../components/Loader";
 import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
 import { Redirect, useHistory } from "react-router";
-import { useDeadline } from "../../shared/hooks/DeadlineHooks";
-import { useCurrentTerm } from "../../shared/hooks/TermsHooks";
 
 export const Home: React.FC = () => {
   const history = useHistory();

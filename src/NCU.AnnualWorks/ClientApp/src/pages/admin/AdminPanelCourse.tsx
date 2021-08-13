@@ -4,7 +4,7 @@ import { RouteNames } from "../../shared/consts/RouteNames";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";
-import { useCourse } from '../../shared/hooks/CourseHooks';
+import { useCourse } from '../../shared/Hooks';
 import ControlledTextField from "../../components/textField/ControlledTextField";
 import { useForm } from "react-hook-form";
 

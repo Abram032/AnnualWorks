@@ -9,7 +9,7 @@ import { AppSettings } from "../AppSettings";
 import { RouteNames } from "../shared/consts/RouteNames";
 import NavLinks from "../components/nav/NavLinks";
 import { Route, useHistory } from "react-router";
-import { useDeadline } from "../shared/hooks/DeadlineHooks";
+import { useDeadline } from "../shared/Hooks";
 
 //TODO: Clean up, move to env addresses
 //TODO: Fix links and routes with useHistory()

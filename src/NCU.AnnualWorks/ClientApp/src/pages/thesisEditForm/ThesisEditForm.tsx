@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
 import { FilePickerOptions } from '../../components/filePicker/FilePickerOptions';
 import { ThesisForm } from '../../components/thesisForm/ThesisForm';
-import { useThesis } from '../../shared/hooks/ThesisHooks';
-import { useKeywords } from '../../shared/hooks/KeywordHooks';
-import { useEmployees, useStudents } from '../../shared/hooks/UserHooks';
+import { useThesis, useKeywords,useEmployees, useStudents } from '../../shared/Hooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';

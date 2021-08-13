@@ -5,7 +5,7 @@ import { mapUsersToPersona } from "../../shared/utils/Mappers";
 import { IPersonaProps, IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
 import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeoplePicker';
-import { useCustomUsers, usePeoplePicker } from '../../shared/hooks/UserHooks';
+import { useCustomUsers, usePeoplePicker } from '../../shared/Hooks';
 import { SetCustomUsersRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import User from "../../shared/models/User";

@@ -5,7 +5,7 @@ import Loader from '../../components/Loader';
 import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
 import Tile from '../../components/Tile';
 import { RouteNames } from '../../shared/consts/RouteNames';
-import { useThesis } from '../../shared/hooks/ThesisHooks';
+import { useThesis } from '../../shared/Hooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
 import ReviewModal from '../../components/reviewModal/ReviewModal';
 import { useApi } from '../../shared/api/Api';

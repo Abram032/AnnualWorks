@@ -1,6 +1,6 @@
 import React from "react";
 import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
-import { useCourse } from "../../shared/hooks/CourseHooks";
+import { useCourse } from "../../shared/Hooks";
 
 export const HomeSignUp: React.FC = () => {
   const course = useCourse();
