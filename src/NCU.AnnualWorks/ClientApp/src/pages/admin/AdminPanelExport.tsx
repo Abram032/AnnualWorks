@@ -1,5 +1,5 @@
 import React from "react";
-import AdminPanel from './AdminPanel';
+import { AdminPanel } from '../../Components';
 import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { useExportState, useCurrentTerm } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";

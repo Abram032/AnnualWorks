@@ -1,9 +1,9 @@
 import React from 'react';
-import { ThesisReviewForm } from '../../components/thesisReviewForm/ThesisReviewForm';
+import { ReviewForm } from '../../Components';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useThesis, useActiveQuestions } from '../../shared/Hooks';
-import Loader from '../../components/Loader';
+import { Loader } from '../../Components';
 
 interface ThesisCreateReviewFormProps {
   thesisGuid: string
@@ -28,7 +28,7 @@ export const ThesisCreateReviewForm: React.FC<ThesisCreateReviewFormProps> = (pr
     api.post(AppSettings.API.Reviews.Base, data);
 
   return (
-    <ThesisReviewForm 
+    <ReviewForm 
       thesis={thesis}
       questions={questions}
       onSave={onSave}

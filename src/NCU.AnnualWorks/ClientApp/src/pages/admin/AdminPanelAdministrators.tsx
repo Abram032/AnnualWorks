@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import AdminPanel from './AdminPanel';
 import { mapUsersToPersona } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
-import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeoplePicker';
+import { PeoplePicker, AdminPanel, Loader } from '../../Components';
 import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/Hooks';
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { User } from "../../shared/Models";
-import Loader from "../../components/Loader";
 
 export const AdminPanelAdministrators: React.FC = () => {
   const admins = useAdmins();
@@ -122,7 +120,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
         />
       </StackItem>
       <StackItem tokens={tokens}>
-        <ControlledPeoplePicker
+        <PeoplePicker
           required={true}
           label="Administratorzy"
           name="administrators"

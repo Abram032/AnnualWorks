@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Loader from '../../components/Loader';
+import { Loader } from '../../Components';
 import { AppSettings } from '../../AppSettings';
 import { useApi } from '../../shared/api/Api';
 import { useHistory } from "react-router-dom";

@@ -1,24 +1,23 @@
 import { CommandBar, IStackTokens, Stack, StackItem, IDropdownOption, PrimaryButton, DefaultButton, MessageBar, MessageBarType, Dialog, DialogFooter, DialogType } from '@fluentui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { addActions } from '../../components/thesisActions/ThesisActions';
+import { addActions } from '../thesis/ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
 import { TextField, Dropdown, Tile } from '../../Components';
 import { useForm } from 'react-hook-form';
-import { answerRules, gradeRules, notRequiredAnswerRules } from './ThesisReviewFormRules';
 import { ReviewRequestData } from '../../shared/api/Api';
 import { useHistory } from 'react-router-dom';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 
-interface ThesisReviewFormProps {
+interface ReviewFormProps {
   thesis: Thesis,
   questions: Question[],
   onSave: (data: ReviewRequestData) => Promise<AxiosResponse<any>>;
   review?: Review,
 };
 
-export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
+export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
   const history = useHistory();
   const confirm = useRef<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -238,4 +237,4 @@ export const ThesisReviewForm: React.FC<ThesisReviewFormProps> = (props) => {
   )
 }
 
-export default ThesisReviewForm;
+export default ReviewForm;

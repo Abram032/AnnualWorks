@@ -1,11 +1,8 @@
 import React from 'react';
-import { ThesisReviewForm } from '../../components/thesisReviewForm/ThesisReviewForm';
+import { ReviewForm, Loader } from '../../Components';
 import { useActiveQuestions, useReview, useThesis } from '../../shared/Hooks';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
-import Loader from '../../components/Loader';
-import { Redirect } from 'react-router';
-import { RouteNames } from '../../shared/Consts';
 
 interface ThesisEditReviewFormProps {
   thesisGuid: string,
@@ -32,7 +29,7 @@ export const ThesisEditReviewForm: React.FC<ThesisEditReviewFormProps> = (props)
   api.put(`${AppSettings.API.Reviews.Base}/${review.guid}`, data);
 
   return (
-    <ThesisReviewForm 
+    <ReviewForm 
       review={review}
       thesis={thesis}
       questions={questions}

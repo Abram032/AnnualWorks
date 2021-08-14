@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogFooter,
   DialogType,
-  IDialogStyles,
   IPersonaProps,
   IStackTokens,
   ITag,
@@ -18,11 +17,11 @@ import React, { useEffect, useState } from "react";
 import { FilePickerOptions } from "../../shared/Models";
 import { RouteNames } from "../../shared/Consts";
 import { useTagPicker, usePeoplePicker } from "../../shared/Hooks";
-import { DeepMap, FieldError, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { TextField, TagPicker, PeoplePicker, FilePicker, Tile } from "../../Components";
 import { ThesisRequestData } from '../../shared/api/Api';
 import { Keyword, Thesis, User } from "../../shared/Models";
-import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormRules';
+import { titleRules, authorRules, abstractRules, tagsRules, reviewerRules, fileRules } from './ThesisFormValidationRules';
 import { AxiosResponse } from "axios";
 import { mapKeywordsToTags, mapTagsToKeywords, mapUsersToPersona, mapUserToPersona } from "../../shared/Utils";
 import { useHistory } from "react-router";

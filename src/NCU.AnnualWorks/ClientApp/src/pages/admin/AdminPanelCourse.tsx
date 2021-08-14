@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import AdminPanel from './AdminPanel';
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";
 import { useCourse } from '../../shared/Hooks';
-import { TextField } from "../../Components";
+import { TextField, AdminPanel } from "../../Components";
 import { useForm } from "react-hook-form";
 
 interface Form {

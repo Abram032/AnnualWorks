@@ -1,7 +1,7 @@
 import React from "react";
-import Tile from "../../components/Tile";
+import { Tile } from '../../Components';
 import { Stack, IStackTokens, IStackStyles, INavLinkGroup } from "@fluentui/react";
-import AdminNav from '../../components/AdminNav';
+import AdminNav from './AdminNav';
 import { RouteNames } from "../../shared/Consts";
 import { useHistory } from "react-router-dom";
 

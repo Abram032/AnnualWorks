@@ -1,15 +1,13 @@
-import { ComboBox, CommandBar, DefaultButton, DetailsRow, Dialog, DialogFooter, FontSizes, IColumn, ICommandBarItemProps, IconButton, IDropdownOption, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import {  CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React, { useContext, useState } from 'react';
-import { Redirect, useHistory } from 'react-router';
-import Loader from '../../components/Loader';
-import { addActions, editGradeAction } from '../../components/thesisActions/ThesisActions';
-import Tile from '../../components/Tile';
+import { useHistory } from 'react-router';
+import { addActions, editGradeAction } from '../../components/thesis/ThesisActions';
+import { Tile, Loader } from '../../Components';
 import { RouteNames } from '../../shared/Consts';
 import { useThesis } from '../../shared/Hooks';
 import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
-import ReviewModal from '../../components/reviewModal/ReviewModal';
-import { useApi } from '../../shared/api/Api';
-import ThesisGradeConfirmDialog from '../../components/thesisGradeConfirm/ThesisGradeConfirmDialog';
+import ReviewModal from '../../components/review/ReviewModal';
+import ThesisGradeConfirmDialog from '../../components/thesis/ThesisGradeConfirmDialog';
 import { useBoolean } from '@fluentui/react-hooks';
 
 interface ThesisDetailsProps {

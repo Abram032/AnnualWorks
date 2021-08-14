@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import AdminPanel from './AdminPanel';
 import { mapUsersToPersona } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
-import ControlledPeoplePicker from '../../components/peoplePicker/ControlledPeoplePicker';
+import { PeoplePicker, AdminPanel, Loader } from '../../Components';
 import { useCustomUsers, usePeoplePicker } from '../../shared/Hooks';
 import { SetCustomUsersRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { User } from "../../shared/Models";
-import Loader from "../../components/Loader";
 
 export const AdminPanelUsers: React.FC = () => {
   const customUsers = useCustomUsers();
@@ -109,7 +107,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
       {errorMessage ? errorMessageBar : null}
       {success ? successMessageBar : null}
       <StackItem tokens={tokens}>
-        <ControlledPeoplePicker
+        <PeoplePicker
           required={true}
           label="Użytkownicy niestandardowi"
           name="users"

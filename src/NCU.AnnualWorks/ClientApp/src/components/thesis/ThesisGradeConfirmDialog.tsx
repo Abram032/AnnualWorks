@@ -6,7 +6,7 @@ import { useHistory } from 'react-router';
 import { AppSettings } from '../../AppSettings';
 import { ConfirmGradeRequestData, useApi } from '../../shared/api/Api';
 import { RouteNames } from '../../shared/Consts';
-import { Dropdown } from '../Dropdown';
+import { Dropdown } from '../../Components';
 
 interface Form {
   grade: string

@@ -1,7 +1,19 @@
 import React from 'react';
 import { useReview } from '../../shared/Hooks';
-import { getTheme, IButtonStyles, IconButton, Modal, IIconProps, Stack, StackItem, Label, IStackStyles, FontSizes, useTheme, IModalStyles, mergeStyles } from '@fluentui/react';
-import { Loader } from '../Loader';
+import { 
+  IButtonStyles, 
+  IconButton,
+  Modal, 
+  IIconProps, 
+  Stack, 
+  StackItem, 
+  Label, 
+  IStackStyles, 
+  FontSizes, 
+  useTheme, 
+  mergeStyles 
+} from '@fluentui/react';
+import { Loader } from '../../Components';
 
 interface ReviewModalProps {
   guid: string,
@@ -34,6 +46,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     )
   };
 
+  //#region Styles
+
   const cancelIcon: IIconProps = { iconName: 'Cancel' };
   const iconButtonStyles: Partial<IButtonStyles> = {
     root: {
@@ -42,7 +56,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     rootHovered: {
       color: theme.palette.neutralDark,
     },
-  };
+  };  
   const contentStyles: Partial<IStackStyles> = {
     root: {
       padding: '2em',
@@ -51,6 +65,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
   const scrollableContent = mergeStyles({
     maxHeight: '100%',
   });
+
+  //#endregion
 
   return (
     <Modal
