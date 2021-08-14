@@ -16,11 +16,11 @@ export const NavHeader: React.FC<NavHeaderProps> = (props) => {
   return (
     <Stack className="nav-header" horizontal>
       <StackItem className="nav-header-title primary">
-        <NavHeaderLink label={props.primaryLabel} href={props.primaryHref} onClick={props.primaryOnClick}/>
+        <NavHeaderLink label={props.primaryLabel} href={props.primaryHref} onClick={props.primaryOnClick} />
       </StackItem>
       <NavSeparator />
       <StackItem className="nav-header-title secondary">
-        <NavHeaderLink label={props.secondarylabel} href={props.secondaryHref} onClick={props.secondaryOnClick}/>
+        <NavHeaderLink label={props.secondarylabel} href={props.secondaryHref} onClick={props.secondaryOnClick} />
       </StackItem>
     </Stack>
   );

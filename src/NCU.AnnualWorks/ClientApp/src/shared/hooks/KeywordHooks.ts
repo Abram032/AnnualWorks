@@ -9,10 +9,10 @@ export const useKeywords = (): Keyword[] => {
   const api = useApi();
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const authContext = useContext(AuthenticationContext);
-  
+
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 
@@ -38,7 +38,7 @@ export const useTagPicker = (keywords: Keyword[]): [ITag[], ITag[], (tags?: ITag
   }, [keywords]);
 
   const onChange = (tags?: ITag[]) => {
-    if(tags) {
+    if (tags) {
       setSelectedTags(tags);
     }
   };

@@ -1,14 +1,14 @@
-import { 
-  ActionButton, 
-  FontSizes, 
-  IconButton, 
-  IStackTokens, 
-  Label, 
-  mergeStyles, 
-  PrimaryButton, 
-  Stack, 
-  StackItem, 
-  TextField, 
+import {
+  ActionButton,
+  FontSizes,
+  IconButton,
+  IStackTokens,
+  Label,
+  mergeStyles,
+  PrimaryButton,
+  Stack,
+  StackItem,
+  TextField,
   useTheme
 } from '@fluentui/react';
 import React, { useEffect, useState } from 'react';
@@ -60,7 +60,7 @@ export default FilePicker;
 
 const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
   const theme = useTheme();
-  
+
   //#region Styles
 
   const stackTokens: IStackTokens = { childrenGap: 15 };
@@ -98,7 +98,7 @@ const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
 
 const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   const [inputElement, setInputElement] = useState<HTMLElement | null>(null);
-  
+
   //Set input element after first render
   useEffect(() => {
     setInputElement(document.getElementById(props.id));
@@ -114,15 +114,15 @@ const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   //Hidden input component that handles files
   //Custom component is rendered instead of default
   const hiddenInputButton = (
-    <input 
+    <input
       id={props.id}
-      type='file' 
+      type='file'
       name={props.name}
       accept={props.options?.allowedExtensions?.join(',') ?? '*'}
       multiple={props.multiple ?? false}
       aria-label="File picker"
       onChange={onChange}
-      style={{display: 'none'}}
+      style={{ display: 'none' }}
       hidden
     />
   );
@@ -132,9 +132,9 @@ const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   const button = (
     <>
       {hiddenInputButton}
-      <PrimaryButton 
-        label='Wybierz plik' 
-        text={props.label ?? "Wybierz plik"} 
+      <PrimaryButton
+        label='Wybierz plik'
+        text={props.label ?? "Wybierz plik"}
         onClick={() => inputElement?.click()}
       />
     </>
@@ -143,9 +143,9 @@ const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   const iconButton = (
     <>
       {hiddenInputButton}
-      <ActionButton 
+      <ActionButton
         iconProps={{ iconName: `${props.icon ?? 'Upload'}` }}
-        label='Wybierz plik' 
+        label='Wybierz plik'
         text={props.label ?? "Wybierz plik"}
         onClick={() => inputElement?.click()}
       />
@@ -155,7 +155,7 @@ const CustomFilePicker: React.FC<FilePickerProps> = (props) => {
   const iconOnlyButton = (
     <>
       {hiddenInputButton}
-      <IconButton 
+      <IconButton
         iconProps={{ iconName: `${props.icon ?? 'Upload'}` }}
         label='Wybierz plik'
         onClick={() => inputElement?.click()}

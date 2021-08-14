@@ -9,18 +9,18 @@ export const useExportState = (termId: string | undefined): boolean | undefined 
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 
-    if(termId) {
+    if (termId) {
       api.get<boolean>(`${AppSettings.API.Export.State}?termId=${termId}`)
-      .then(response => {
-        setValid(response.data);
-      })
-      .catch(error => {
-        //console.error(error);
-      });
+        .then(response => {
+          setValid(response.data);
+        })
+        .catch(error => {
+          //console.error(error);
+        });
     }
   }, [termId, authContext.isAuthenticated]);
 

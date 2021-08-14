@@ -11,7 +11,7 @@ export const useReview = (guid: string): [Review | undefined, boolean] => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       setIsFetching(false);
       return;
     }

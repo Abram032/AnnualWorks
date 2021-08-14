@@ -23,8 +23,7 @@ export const AuthenticationProvider: React.FC = (props) => {
 
   useEffect(() => {
     const userToken = cookies[CookieNames.user];
-    try
-    {
+    try {
       const userClaims = jwtDecode<UserClaims>(userToken);
       setCurrentUser({
         id: userClaims.Id,
@@ -33,7 +32,7 @@ export const AuthenticationProvider: React.FC = (props) => {
         isParticipant: (userClaims.IsParticipant.toLowerCase() === 'true'),
         isLecturer: (userClaims.IsLecturer.toLowerCase() === 'true'),
         isAdmin: (userClaims.IsAdmin.toLowerCase() === 'true'),
-        isCustom: (userClaims.IsCustom .toLowerCase()=== 'true'),
+        isCustom: (userClaims.IsCustom.toLowerCase() === 'true'),
         email: userClaims.Email,
       });
       setIsAuthenticated(!!userClaims.Id);

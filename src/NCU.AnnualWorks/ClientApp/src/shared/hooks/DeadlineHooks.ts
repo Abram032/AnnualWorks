@@ -9,7 +9,7 @@ export const useDeadline = (): Date | undefined => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 

@@ -12,7 +12,7 @@ export const Nav: React.FC = () => {
   const history = useHistory();
   const deadline = useDeadline();
 
-  const actions = isAuthenticated && currentUser ? 
+  const actions = isAuthenticated && currentUser ?
     <MeControl user={currentUser!} /> :
     <NavLink label="Zaloguj się" href={RouteNames.signIn} />;
 

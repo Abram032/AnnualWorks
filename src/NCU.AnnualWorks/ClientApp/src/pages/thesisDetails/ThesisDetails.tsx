@@ -21,7 +21,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [thesis, isFetching] = useThesis(props.guid);
   const [isPromoterReviewVisible, setIsPromoterReviewVisible] = useState<boolean>(false);
   const [isReviewerReviewVisible, setIsReviewerReviewVisible] = useState<boolean>(false);
-  const [confirmDialog, { toggle: toggleConfirmDialog }] = useBoolean(true);
+  const [confirmDialogIsVisible, { toggle: toggleConfirmDialogIsVisible }] = useBoolean(true);
 
   if(isFetching || !thesis) {
     return <Loader size='medium' label={"Ładowanie..."} />
@@ -33,11 +33,11 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   // }
   
   //Adding available actions
-  const actionItems: ICommandBarItemProps[] = addActions(thesis, history, false);
+  const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
   if(thesis?.actions.canEditGrade) {
     actionItems.push(editGradeAction({
       iconOnly: false,
-      onClick: () => toggleConfirmDialog()
+      onClick: () => toggleConfirmDialogIsVisible()
     }))
   }
 
@@ -163,7 +163,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
     <Stack className={containerStyles} tokens={containerStackTokens}>
       <Tile title={thesis?.title}>
         {thesis?.promoterReview?.grade && thesis?.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
-        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialog} setIsVisible={toggleConfirmDialog} />
+        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} toggleIsVisible={toggleConfirmDialogIsVisible} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar

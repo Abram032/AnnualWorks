@@ -11,7 +11,7 @@ interface ThemePickerProps {
 export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
   const context = useContext(PersonalizationContext);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(
-    context.themeName === ThemeNames.dark || 
+    context.themeName === ThemeNames.dark ||
     context.themeName === ThemeNames.darkHighContrast
   );
   const [isHighContrast, setIsHighContrast] = useState<boolean>(
@@ -29,9 +29,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
     context.switchTheme(currentTheme);
   }, [currentTheme]);
 
-  
-  if(props.useDropdown)
-  {
+
+  if (props.useDropdown) {
     return (
       <Dropdown
         dropdownWidth={'auto'}
@@ -49,26 +48,26 @@ export const ThemePicker: React.FC<ThemePickerProps> = (props) => {
     <Stack tokens={stackTokens}>
       <Stack verticalAlign='center' tokens={stackTokens} horizontal>
         <Label>Motyw:</Label>
-        <Icon className={iconStyles} iconName='Sunny'/>
-        <Toggle 
-          className={toggleStyles} 
-          defaultChecked={isDarkMode} 
-          onClick={() => setIsDarkMode(!isDarkMode)} 
+        <Icon className={iconStyles} iconName='Sunny' />
+        <Toggle
+          className={toggleStyles}
+          defaultChecked={isDarkMode}
+          onClick={() => setIsDarkMode(!isDarkMode)}
         />
-        <Icon className={iconStyles} iconName='ClearNight'/>
+        <Icon className={iconStyles} iconName='ClearNight' />
       </Stack>
       <Stack verticalAlign='center' tokens={stackTokens} horizontal>
         <Label>Wysoki kontrast:</Label>
-        <Icon className={iconStyles} iconName='CircleRing'/>
+        <Icon className={iconStyles} iconName='CircleRing' />
         <Toggle
           className={toggleStyles}
-          defaultChecked={isHighContrast} 
-          onClick={() => setIsHighContrast(!isHighContrast)} 
+          defaultChecked={isHighContrast}
+          onClick={() => setIsHighContrast(!isHighContrast)}
         />
-        <Icon className={iconStyles} iconName='Contrast'/>
+        <Icon className={iconStyles} iconName='Contrast' />
       </Stack>
     </Stack>
-    );
+  );
 };
 
 export default ThemePicker;

@@ -8,5 +8,5 @@ export const mapUserToPersona = (user: User): IPersonaProps => ({
   imageUrl: user.photoUrl,
 })
 
-export const mapUsersToPersona = (users: User[]): IPersonaProps[] => 
+export const mapUsersToPersona = (users: User[]): IPersonaProps[] =>
   users.map<IPersonaProps>(u => mapUserToPersona(u));

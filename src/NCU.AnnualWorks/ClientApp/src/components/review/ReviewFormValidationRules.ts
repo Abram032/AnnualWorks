@@ -1,6 +1,6 @@
 import { RegisterOptions } from "react-hook-form";
 
-export const answerRules = (isRequired: boolean): RegisterOptions => {  
+export const answerRules = (isRequired: boolean): RegisterOptions => {
   const validators: RegisterOptions = {
     validate: (value: string) => {
       if (value.length > 2500) {
@@ -8,10 +8,10 @@ export const answerRules = (isRequired: boolean): RegisterOptions => {
       }
     }
   };
-  if(isRequired) {
+  if (isRequired) {
     validators.required = "Odpowiedź jest wymagana";
   }
-  
+
   return validators;
 };
 

@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
       <Link href={AppSettings.Urls.InstituteOfPsychology}>Instytut Psychologii</Link>
       <Link href={RouteNames.privacy}>Prywatność</Link>
       <Link href={RouteNames.about}>O stronie</Link>
-      <ThemePicker useDropdown/>
+      <ThemePicker useDropdown />
     </Stack>
   );
 };

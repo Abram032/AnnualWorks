@@ -3,7 +3,7 @@ import { DatePicker as FluentDatePicker, DayOfWeek, IDatePickerProps, IDatePicke
 
 export const DatePicker: React.FC<IDatePickerProps> = (props) => {
   return (
-    <FluentDatePicker 
+    <FluentDatePicker
       {...props}
       firstDayOfWeek={DayOfWeek.Monday}
       formatDate={(date) => date ? date.toLocaleDateString() : ""}

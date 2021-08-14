@@ -11,8 +11,8 @@ export const NavLinks: React.FC = (props) => {
 
 export default NavLinks;
 
-  //#region Styles
+//#region Styles
 
-  const stackTokens: IStackTokens = { childrenGap: 50 }
+const stackTokens: IStackTokens = { childrenGap: 50 }
 
-  //#endregion
+//#endregion

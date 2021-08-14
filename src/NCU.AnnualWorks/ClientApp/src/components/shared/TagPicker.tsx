@@ -1,5 +1,5 @@
 import React from 'react';
-import { FontSizes, ITag, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme} from '@fluentui/react';
+import { FontSizes, ITag, Label, mergeStyles, TagPicker as FluentTagPicker, useTheme } from '@fluentui/react';
 import { Controller } from "react-hook-form";
 import { HookFormProps } from "../../shared/Models";
 
@@ -51,7 +51,7 @@ export const TagPickerWrapper: React.FC<TagPickerProps> = (props) => {
     filter: string,
     selectedItems?: ITag[]
   ): ITag[] | Promise<ITag[]> => {
-    if(filter.endsWith(props.separator ?? ' ')) {
+    if (filter.endsWith(props.separator ?? ' ')) {
       const value = filter.slice(0, filter.length - 1);
       const tag: ITag = {
         key: value,
@@ -84,7 +84,7 @@ export const TagPickerWrapper: React.FC<TagPickerProps> = (props) => {
   return (
     <>
       <Label required={props.required}>{props.label}</Label>
-      <FluentTagPicker 
+      <FluentTagPicker
         key={props.name}
         itemLimit={props.itemLimit}
         onEmptyResolveSuggestions={onEmptyFilter}

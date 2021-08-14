@@ -10,12 +10,12 @@ interface AuthenticatedWrapper {
 
 export const AuthenticatedWrapper: React.FC<AuthenticatedWrapper> = (props) => {
   const isAuthenticated = useIsAuthenticated();
-  
-  if(isAuthenticated === null) {
+
+  if (isAuthenticated === null) {
     return !props.useLoader ? null : <Loader />;
   }
 
-  if(!isAuthenticated) {
+  if (!isAuthenticated) {
     return <Redirect to={RouteNames.signIn} />
   }
 

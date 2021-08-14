@@ -2,21 +2,21 @@ import { DefaultButton, Dialog, DialogFooter, DialogType, PrimaryButton } from '
 import { useId } from '@fluentui/react-hooks';
 import React from 'react';
 
-interface ReviewFormConfirmDialogProps {
+interface ThesisFormConfirmDialogProps {
   isVisible: boolean,
   toggleIsVisible: () => void,
   onConfirm: () => void,
   onSave: () => void
 };
 
-export const ReviewFormConfirmDialog: React.FC<ReviewFormConfirmDialogProps> = (props) => {
-  const labelId: string = useId('ReviewFormConfirmDialogLabelId');
-  const subTextId: string = useId('ReviewFormConfirmDialogSubTextId');
+export const ThesisFormConfirmDialog: React.FC<ThesisFormConfirmDialogProps> = (props) => {
+  const labelId: string = useId('ThesisFormConfirmDialogLabelId');
+  const subTextId: string = useId('ThesisFormConfirmDialogSubTextId');
   const dialogContentProps = {
     type: DialogType.normal,
-    title: 'Zatwierdzanie recenzji',
+    title: 'Zapis pracy',
     closeButtonAriaLabel: 'Close',
-    subText: 'Czy jesteś pewien, że chcesz zatwierdzić swoją recenzję? Po zatwierdzeniu nie ma możliwości jej dalszej edycji oraz edycji pracy.',
+    subText: 'Czy jesteś pewien, że chcesz zapisać pracę i rozpocząć proces recenzji? Po zatwierdzeniu pierwszej recenzji nie ma możliwości dalszej edycji pracy.',
   };
   const modalProps = React.useMemo(
     () => ({
@@ -38,7 +38,7 @@ export const ReviewFormConfirmDialog: React.FC<ReviewFormConfirmDialogProps> = (
         <PrimaryButton onClick={() => {
           props.toggleIsVisible();
           props.onConfirm();
-        }} text="Zapisz i zatwierdź" />
+        }} text="Zapisz i zrecenzuj" />
         <DefaultButton onClick={() => {
           props.toggleIsVisible();
           props.onSave();

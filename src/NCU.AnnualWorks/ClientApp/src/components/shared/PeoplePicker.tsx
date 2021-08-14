@@ -8,7 +8,7 @@ interface PeoplePickerProps {
   label: string,
   people: IPersonaProps[],
   selectedPeople: IPersonaProps[],
-  onChange?: (people?: IPersonaProps[]) => void, 
+  onChange?: (people?: IPersonaProps[]) => void,
   onBlur?: () => void,
   peopleLimit?: number,
   maxSuggestions?: number,
@@ -57,13 +57,13 @@ const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
     filter: string,
     selectedItems?: IPersonaProps[]
   ): IPersonaProps[] | Promise<IPersonaProps[]> => {
-    
+
     return props.people.filter(p => (
-      p.text?.toLowerCase().includes(filter.toLowerCase()) || 
+      p.text?.toLowerCase().includes(filter.toLowerCase()) ||
       p.secondaryText?.toLowerCase().includes(filter.toLowerCase())
     ) && !selectedItems?.includes(p))
-    .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
-    .slice(0, props.maxSuggestions);
+      .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
+      .slice(0, props.maxSuggestions);
   };
 
   const onEmptyFilter = (

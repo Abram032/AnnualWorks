@@ -7,7 +7,7 @@ export const useIsAuthenticated = (): boolean | null => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if(!authContext.isFetching) {
+    if (!authContext.isFetching) {
       authContext.isAuthenticated ? setIsAuthenticated(true) : setIsAuthenticated(false);
     }
   }, [authContext.isAuthenticated, authContext.isFetching]);
@@ -20,7 +20,7 @@ export const useCurrentUser = (): CurrentUser | null => {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
-    if(!authContext.isFetching) {
+    if (!authContext.isFetching) {
       authContext.currentUser ? setCurrentUser(authContext.currentUser) : setCurrentUser(null);
     }
   }, [authContext.currentUser, authContext.isFetching]);

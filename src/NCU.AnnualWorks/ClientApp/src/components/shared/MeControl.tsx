@@ -25,21 +25,21 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
   const meButtonId = useId('me-button-id');
 
   const calloutButton = (
-    <DefaultButton 
-        id={meButtonId}
-        onClick={toggleCalloutIsVisible}
-        className='me-control-button' 
-        text={props.user.name}
-      >
-        <Persona
-          imageUrl={props.user.avatarUrl}
-          imageInitials={props.user.name
-            .split(" ")
-            .map((s) => s.charAt(0))
-            .join("")}
-          size={PersonaSize.size40}
-        />
-      </DefaultButton>
+    <DefaultButton
+      id={meButtonId}
+      onClick={toggleCalloutIsVisible}
+      className='me-control-button'
+      text={props.user.name}
+    >
+      <Persona
+        imageUrl={props.user.avatarUrl}
+        imageInitials={props.user.name
+          .split(" ")
+          .map((s) => s.charAt(0))
+          .join("")}
+        size={PersonaSize.size40}
+      />
+    </DefaultButton>
   );
 
   const calloutContent = (
@@ -53,7 +53,7 @@ export const MeControl: React.FC<MeControlProps> = (props) => {
         />
       </Stack>
       <Stack.Item tokens={stackTokens}>
-      <Persona
+        <Persona
           imageUrl={props.user.avatarUrl}
           text={props.user.name}
           secondaryText={props.user.email}

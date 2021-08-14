@@ -1,17 +1,17 @@
 import React from 'react';
 import { useReview } from '../../shared/Hooks';
-import { 
-  IButtonStyles, 
+import {
+  IButtonStyles,
   IconButton,
-  Modal, 
-  IIconProps, 
-  Stack, 
-  StackItem, 
-  Label, 
-  IStackStyles, 
-  FontSizes, 
-  useTheme, 
-  mergeStyles 
+  Modal,
+  IIconProps,
+  Stack,
+  StackItem,
+  Label,
+  IStackStyles,
+  FontSizes,
+  useTheme,
+  mergeStyles
 } from '@fluentui/react';
 import { Loader } from '../../Components';
 
@@ -36,12 +36,12 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
 
   const form = (
     <StackItem>
-      <Label style={{fontSize: FontSizes.size20}}>Recenzja - {props.person}</Label>
+      <Label style={{ fontSize: FontSizes.size20 }}>Recenzja - {props.person}</Label>
       {qnas}
       <Label>Ocena: {review?.grade}</Label>
     </StackItem>
   );
-  
+
   //#region Styles
 
   const cancelIcon: IIconProps = { iconName: 'Cancel' };
@@ -52,7 +52,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
     rootHovered: {
       color: theme.palette.neutralDark,
     },
-  };  
+  };
   const contentStyles: Partial<IStackStyles> = {
     root: {
       padding: '2em',
@@ -66,23 +66,23 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
 
   return (
     <Modal
-        isOpen={props.isModalVisible}
-        className='review-modal'
-      >
-        <Stack horizontalAlign="end" horizontal>
-          <StackItem styles={{ root: { marginLeft: "auto"} }}>
-            <IconButton
-              styles={iconButtonStyles}
-              iconProps={cancelIcon}
-              ariaLabel="Close popup modal"
-              onClick={() => props.setModalVisible(false)}
-            />
-          </StackItem>
-        </Stack>
-        <Stack styles={contentStyles}>
-          {!isFetching ? form : loader}
-        </Stack>
-      </Modal>
+      isOpen={props.isModalVisible}
+      className='review-modal'
+    >
+      <Stack horizontalAlign="end" horizontal>
+        <StackItem styles={{ root: { marginLeft: "auto" } }}>
+          <IconButton
+            styles={iconButtonStyles}
+            iconProps={cancelIcon}
+            ariaLabel="Close popup modal"
+            onClick={() => props.setModalVisible(false)}
+          />
+        </StackItem>
+      </Stack>
+      <Stack styles={contentStyles}>
+        {!isFetching ? form : loader}
+      </Stack>
+    </Modal>
   );
 };
 

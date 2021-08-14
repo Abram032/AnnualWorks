@@ -10,7 +10,7 @@ export const useCourse = (): Course | undefined => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 

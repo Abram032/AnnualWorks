@@ -1,4 +1,4 @@
-import { DefaultButton, Dialog, DialogFooter, DialogType, IDropdownOption, MessageBar, MessageBarType, PrimaryButton } from '@fluentui/react';
+import { DefaultButton, Dialog, DialogFooter, DialogType, MessageBar, MessageBarType, PrimaryButton } from '@fluentui/react';
 import { useId } from '@fluentui/react-hooks';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -7,15 +7,17 @@ import { AppSettings } from '../../AppSettings';
 import { ConfirmGradeRequestData, useApi } from '../../shared/api/Api';
 import { RouteNames } from '../../shared/Consts';
 import { Dropdown } from '../../Components';
+import { Grade, GradeList } from '../../shared/Models';
+import { mapGradesToDropdownOptions } from '../../shared/Utils';
 
 interface Form {
-  grade: string
+  grade: Grade
 }
 
 interface ThesisGradeConfirmDialogProps {
   guid: string,
   isVisible: boolean,
-  setIsVisible: () => void
+  toggleIsVisible: () => void
 }
 
 export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> = (props) => {
@@ -25,8 +27,8 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
-  const labelId: string = useId('confirmDialogLabelId');
-  const subTextId: string = useId('confirmDialogSubtextId');
+  const labelId: string = useId('ThesisGradeConfirmDialogLabelId');
+  const subTextId: string = useId('ThesisGradeConfirmDialogSubTextId');
   const dialogContentProps = {
     type: DialogType.normal,
     title: 'Wystaw ocenę',
@@ -46,9 +48,6 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
     mode: "all",
   });
 
-  const gradeValues = ['2', '3', '3.5', '4', '4.5', '5'];
-  const grades: IDropdownOption[] = gradeValues.map<IDropdownOption>(g => ({ key: g, text: g }));
-
   const onSave = () => {
     handleSubmit(
       (values) => {
@@ -56,14 +55,14 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
           grade: values.grade
         };
         api.post(`${AppSettings.API.Theses.Grade}/${props.guid}`, body)
-        .then(res => {
-          setUploadSuccess(true);
-          props.setIsVisible();
-          history.push(RouteNames.detailsPath(props.guid));
-        })
-        .catch(err => {
-          setErrorMessage(err.data);
-        })
+          .then(res => {
+            setUploadSuccess(true);
+            props.toggleIsVisible();
+            history.push(RouteNames.detailsPath(props.guid));
+          })
+          .catch(err => {
+            setErrorMessage(err.data);
+          })
       },
       (err) => {
         console.log(err);
@@ -86,7 +85,7 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
   return (
     <Dialog
       hidden={props.isVisible}
-      onDismiss={props.setIsVisible}
+      onDismiss={props.toggleIsVisible}
       dialogContentProps={dialogContentProps}
       modalProps={modalProps}
     >
@@ -103,12 +102,12 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
           required: "Ocena jest wymagana."
         }}
         placeholder='Wybierz ocenę'
-        options={grades}
+        options={mapGradesToDropdownOptions(GradeList)}
         required
       />
       <DialogFooter>
         <PrimaryButton onClick={onSave} text="Zatwierdź" />
-        <DefaultButton onClick={props.setIsVisible} text="Anuluj" />
+        <DefaultButton onClick={props.toggleIsVisible} text="Anuluj" />
       </DialogFooter>
     </Dialog>
   );

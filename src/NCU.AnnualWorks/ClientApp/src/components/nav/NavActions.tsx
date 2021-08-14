@@ -11,8 +11,8 @@ export const NavActions: React.FC = (props) => {
 
 export default NavActions;
 
-  //#region Styles
+//#region Styles
 
-  const stackTokens: IStackTokens = { childrenGap: 15 }
-  
-  //#endregion
+const stackTokens: IStackTokens = { childrenGap: 15 }
+
+//#endregion

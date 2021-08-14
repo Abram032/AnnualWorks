@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { useHistory } from 'react-router';
 import { CsrfNames } from '../Consts';
 import { RouteNames } from '../Consts';
-import { Keyword, Review } from '../Models';
+import { Keyword, Review, Grade } from '../Models';
 
 export const useApi = (): AxiosInstance => {
   const history = useHistory();
@@ -12,7 +12,7 @@ export const useApi = (): AxiosInstance => {
   });
 
   api.interceptors.response.use(response => response, error => {
-    switch(error.response.status) {
+    switch (error.response.status) {
       case 400:
       case 409:
       case 500:
@@ -20,7 +20,7 @@ export const useApi = (): AxiosInstance => {
       case 403:
       case 404:
         throw error.response;
-        //Only logging errors to show prompt to user.
+      //Only logging errors to show prompt to user.
       // case 401:
       //   return history.push(RouteNames.signIn);
       // case 403:
@@ -28,7 +28,7 @@ export const useApi = (): AxiosInstance => {
       // case 404:
       //   return history.push(RouteNames.notFound);
       default:
-        //return history.push(RouteNames.error);
+      //return history.push(RouteNames.error);
     }
   });
 
@@ -45,7 +45,7 @@ export interface ThesisRequestData {
 export interface ReviewRequestData {
   thesisGuid: string,
   qnAs: Record<number, string>,
-  grade: string,
+  grade: Grade,
   isConfirmed: boolean,
 }
 

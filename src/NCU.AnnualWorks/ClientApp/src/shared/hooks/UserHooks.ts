@@ -11,7 +11,7 @@ const useUsers = <T>(endpoint: string, query?: string) => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 
@@ -49,7 +49,7 @@ export const usePeoplePicker = (users: User[], excludedIds?: any[]): [IPersonaPr
   }, [users]);
 
   const onChange = (people?: IPersonaProps[]) => {
-    if(people) {
+    if (people) {
       setSelectedPeople(people);
     }
   };

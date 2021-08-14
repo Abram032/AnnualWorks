@@ -16,9 +16,9 @@ interface IPersonalizationContext {
 
 export const PersonalizationContext = React.createContext<IPersonalizationContext>({
   themeName: ThemeNames.light,
-  switchTheme: (themeName: ThemeName) => {},
+  switchTheme: (themeName: ThemeName) => { },
   languageName: LanguageNames.Polish,
-  switchLanguage: (languageName: LanguageName) => {}
+  switchLanguage: (languageName: LanguageName) => { }
 });
 
 export const PersonalizationProvider: React.FC = (props) => {
@@ -35,10 +35,10 @@ export const PersonalizationProvider: React.FC = (props) => {
   const saveLanguageSettings = (language: LanguageName) => {
     setCookie(CookieNames.language, language, defaultCookieOptions);
   }
-  
+
   const [theme, setTheme] = useState<ThemeName>(() => {
     const themeName = cookies[CookieNames.theme];
-    if(!themeName) {
+    if (!themeName) {
       saveThemeSettings(ThemeNames.light);
       return ThemeNames.light;
     }
@@ -54,7 +54,7 @@ export const PersonalizationProvider: React.FC = (props) => {
   const { i18n } = useTranslation();
   const [language, setLanguage] = useState<LanguageName>(() => {
     const languageName = cookies[CookieNames.language];
-    if(!languageName) {
+    if (!languageName) {
       saveLanguageSettings(LanguageNames.Polish);
       return LanguageNames.Polish;
     };

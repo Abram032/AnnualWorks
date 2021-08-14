@@ -11,11 +11,11 @@ interface LanguagePickerProps {
 export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
   const context = useContext(PersonalizationContext);
   const [language, setLanguage] = useState<LanguageName>(context.languageName);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const switchLanguage = () => {
-    language === LanguageNames.Polish ? 
-      setLanguage(LanguageNames.English) : 
+    language === LanguageNames.Polish ?
+      setLanguage(LanguageNames.English) :
       setLanguage(LanguageNames.Polish)
   };
 
@@ -23,12 +23,12 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
     context.switchLanguage(language);
   }, [language]);
 
-  
-  if(props.useDropdown) {
+
+  if (props.useDropdown) {
     return (
       <Stack horizontal verticalAlign='center' tokens={stackTokens}>
         <Icon iconName='Globe' />
-        <Dropdown 
+        <Dropdown
           selectedKey={context.languageName}
           options={dropdownOptions}
           onChange={(event, item) => {
@@ -45,15 +45,15 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = (props) => {
       <Stack verticalAlign='center' tokens={stackTokens} horizontal>
         <Label>{t('language')}:</Label>
         <Label>Polski</Label>
-        <Toggle 
+        <Toggle
           className={toggleStyles}
-          defaultChecked={language === LanguageNames.English} 
-          onClick={switchLanguage} 
+          defaultChecked={language === LanguageNames.English}
+          onClick={switchLanguage}
         />
         <Label>English</Label>
       </Stack>
     </Stack>
-    );
+  );
 };
 
 export default LanguagePicker;

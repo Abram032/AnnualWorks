@@ -3,7 +3,6 @@ import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, Link, Selec
 import { addActions } from './ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Thesis } from '../../shared/Models';
-import { useHistory } from 'react-router-dom';
 
 interface ThesisListProps {
   title: string,
@@ -13,7 +12,6 @@ interface ThesisListProps {
 }
 
 export const ThesisList: React.FC<ThesisListProps> = (props) => {
-  const history = useHistory();
   const groups: IGroup[] = [{
     key: props.title,
     name: props.title,
@@ -34,18 +32,13 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'title':
-        if(item.actions.canView) {
-          return <Link 
-            style={{fontSize: FontSizes.size16}} 
-            //href={RouteNames.detailsPath(item.guid)} 
-            onClick={() => history.push(RouteNames.detailsPath(item.guid))}>
-              {item.title}
-            </Link>
+        if (item.actions.canView) {
+          return <Link style={{ fontSize: FontSizes.size16 }} href={RouteNames.detailsPath(item.guid)}>{item.title}</Link>
         } else {
           return <Label>{item.title}</Label>
         }
       case 'actions':
-        const actionItems = addActions(item, history, true);
+        const actionItems = addActions(item, true);
         return (
           <CommandBar
             className='theses-simple-list-actions'
@@ -58,7 +51,7 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
   };
 
   return (
-    <DetailsList 
+    <DetailsList
       className='theses-simple-list'
       items={props.items}
       columns={columns}

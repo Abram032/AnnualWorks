@@ -13,7 +13,7 @@ export const AdminNav: React.FC<AdminNavProps> = (props) => {
 
   function onClick(ev?: React.MouseEvent<HTMLElement>, item?: INavLink) {
     ev?.preventDefault();
-    if(item) {
+    if (item) {
       history.push(item.url);
     }
   }

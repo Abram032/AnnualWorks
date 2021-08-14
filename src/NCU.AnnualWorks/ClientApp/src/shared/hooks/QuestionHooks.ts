@@ -10,7 +10,7 @@ export const useActiveQuestions = (): Question[] => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       return;
     }
 

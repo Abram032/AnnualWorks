@@ -11,7 +11,7 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       setIsFetching(false);
       return;
     }
@@ -38,7 +38,7 @@ const useTheses = (endpoint: string): [Thesis[], boolean] => {
   const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if(!authContext.isAuthenticated) {
+    if (!authContext.isAuthenticated) {
       setIsFetching(false);
       return;
     }

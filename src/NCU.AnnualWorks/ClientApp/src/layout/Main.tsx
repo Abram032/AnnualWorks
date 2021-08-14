@@ -11,7 +11,7 @@ export const Main: React.FC = (props) => {
   })
 
   //#endregion
-  
+
   return (
     <main className={style}>
       {props.children}

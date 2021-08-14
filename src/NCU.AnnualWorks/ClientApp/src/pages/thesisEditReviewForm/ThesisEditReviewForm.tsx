@@ -29,7 +29,7 @@ export const ThesisEditReviewForm: React.FC<ThesisEditReviewFormProps> = (props)
   api.put(`${AppSettings.API.Reviews.Base}/${review.guid}`, data);
 
   return (
-    <ReviewForm 
+    <ReviewForm
       review={review}
       thesis={thesis}
       questions={questions}
