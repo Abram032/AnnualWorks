@@ -5,11 +5,11 @@ import { AppSettings } from '../../AppSettings';
 import { useThesis, useActiveQuestions } from '../../shared/Hooks';
 import { Loader } from '../../Components';
 
-interface ThesisCreateReviewFormProps {
+interface ReviewCreateFormProps {
   thesisGuid: string
 }
 
-export const ThesisCreateReviewForm: React.FC<ThesisCreateReviewFormProps> = (props) => {
+export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
   const api = useApi();
   const questions = useActiveQuestions();
   const [thesis, isThesisFetching] = useThesis(props.thesisGuid);
@@ -36,4 +36,4 @@ export const ThesisCreateReviewForm: React.FC<ThesisCreateReviewFormProps> = (pr
   )
 };
 
-export default ThesisCreateReviewForm;
+export default ReviewCreateForm;

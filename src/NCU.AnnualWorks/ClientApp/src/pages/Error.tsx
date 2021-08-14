@@ -2,7 +2,6 @@ import React from "react";
 import { Label, Stack, FontSizes, IStackTokens } from "@fluentui/react";
 
 export const Error: React.FC = () => {
-  const stackTokens: IStackTokens = { childrenGap: 15 };
   return (
     <Stack tokens={stackTokens}>
       <Stack.Item align="center" tokens={stackTokens}>
@@ -25,3 +24,9 @@ export const Error: React.FC = () => {
 };
 
 export default Error;
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion

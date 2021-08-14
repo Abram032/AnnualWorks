@@ -3,10 +3,10 @@ import { Loader } from '../../Components';
 import { AppSettings } from '../../AppSettings';
 import { useApi } from '../../shared/api/Api';
 
-export const Login: React.FC = () =>
+export const SignOut: React.FC = () =>
 {
     const api = useApi();
-  //TODO: Move to api
+    //TODO: Move to api
     useEffect(() => {
         api.post(AppSettings.API.Auth.SignOut)
         .then(response => {
@@ -18,4 +18,4 @@ export const Login: React.FC = () =>
     return <Loader size='medium' label='Wylogowywanie...'/>
 }
 
-export default Login;
+export default SignOut;

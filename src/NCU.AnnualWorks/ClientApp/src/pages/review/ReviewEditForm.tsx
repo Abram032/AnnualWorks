@@ -3,30 +3,29 @@ import { ReviewForm, Loader } from '../../Components';
 import { useActiveQuestions, useReview, useThesis } from '../../shared/Hooks';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
+import { Redirect } from 'react-router-dom';
+import { RouteNames } from '../../shared/Consts';
 
-interface ThesisEditReviewFormProps {
+interface ReviewEditFormProps {
   thesisGuid: string,
   reviewGuid: string,
 }
 
-export const ThesisEditReviewForm: React.FC<ThesisEditReviewFormProps> = (props) => {
+export const ReviewEditForm: React.FC<ReviewEditFormProps> = (props) => {
   const questions = useActiveQuestions();
   const [thesis, isThesisFetching] = useThesis(props.thesisGuid);
   const [review, isReviewFetching] = useReview(props.reviewGuid);
   const api = useApi();
 
-  if(isThesisFetching || isReviewFetching || !thesis || !review) {
+  if (isThesisFetching || isReviewFetching) {
     return <Loader label='Ładowanie...' size='medium' />
-  } 
-  // else {
-  //   if(!thesis || !review) {
-  //     return <Redirect to={RouteNames.error} />
-  //   }
-  // }
+  }
 
-  //TODO: Implement saving reviews
-  const onSave = (data: ReviewRequestData) => 
-  api.put(`${AppSettings.API.Reviews.Base}/${review.guid}`, data);
+  if (!thesis || !review) {
+    return <Redirect to={RouteNames.error} />
+  }
+
+  const onSave = (data: ReviewRequestData) => api.put(`${AppSettings.API.Reviews.Base}/${review.guid}`, data);
 
   return (
     <ReviewForm
@@ -38,4 +37,4 @@ export const ThesisEditReviewForm: React.FC<ThesisEditReviewFormProps> = (props)
   )
 };
 
-export default ThesisEditReviewForm;
+export default ReviewEditForm;

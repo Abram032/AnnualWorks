@@ -24,4 +24,4 @@ export const AuthenticatedWrapper: React.FC<AuthenticatedWrapper> = (props) => {
       {props.children}
     </>
   );
-}
+};

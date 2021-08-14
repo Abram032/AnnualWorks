@@ -3,7 +3,7 @@ import { Loader } from '../../Components';
 import { AppSettings } from '../../AppSettings';
 import { useApi } from '../../shared/api/Api';
 
-export const Login: React.FC = () =>
+export const SignIn: React.FC = () =>
 {
     const api = useApi();
     //TODO: Move to api
@@ -18,4 +18,4 @@ export const Login: React.FC = () =>
     return <Loader size='medium' label='Łączenie z systemem USOS...'/>
 }
 
-export default Login;
+export default SignIn;
