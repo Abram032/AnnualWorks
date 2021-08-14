@@ -25,3 +25,4 @@ export * from './thesis/ThesisForm';
 export * from './thesis/ThesisFormValidationRules';
 export * from './thesis/ThesisGradeConfirmDialog';
 export * from './thesis/ThesisList';
+export * from './auth/AuthenticatedWrapper';

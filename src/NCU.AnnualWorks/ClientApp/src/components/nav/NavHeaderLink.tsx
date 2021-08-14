@@ -9,6 +9,9 @@ interface NavHeaderLinkProps {
 
 export const NavHeaderLink: React.FC<NavHeaderLinkProps> = (props) => {
   const theme = useTheme();
+
+  //#region Styles
+
   const styles = {
     root: [
       {
@@ -30,6 +33,8 @@ export const NavHeaderLink: React.FC<NavHeaderLinkProps> = (props) => {
       },
     ],
   };
+
+  //#endregion
 
   return (
     <Link className="nav-header-link" styles={styles} href={props.href} onClick={props.onClick}>

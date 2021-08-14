@@ -3,6 +3,9 @@ import { Separator, useTheme } from '@fluentui/react';
 
 export const NavSeparator: React.FC = () => {
   const theme = useTheme();
+
+  //#region Styles
+
   const styles = {
     root: [
       {
@@ -14,6 +17,8 @@ export const NavSeparator: React.FC = () => {
       },
     ],
   };
+
+  //#endregion
 
   return (
     <Separator className="nav-separator" styles={styles} vertical />

@@ -5,13 +5,6 @@ import Footer from "./Footer";
 import { mergeStyles } from "@fluentui/merge-styles";
 
 export const Layout: React.FC = (props) => {
-  const layoutStyles = mergeStyles({
-    margin: 0,
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-  })
-  
   return (
     <div className={layoutStyles}>
       <Nav />
@@ -22,3 +15,14 @@ export const Layout: React.FC = (props) => {
 };
 
 export default Layout;
+
+//#region Styles
+
+const layoutStyles = mergeStyles({
+  margin: 0,
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+//#endregion

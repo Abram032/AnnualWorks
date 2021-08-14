@@ -9,6 +9,8 @@ import { useForm } from 'react-hook-form';
 import { ReviewRequestData } from '../../shared/api/Api';
 import { useHistory } from 'react-router-dom';
 import { useBoolean, useId } from '@fluentui/react-hooks';
+import { GradeList } from '../../shared/Models';
+import { mapGradesToDropdownOptions } from '../../shared/Utils';
 
 interface ReviewFormProps {
   thesis: Thesis,
@@ -97,10 +99,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
 
   const actionItems = addActions(props.thesis, history, false);
 
-  const gradeValues = ['2', '3', '3.5', '4', '4.5', '5'];
-  const grades: IDropdownOption[] = gradeValues.map<IDropdownOption>(g => ({ key: g, text: g }));
+  
 
-  const stackTokens: IStackTokens = { childrenGap: 15 };
+  
 
   const buildFormQuestion = (index: number, question: Question, answer?: string): React.ReactNode => {
     return (
@@ -156,7 +157,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
               }
             }}
             placeholder='Wybierz ocenę'
-            options={grades}
+            options={mapGradesToDropdownOptions(GradeList)}
             defaultValue={props.review?.grade ?? undefined}
             required
           />
@@ -238,3 +239,11 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
 }
 
 export default ReviewForm;
+
+
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion

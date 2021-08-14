@@ -4,11 +4,14 @@ import React from "react";
 interface NavLinkProps {
   label: string;
   href: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const NavLink: React.FC<NavLinkProps> = (props) => {
   const theme = useTheme();
+
+  //#region Styles
+
   const styles = {
     root: [
       {
@@ -30,6 +33,8 @@ export const NavLink: React.FC<NavLinkProps> = (props) => {
       },
     ],
   };
+
+  //#endregion
 
   return (
     <Link className="nav-link" styles={styles} href={props.href} onClick={props.onClick}>
