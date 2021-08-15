@@ -6,6 +6,7 @@ import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
 import { CurrentUser, Review, Thesis, ThesisActions, User } from '../../shared/Models';
+import { ThesisHistoryLog } from '../../components/Index';
 
 interface ThesisDetailsProps {
   guid: string
@@ -70,6 +71,9 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
           />
           {getReviewModal(thesis.reviewer, isReviewerReviewVisible, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
           <Label style={{ fontSize: FontSizes.size20 }}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
+        </Stack>
+        <Stack tokens={stackTokens}>
+          <ThesisHistoryLog thesisLogs={thesis.thesisLogs} />
         </Stack>
       </Tile>
       <Stack horizontal tokens={stackTokens}>
