@@ -1,16 +1,22 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { Term } from '../Models';
 import { AppSettings } from '../../AppSettings';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
-export const useCurrentTerm = (): Term | undefined => {
+export const useCurrentTerm = (): [Term | undefined, boolean] => {
   const api = useApi();
   const [term, setTerm] = useState<Term>();
-  const authContext = useContext(AuthenticationContext);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
       return;
     }
 
@@ -26,11 +32,13 @@ export const useCurrentTerm = (): Term | undefined => {
           endDate: new Date(response.data.endDate),
           finishDate: new Date(response.data.finishDate)
         });
+        setIsFetching(false);
       })
       .catch(error => {
         console.error(error);
+        setIsFetching(false);
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
-  return term;
+  return [term, isFetching];
 };

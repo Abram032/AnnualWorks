@@ -1,17 +1,21 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { Thesis } from '../Models';
 import { AppSettings } from '../../AppSettings';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
 export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
   const [thesis, setThesis] = useState<Thesis>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
   const api = useApi();
-  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
       setIsFetching(false);
       return;
     }
@@ -26,7 +30,7 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
   return [thesis, isFetching];
 };
@@ -34,11 +38,15 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
 const useTheses = (endpoint: string): [Thesis[], boolean] => {
   const [thesis, setThesis] = useState<Thesis[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
   const api = useApi();
-  const authContext = useContext(AuthenticationContext);
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
       setIsFetching(false);
       return;
     }
@@ -53,7 +61,7 @@ const useTheses = (endpoint: string): [Thesis[], boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, []);
+  }, [isAuthenticated]);
 
   return [thesis, isFetching];
 };

@@ -1,27 +1,35 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Course } from '../Models';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
-export const useCourse = (): Course | undefined => {
+export const useCourse = (): [Course | undefined, boolean] => {
   const api = useApi();
   const [course, setCourse] = useState<Course>();
-  const authContext = useContext(AuthenticationContext);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
       return;
     }
 
     api.get<Course>(AppSettings.API.Course.Base)
       .then(response => {
         setCourse(response.data);
+        setIsFetching(false);
       })
       .catch(error => {
         console.error(error);
+        setIsFetching(false);
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
-  return course;
+  return [course, isFetching];
 };

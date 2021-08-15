@@ -12,16 +12,16 @@ interface ReviewEditFormProps {
 }
 
 export const ReviewEditForm: React.FC<ReviewEditFormProps> = (props) => {
-  const questions = useActiveQuestions();
-  const [thesis, isThesisFetching] = useThesis(props.thesisGuid);
-  const [review, isReviewFetching] = useReview(props.reviewGuid);
+  const [questions, questionsFetching] = useActiveQuestions();
+  const [thesis, thesisFetching] = useThesis(props.thesisGuid);
+  const [review, reviewFetching] = useReview(props.reviewGuid);
   const api = useApi();
 
-  if (isThesisFetching || isReviewFetching) {
-    return <Loader label='Ładowanie...' size='medium' />
+  if (thesisFetching || reviewFetching || questionsFetching) {
+    return <Loader />
   }
 
-  if (!thesis || !review) {
+  if (!thesis || !review || !questions) {
     return <Redirect to={RouteNames.error} />
   }
 

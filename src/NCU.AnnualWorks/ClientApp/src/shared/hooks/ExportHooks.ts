@@ -1,15 +1,21 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
-export const useExportState = (termId: string | undefined): boolean | undefined => {
+export const useExportValidation = (termId: string | undefined): [boolean | undefined, boolean] => {
   const api = useApi();
   const [valid, setValid] = useState<boolean>();
-  const authContext = useContext(AuthenticationContext);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
       return;
     }
 
@@ -17,12 +23,14 @@ export const useExportState = (termId: string | undefined): boolean | undefined 
       api.get<boolean>(`${AppSettings.API.Export.State}?termId=${termId}`)
         .then(response => {
           setValid(response.data);
+          setIsFetching(false);
         })
         .catch(error => {
-          //console.error(error);
+          console.error(error);
+          setIsFetching(false);
         });
     }
-  }, [termId, authContext.isAuthenticated]);
+  }, [termId, isAuthenticated]);
 
-  return valid;
+  return [valid, isFetching];
 };

@@ -1,9 +1,10 @@
 import React from 'react';
-import { ReviewForm } from '../../Components';
+import { ReviewForm, Loader } from '../../Components';
 import { ReviewRequestData, useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useThesis, useActiveQuestions } from '../../shared/Hooks';
-import { Loader } from '../../Components';
+import { Redirect } from 'react-router-dom';
+import { RouteNames } from '../../shared/Consts';
 
 interface ReviewCreateFormProps {
   thesisGuid: string
@@ -11,17 +12,16 @@ interface ReviewCreateFormProps {
 
 export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
   const api = useApi();
-  const questions = useActiveQuestions();
-  const [thesis, isThesisFetching] = useThesis(props.thesisGuid);
+  const [questions, questionsFetching] = useActiveQuestions();
+  const [thesis, thesisFetching] = useThesis(props.thesisGuid);
 
-  if(isThesisFetching || !thesis) {
-    return <Loader label='Ładowanie...' size='medium' />
-  } 
-  // else {
-  //   if(!thesis) {
-  //     return <Redirect to={RouteNames.error} />
-  //   }
-  // }
+  if(questionsFetching || thesisFetching) {
+    return <Loader />
+  }
+  
+  if(!questions || !thesis) {
+    return <Redirect to={RouteNames.error} />
+  }
 
   //TODO: Implement saving reviews
   const onSave = (data: ReviewRequestData) => 

@@ -1,17 +1,21 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Review } from '../Models';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
 export const useReview = (guid: string): [Review | undefined, boolean] => {
   const api = useApi();
   const [review, setReview] = useState<Review>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  const authContext = useContext(AuthenticationContext);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
       setIsFetching(false);
       return;
     }
@@ -26,7 +30,7 @@ export const useReview = (guid: string): [Review | undefined, boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
   return [review, isFetching];
 };

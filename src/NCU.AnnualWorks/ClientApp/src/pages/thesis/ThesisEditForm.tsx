@@ -1,23 +1,35 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { FilePickerOptions } from '../../shared/Models';
 import { ThesisForm, Loader } from '../../Components';
-import { useThesis, useKeywords,useEmployees, useStudents } from '../../shared/Hooks';
-import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import { useThesis, useKeywords,useEmployees, useStudents, useCurrentUser } from '../../shared/Hooks';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
+import { Redirect } from 'react-router-dom';
+import { RouteNames } from '../../shared/Consts';
 
 interface ThesisEditFormProps {
   guid: string
 };
 
 export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
-  const authContext = useContext(AuthenticationContext);
   const api = useApi();
+  const currentUser = useCurrentUser();
+  const [thesis, thesisFetching] = useThesis(props.guid);
+  const [keywords, keywordsFetching] = useKeywords();
+  const [students, studentsFetching] = useStudents();
+  const [employees, employeesFetching] = useEmployees();
 
-  const [thesis, isFetching] = useThesis(props.guid);
-  const keywords = useKeywords();
-  const students = useStudents();
-  const employees = useEmployees();
+  if(keywordsFetching || studentsFetching || employeesFetching || thesisFetching) {
+    return <Loader />
+  }
+
+  if(!thesis || !keywords || !students || !employees || !currentUser) {
+    return <Redirect to={RouteNames.error} />
+  }
+
+  if(!currentUser.isLecturer) {
+    return <Redirect to={RouteNames.forbidden} />
+  }
 
   const filePickerOptions: FilePickerOptions = {
     allowedExtensions: [".pdf"],
@@ -30,17 +42,13 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-  if(isFetching || !thesis || !students || !employees) {
-    return <Loader />
-  }
-
   return (
     <ThesisForm 
       thesis={thesis}
       keywords={keywords}
       students={students}
       employees={employees}
-      excludedUserIds={authContext.currentUser ? [authContext.currentUser.id] : undefined}
+      excludedUserIds={[currentUser.id]}
       onSave={onSave}
       fileOptions={filePickerOptions}
     />

@@ -1,9 +1,20 @@
 import React from "react";
 import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
 import { useCourse } from "../../shared/Hooks";
+import { Loader } from "../../Components";
+import { RouteNames } from "../../shared/Consts";
+import { Redirect } from "react-router-dom";
 
 export const HomeSignUp: React.FC = () => {
-  const course = useCourse();
+  const [course, courseFetching] = useCourse();
+
+  if(courseFetching) {
+    return <Loader />
+  }
+
+  if(!course) {
+    return <Redirect to={RouteNames.error} />
+  }
 
   return (
     <Stack>
@@ -13,7 +24,6 @@ export const HomeSignUp: React.FC = () => {
         </Label>
       </Stack.Item>
       <Stack.Item align="center">
-        {/* //TODO: Get url to course code from backend or get the course code and build url to it */}
         <PrimaryButton href={course?.courseUrl}>Zarejestruj się</PrimaryButton>
       </Stack.Item>
     </Stack>

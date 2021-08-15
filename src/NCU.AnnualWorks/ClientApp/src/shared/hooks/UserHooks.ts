@@ -1,30 +1,38 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { User } from '../../shared/Models';
 import { IPersonaProps } from '@fluentui/react';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
-const useUsers = <T>(endpoint: string, query?: string) => {
+const useUsers = <T>(endpoint: string, query?: string): [T | undefined, boolean] => {
   const api = useApi();
   const [users, setUsers] = useState<T>();
-  const authContext = useContext(AuthenticationContext);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
       return;
     }
 
     api.get<T>(endpoint)
       .then(response => {
         setUsers(response.data);
+        setIsFetching(false);
       })
       .catch(error => {
         console.error(error);
+        setIsFetching(false);
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
-  return users;
+  return [users, isFetching];
 };
 
 export const useStudents = () => useUsers<User[]>(AppSettings.API.Users.Students);

@@ -1,25 +1,26 @@
-import React, { useContext } from "react";
-import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import React from "react";
 import HomeSignIn from "./HomeSignIn";
 import HomeSignUp from "./HomeSignUp";
 import Home from "./Home";
 import { Loader } from '../../Components';
+import { useCurrentUser, useIsAuthenticated } from "../../shared/Hooks";
 
 export const HomeContainer: React.FC = () => {
-  const authContext = useContext(AuthenticationContext);
-  const currentUser = authContext.currentUser;
+  const isAuthenticated = useIsAuthenticated();
+  const currentUser = useCurrentUser();
   const hasAccess = currentUser?.isParticipant || 
     currentUser?.isLecturer || 
-    currentUser?.isAdmin || 
+    currentUser?.isCustom || 
     currentUser?.isAdmin;
     
-  if(authContext.isFetching) {
+  if(isAuthenticated === null) {
     return <Loader label={'Ładowanie...'} size='medium' />
   } 
-  else if(!authContext.isAuthenticated) {
+
+  if(!isAuthenticated) {
     return <HomeSignIn />
   }
-  else if(!hasAccess || !authContext.isAuthenticated) {
+  else if(!hasAccess) {
     return <HomeSignUp />
   }
   else {

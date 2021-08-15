@@ -11,8 +11,8 @@ interface Form {
 }
 
 export const AdminPanelCourse: React.FC = () => {
-  const course = useCourse();
   const api = useApi();
+  const [course, courseFetching] = useCourse();
 
   const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setIsSuccess] = useState<boolean>();
@@ -25,20 +25,20 @@ export const AdminPanelCourse: React.FC = () => {
   const onSave = () => {
     setIsSuccess(false);
     setErrorMessage(undefined);
-    
+
     handleSubmit(
       (values) => {
         const request: SetCourseRequestData = {
           courseCode: values.courseCode
         }
         api.put(AppSettings.API.Course.Base, request)
-        .then(res => {
-          setIsSuccess(true);
-        })
-        .catch(err => {
-          setIsSuccess(false);
-          setErrorMessage(err.data);
-        })
+          .then(res => {
+            setIsSuccess(true);
+          })
+          .catch(err => {
+            setIsSuccess(false);
+            setErrorMessage(err.data);
+          })
       },
       (err) => {
       }
@@ -46,8 +46,8 @@ export const AdminPanelCourse: React.FC = () => {
   };
 
   useEffect(() => {
-    if(course) {
-      setValue("courseCode", course.courseCode);
+    if (course) {
+      setValue("courseCode", course?.courseCode);
     }
   }, [course]);
 

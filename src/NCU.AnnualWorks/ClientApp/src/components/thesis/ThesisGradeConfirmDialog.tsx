@@ -84,7 +84,7 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
 
   return (
     <Dialog
-      hidden={props.isVisible}
+      hidden={!props.isVisible}
       onDismiss={props.toggleIsVisible}
       dialogContentProps={dialogContentProps}
       modalProps={modalProps}

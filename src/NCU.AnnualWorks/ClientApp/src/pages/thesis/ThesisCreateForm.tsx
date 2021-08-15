@@ -1,19 +1,31 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { FilePickerOptions } from '../../shared/Models';
 import { ThesisForm } from '../../components/thesis/ThesisForm';
-import { useKeywords, useEmployees, useStudents } from '../../shared/Hooks';
-import { AuthenticationContext } from '../../shared/providers/AuthenticationProvider';
+import { useKeywords, useEmployees, useStudents, useCurrentUser } from '../../shared/Hooks';
 import { useApi } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Loader } from '../../Components';
+import { Redirect } from 'react-router-dom';
+import { RouteNames } from '../../shared/Consts';
 
 export const ThesisCreateForm: React.FC = () => {
-  const authContext = useContext(AuthenticationContext);
   const api = useApi();
-  
-  const keywords = useKeywords();
-  const students = useStudents();
-  const employees = useEmployees();
+  const currentUser = useCurrentUser();
+  const [keywords, keywordsFetching] = useKeywords();
+  const [students, studentsFetching] = useStudents();
+  const [employees, employeesFetching] = useEmployees();
+
+  if(keywordsFetching || studentsFetching || employeesFetching) {
+    return <Loader />
+  }
+
+  if(!keywords || !students || !employees || !currentUser) {
+    return <Redirect to={RouteNames.error} />
+  }
+
+  if(!currentUser.isLecturer) {
+    return <Redirect to={RouteNames.forbidden} />
+  }
 
   const filePickerOptions: FilePickerOptions = {
     allowedExtensions: [".pdf"],
@@ -35,7 +47,7 @@ export const ThesisCreateForm: React.FC = () => {
       keywords={keywords}
       students={students}
       employees={employees}
-      excludedUserIds={authContext.currentUser ? [authContext.currentUser.id] : undefined}
+      excludedUserIds={[currentUser.id]}
       onSave={onSave}
       fileOptions={filePickerOptions}
     />

@@ -7,18 +7,21 @@ import { useCustomUsers, usePeoplePicker } from '../../shared/Hooks';
 import { SetCustomUsersRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { User } from "../../shared/Models";
+import { RouteNames } from "../../shared/Consts";
+import { Redirect } from "react-router-dom";
 
 export const AdminPanelUsers: React.FC = () => {
-  const customUsers = useCustomUsers();
+  const [customUsers, customUsersFetching] = useCustomUsers();
 
-  if(customUsers) {
-    return <AdminPanelUsersForm 
-      users={customUsers}
-    />
+  if (customUsersFetching) {
+    return <Loader />
   }
-  else {
-    return <Loader size='medium' label='Ładowanie...' />
+
+  if (!customUsers) {
+    return <Redirect to={RouteNames.error} />
   }
+
+  return <AdminPanelUsersForm users={customUsers} />
 }
 
 export default AdminPanelUsers;
@@ -53,9 +56,9 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
     return api.get<User[]>(`${AppSettings.API.Users.Base}?search=${filter.trim()}`)
       .then(res => mapUsersToPersona(res.data))
       .then(people => people.filter(p => (
-          p.text?.toLowerCase().startsWith(filter.toLowerCase()) || 
-          p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
-        ) && !selectedItems?.some(u => u.key === p.key))
+        p.text?.toLowerCase().startsWith(filter.toLowerCase()) ||
+        p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
+      ) && !selectedItems?.some(u => u.key === p.key))
         .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
         .slice(0, maxSuggestions))
       .catch(err => {
@@ -68,20 +71,20 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   const onSave = () => {
     setIsSuccess(false);
     setErrorMessage(undefined);
-    
+
     handleSubmit(
       (values) => {
         const request: SetCustomUsersRequestData = {
           userIds: values.users.map<string>(u => u.key!.toString())
         }
         api.put(AppSettings.API.Users.Custom, request)
-        .then(res => {
-          setIsSuccess(true);
-        })
-        .catch(err => {
-          setIsSuccess(false);
-          setErrorMessage(err.data);
-        })
+          .then(res => {
+            setIsSuccess(true);
+          })
+          .catch(err => {
+            setIsSuccess(false);
+            setErrorMessage(err.data);
+          })
       },
       (err) => {
       }

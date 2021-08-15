@@ -7,20 +7,22 @@ import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/Hooks'
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { User } from "../../shared/Models";
+import { RouteNames } from "../../shared/Consts";
+import { Redirect } from "react-router-dom";
 
 export const AdminPanelAdministrators: React.FC = () => {
-  const admins = useAdmins();
-  const defaultAdmin = useDefaultAdmin();
+  const [admins, adminsFetching] = useAdmins();
+  const [defaultAdmin, defaultAdminFetching] = useDefaultAdmin();
 
-  if(admins && defaultAdmin) {
-    return <AdminPanelAdministratorsForm 
-      admins={admins.filter(p => p.usosId !== defaultAdmin.usosId)} 
-      defaultAdmin={defaultAdmin} 
-    />
+  if (adminsFetching || defaultAdminFetching) {
+    return <Loader />
   }
-  else {
-    return <Loader size='medium' label='Ładowanie...' />
+
+  if (!admins || !defaultAdmin) {
+    return <Redirect to={RouteNames.error} />
   }
+
+  return <AdminPanelAdministratorsForm admins={admins.filter(p => p.usosId !== defaultAdmin.usosId)} defaultAdmin={defaultAdmin} />
 }
 
 export default AdminPanelAdministrators;
@@ -56,9 +58,9 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
     return api.get<User[]>(`${AppSettings.API.Users.Base}?search=${filter.trim()}`)
       .then(res => mapUsersToPersona(res.data))
       .then(people => people.filter(p => (
-          p.text?.toLowerCase().startsWith(filter.toLowerCase()) || 
-          p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
-        ) && !selectedItems?.some(u => u.key === p.key))
+        p.text?.toLowerCase().startsWith(filter.toLowerCase()) ||
+        p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
+      ) && !selectedItems?.some(u => u.key === p.key))
         .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
         .slice(0, maxSuggestions))
       .catch(err => {
@@ -71,20 +73,20 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   const onSave = () => {
     setIsSuccess(false);
     setErrorMessage(undefined);
-    
+
     handleSubmit(
       (values) => {
         const request: SetAdminsRequestData = {
           userIds: values.administrators.map<string>(u => u.key!.toString())
         }
         api.put(AppSettings.API.Users.Admins.Base, request)
-        .then(res => {
-          setIsSuccess(true);
-        })
-        .catch(err => {
-          setIsSuccess(false);
-          setErrorMessage(err.data);
-        })
+          .then(res => {
+            setIsSuccess(true);
+          })
+          .catch(err => {
+            setIsSuccess(false);
+            setErrorMessage(err.data);
+          })
       },
       (err) => {
       }

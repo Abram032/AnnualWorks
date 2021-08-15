@@ -5,8 +5,7 @@ import { useApi } from '../../shared/api/Api';
 import { useHistory } from "react-router-dom";
 import { RouteNames } from '../../shared/Consts';
 
-export const Authorize: React.FC = () =>
-{
+export const Authorize: React.FC = () => {
     const history = useHistory();
     const api = useApi();
     //TODO: Move to api
@@ -21,14 +20,13 @@ export const Authorize: React.FC = () =>
             OAuthVerifier: verifier
         }).then(response => {
             history.push(RouteNames.root);
-        })
-        .catch(error => {
+        }).catch(error => {
             console.error(error);
             //history.push(RouteNames.error);
         });
-    }, [])
+    }, []);
 
-    return <Loader size='medium' label='Autoryzacja...'/>
+    return <Loader size='medium' label='Autoryzacja...' />
 }
 
 export default Authorize;

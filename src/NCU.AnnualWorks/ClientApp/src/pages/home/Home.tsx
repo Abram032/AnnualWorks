@@ -1,78 +1,57 @@
-import React, { useContext } from "react";
+import React from "react";
 import { IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
 import { Tile, ThesisList, Loader } from '../../Components';
 import { RouteNames } from "../../shared/Consts";
-import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses, useDeadline, useCurrentTerm } from "../../shared/Hooks";
-import { AuthenticationContext } from "../../shared/providers/AuthenticationProvider";
-import { useHistory } from "react-router";
+import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses, useDeadline, useCurrentTerm, useCurrentUser } from "../../shared/Hooks";
+import { Redirect } from "react-router-dom";
 
 export const Home: React.FC = () => {
-  const history = useHistory();
-  const deadline = useDeadline();
-  const term = useCurrentTerm();
-  const authContext =  useContext(AuthenticationContext);
-  const currentUser = authContext.currentUser;
+  const currentUser = useCurrentUser();
+  const [deadline, deadlineFetching] = useDeadline();
+  const [currentTerm, currentTermFetching] = useCurrentTerm();
   const [currentTheses, curentThesesFetching] = useCurrentTheses();
   const [authoredTheses, authoredThesesFetching] = useAuthoredTheses();
   const [promotedTheses, promotedThesesFetching] = usePromotedTheses();
   const [reviewedTheses, reviewedThesesFetching] = useReviewedTheses();
 
-  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || !deadline || !term) {
-    return <Loader size='medium' label='Ładowanie...' />
-  } 
-  // else {
-  //   if(!currentTheses || !authoredTheses || !promotedTheses || !reviewedTheses) {
-  //     return <Redirect to={RouteNames.error} />
-  //   }
-  // }
-
-  const stackTokens: IStackTokens = { childrenGap: 25 }
-
-  const authoredList = (): React.ReactNode => {
-    if(!currentUser?.isParticipant) {
-      return null;
-    }
-    return <ThesisList title='Moje prace' items={authoredTheses} isCollapsed={false}/>
+  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || deadlineFetching || currentTermFetching) {
+    return <Loader />
   };
 
-  const promotedList = (): React.ReactNode => {
-    if(!currentUser?.isLecturer) {
-      return null;
-    }
-    return <ThesisList title='Promowane prace' items={promotedTheses} isCollapsed={false}/>
-  };
-
-  const reviewedList = (): React.ReactNode => {
-    if(!currentUser?.isLecturer && !currentUser?.isCustom && !currentUser?.isAdmin) {
-      return null;
-    }
-    return <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/>
-  };
-
-  const addThesis = (): React.ReactNode => {
-    if(!currentUser?.isLecturer || deadline < new Date()) {
-      return null;
-    }
-    return <PrimaryButton 
-      //href={RouteNames.addThesis} 
-      onClick={() => history.push(RouteNames.addThesis)}
-      >
-        Dodaj pracę
-      </PrimaryButton>
+  if(!currentUser || !deadline || !currentTerm) {
+    return <Redirect to={RouteNames.error} />
   }
+
+  const authoredList = currentUser?.isParticipant ? 
+    <ThesisList title='Moje prace' items={authoredTheses} isCollapsed={false}/> : null;
+
+  const promotedList = currentUser?.isLecturer ?
+    <ThesisList title='Promowane prace' items={promotedTheses} isCollapsed={false}/> : null;
+
+  const reviewedList = currentUser?.isLecturer || currentUser?.isCustom || currentUser?.isAdmin ?
+    <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/> : null;
+
+  const addThesisButton = currentUser?.isLecturer && deadline && deadline > new Date() ? 
+    <PrimaryButton href={RouteNames.addThesis}>Dodaj pracę</PrimaryButton> : null;
 
   return (
     <Tile title='Lista prac rocznych'>
       <Stack horizontal horizontalAlign='end' tokens={stackTokens}>
-        {addThesis()}
-        <Label>{`Termin końcowy: ${deadline.toLocaleDateString()}`}</Label>
+        {addThesisButton}
+        <Label>{`Termin końcowy: ${deadline?.toLocaleDateString()}`}</Label>
       </Stack>
-      {authoredList()}
-      {promotedList()}
-      {reviewedList()} 
-      <ThesisList title={term.names.pl} items={currentTheses} />
+      {authoredList}
+      {promotedList}
+      {reviewedList} 
+      <ThesisList title={currentTerm?.names.pl} items={currentTheses} />
     </Tile>
   );
 };
 
 export default Home;
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 25 }
+
+//#endregion

@@ -1,26 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApi } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
-import { AuthenticationContext } from '../providers/AuthenticationProvider';
+import { useIsAuthenticated } from './AuthHooks';
 
-export const useDeadline = (): Date | undefined => {
+export const useDeadline = (): [Date | undefined, boolean] => {
   const api = useApi();
   const [date, setDate] = useState<Date>();
-  const authContext = useContext(AuthenticationContext);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (!authContext.isAuthenticated) {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
       return;
     }
 
     api.get<Date>(AppSettings.API.Deadline.Base)
       .then(response => {
         setDate(new Date(response.data));
+        setIsFetching(false);
       })
       .catch(error => {
-        //console.error(error);
+        console.error(error);
+        setIsFetching(false);
       });
-  }, [authContext.isAuthenticated]);
+  }, [isAuthenticated]);
 
-  return date;
+  return [date, isFetching];
 };

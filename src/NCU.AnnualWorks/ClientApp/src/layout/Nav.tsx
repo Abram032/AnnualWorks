@@ -10,7 +10,7 @@ export const Nav: React.FC = () => {
   const isAuthenticated = useIsAuthenticated();
   const currentUser = useCurrentUser();
   const history = useHistory();
-  const deadline = useDeadline();
+  const [deadline, deadlineFetching] = useDeadline();
 
   const actions = isAuthenticated && currentUser ?
     <MeControl user={currentUser!} /> :

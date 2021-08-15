@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
 import { useCurrentTerm } from '../../shared/Hooks';
-import { useDeadline } from '../../shared/Hooks'; 
+import { useDeadline } from '../../shared/Hooks';
 import { DatePicker, AdminPanel } from '../../Components';
 import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 
 export const AdminPanelDeadline: React.FC = () => {
   const [date, setDate] = useState<Date>();
-  const term = useCurrentTerm();
-  const deadline = useDeadline();
+  const [term, termFetching] = useCurrentTerm();
+  const [deadline, deadlineFetching] = useDeadline();
   const api = useApi();
 
   const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setIsSuccess] = useState<boolean>();
-  
+
   const onSelect = (date: Date | null | undefined) => {
-    if(date) {
+    if (date) {
       setDate(date);
     }
   }
@@ -28,7 +28,7 @@ export const AdminPanelDeadline: React.FC = () => {
   const save = () => {
     setIsSuccess(false);
     setErrorMessage(undefined);
-    if(!date) {
+    if (!date) {
       setErrorMessage("Wybierz datę, aby zapisać nowy termin końcowy.");
       return;
     }
@@ -36,13 +36,13 @@ export const AdminPanelDeadline: React.FC = () => {
       deadline: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     }
     api.put(AppSettings.API.Deadline.Base, request)
-    .then(res => {
-      setIsSuccess(true);
-    })
-    .catch(err => {
-      setIsSuccess(false);
-      setErrorMessage(err.data);
-    })
+      .then(res => {
+        setIsSuccess(true);
+      })
+      .catch(err => {
+        setIsSuccess(false);
+        setErrorMessage(err.data);
+      })
   }
 
   const warningMessageBar = (
@@ -70,8 +70,8 @@ export const AdminPanelDeadline: React.FC = () => {
       {warningMessageBar}
       {success ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
-      <StackItem tokens={tokens }>
-        <DatePicker 
+      <StackItem tokens={tokens}>
+        <DatePicker
           label="Wybierz termin końcowy"
           placeholder="Wybierz..."
           aria-placeholder="Wybierz datę..."
