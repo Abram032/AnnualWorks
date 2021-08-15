@@ -19,6 +19,8 @@ export const AdminPanelExport: React.FC = () => {
     return <Redirect to={RouteNames.error} />
   }
 
+  //#region Messages
+
   const warningMessageBar = (
     <MessageBar messageBarType={MessageBarType.severeWarning} isMultiline>
       Nie wszystkie prace posiadają ocenę końcową.
@@ -27,7 +29,7 @@ export const AdminPanelExport: React.FC = () => {
     </MessageBar>
   );
 
-  const tokens: IStackTokens = { childrenGap: 15 };
+  //#endregion
 
   return (
     <AdminPanel>
@@ -41,3 +43,9 @@ export const AdminPanelExport: React.FC = () => {
 };
 
 export default AdminPanelExport;
+
+//#region Styles
+
+const tokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion
