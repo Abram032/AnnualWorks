@@ -1,19 +1,17 @@
 import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import React from 'react';
 import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog } from '../../Components';
 import { RouteNames } from '../../shared/Consts';
 import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
-import { CurrentUser, Review, ThesisActions, User } from '../../shared/Models';
+import { CurrentUser, Review, Thesis, ThesisActions, User } from '../../shared/Models';
 
 interface ThesisDetailsProps {
   guid: string
 }
 
 export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
-  const history = useHistory();
   const currentUser = useCurrentUser();
   const [thesis, thesisFetching] = useThesis(props.guid);
   const [isPromoterReviewVisible, { toggle: toggleIsPromoterReviewVisible }] = useBoolean(false);
@@ -28,121 +26,6 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
     return <Redirect to={RouteNames.error} />
   }
 
-  //Adding available actions
-  const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
-  if (thesis.actions.canEditGrade) {
-    actionItems.push(editGradeAction({
-      iconOnly: false,
-      onClick: toggleConfirmDialogIsVisible
-    }))
-  }
-
-  const columns: IColumn[] = [
-    //{ key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
-    { key: 'name', name: 'Imie i nazwisko', fieldName: 'name', minWidth: 200, maxWidth: 500 },
-    { key: 'grade', name: 'Ocena', fieldName: 'grade', minWidth: 200, maxWidth: 500 },
-  ];
-
-  const reviewAddAction = (
-    <IconButton
-      iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }}
-      href={RouteNames.addReviewPath(props.guid)} 
-    />
-  );
-
-  const reviewEditAction = (reviewGuid: string) => (
-    <IconButton
-      iconProps={{ iconName: 'PageEdit', className: `${iconStyles}` }}
-      href={RouteNames.editReviewPath(props.guid, reviewGuid)} 
-    />
-  );
-
-  const getActions = (currentUser: CurrentUser, user: User, review: Review, allowedActions: ThesisActions) => {
-    if(user.usosId === currentUser.id) {
-      if(review)
-      {
-        
-      }
-    }
-  }
-
-  const getPromoterAction = () => {
-    if (thesis.promoter.usosId === currentUser.id) {
-      if (thesis.promoterReview && thesis.actions.canEditReview) {
-        return reviewEditAction(thesis.promoterReview.guid!);
-      } else if (thesis.actions.canAddReview) {
-        return reviewAddAction;
-      } else {
-        return null;
-      }
-    }
-  }
-
-  const getReviewerAction = () => {
-    if (thesis.reviewer.usosId === currentUser.id) {
-      if (thesis.reviewerReview && thesis.actions.canEditReview) {
-        return reviewEditAction(thesis.reviewerReview.guid!);
-      } else if (thesis.actions.canAddReview) {
-        return reviewAddAction;
-      } else {
-        return null;
-      }
-    }
-  }
-
-  const promoterReviewModal = !thesis.promoterReview?.guid ? null :
-    <ReviewModal 
-      guid={thesis.promoterReview.guid} 
-      person={`${thesis.promoter.firstName} ${thesis.promoter.lastName}`} 
-      isModalVisible={isPromoterReviewVisible} 
-      setModalVisible={toggleIsPromoterReviewVisible}
-    />;
-
-  const reviewerReviewModal = !thesis.reviewerReview?.guid ? null : 
-    <ReviewModal 
-      guid={thesis.reviewerReview.guid} 
-      person={`${thesis.reviewer.firstName} ${thesis.reviewer.lastName}`} 
-      isModalVisible={isReviewerReviewVisible} 
-      setModalVisible={toggleIsReviewerReviewVisible}
-    />;
-
-  const reviewerReview = {
-    guid: thesis.reviewerReview?.guid,
-    name: `${thesis.reviewer.firstName} ${thesis.reviewer.lastName}`,
-    grade: thesis.reviewerReview?.grade ?? "Brak oceny",
-    action: getReviewerAction(),
-    showModal: thesis.reviewerReview ? toggleIsReviewerReviewVisible: undefined
-  };
-
-  const promoterReview = {
-    guid: thesis.promoterReview?.guid,
-    name: `${thesis.promoter.firstName} ${thesis.promoter.lastName}`,
-    grade: thesis.promoterReview?.grade ?? "Brak oceny",
-    action: getPromoterAction(),
-    showModal: thesis.promoterReview ? toggleIsPromoterReviewVisible : undefined
-  };
-
-  const onRenderItemColumn = (
-    item: any,
-    itemIndex?: number,
-    column?: IColumn
-  ): React.ReactNode => {
-    switch (column?.key) {
-      case 'action':
-        return item.action
-      case 'name':
-        if (item.showModal) {
-          return <Link style={{ fontSize: FontSizes.size14 }} onClick={item.showModal}>{item.name}</Link>
-        } else {
-          return <Label>{item.name}</Label>
-        }
-      case 'grade':
-        return <Label>Ocena: {item.grade}</Label>
-      default:
-        return null;
-    }
-  }
-
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
       <Tile title={thesis.title}>
@@ -152,7 +35,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
         <Stack>
           <CommandBar
             className='theses-simple-list-actions'
-            items={actionItems}
+            items={getThesisActions(thesis, toggleConfirmDialogIsVisible)}
           />
         </Stack>
         <Stack tokens={stackTokens}>
@@ -171,21 +54,21 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
             className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
-            item={promoterReview}
+            item={getReviewDetailRow(props.guid, thesis.actions, currentUser, thesis.promoter, toggleIsPromoterReviewVisible, thesis.promoterReview)}
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
-          {promoterReviewModal}
+          {getReviewModal(thesis.promoter, isPromoterReviewVisible, toggleIsPromoterReviewVisible, thesis.promoterReview)}
           <Label style={{ fontSize: FontSizes.size20 }}>Recenzja recenzenta:</Label>
           <DetailsRow
             className={rowStyles}
             selectionMode={SelectionMode.none}
             itemIndex={0}
-            item={reviewerReview}
+            item={getReviewDetailRow(props.guid, thesis.actions, currentUser, thesis.reviewer, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
             columns={columns}
             onRenderItemColumn={onRenderItemColumn}
           />
-          {reviewerReviewModal}
+          {getReviewModal(thesis.reviewer, isReviewerReviewVisible, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
           <Label style={{ fontSize: FontSizes.size20 }}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
         </Stack>
       </Tile>
@@ -230,5 +113,105 @@ const gradeConflictMessageBar = (
     </MessageBar>
   </Stack>
 );
+
+//#endregion
+
+//#region Review Actions
+
+const getReviewActions = (currentUser: CurrentUser, user: User, thesisGuid: string, allowedActions: ThesisActions, review?: Review) => {
+  if (user.usosId === currentUser.id) {
+    if (allowedActions.canAddReview) {
+      return <IconButton iconProps={{ iconName: 'PageAdd', className: `${iconStyles}` }} href={RouteNames.addReviewPath(thesisGuid)} />
+    } else if (review && allowedActions.canEdit) {
+      return <IconButton iconProps={{ iconName: 'PageEdit', className: `${iconStyles}` }} href={RouteNames.editReviewPath(thesisGuid, review.guid!)} />
+    } else {
+      return null;
+    }
+  }
+};
+
+//#endregion
+
+//#region Thesis Actions 
+
+const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void): ICommandBarItemProps[] => {
+  //Adding available actions
+  const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
+
+  if (thesis.actions.canEditGrade) {
+    actionItems.push(editGradeAction({
+      iconOnly: false,
+      onClick: toggleGradeConfrimDialog
+    }))
+  }
+
+  return actionItems;
+}
+
+//#endregion
+
+//#region Render Column Item
+
+const columns: IColumn[] = [
+  //{ key: 'action', name: 'Akcja', fieldName: 'action', minWidth: 50, maxWidth: 50 },
+  { key: 'name', name: 'Imie i nazwisko', fieldName: 'name', minWidth: 200, maxWidth: 500 },
+  { key: 'grade', name: 'Ocena', fieldName: 'grade', minWidth: 200, maxWidth: 500 },
+];
+
+const onRenderItemColumn = (
+  item: any,
+  itemIndex?: number,
+  column?: IColumn
+): React.ReactNode => {
+  switch (column?.key) {
+    case 'action':
+      return item.action
+    case 'name':
+      if (item.showModal) {
+        return <Link style={{ fontSize: FontSizes.size14 }} onClick={item.showModal}>{item.name}</Link>
+      } else {
+        return <Label>{item.name}</Label>
+      }
+    case 'grade':
+      return <Label>Ocena: {item.grade}</Label>
+    default:
+      return null;
+  }
+}
+
+//#endregion
+
+//#region Review Modal
+
+const getReviewModal = (user: User, isVisible: boolean, toggleIsVisible: () => void, review?: Review) => {
+  return !review?.guid ? null :
+    <ReviewModal
+      guid={review.guid!}
+      person={`${user.firstName} ${user.lastName}`}
+      isModalVisible={isVisible}
+      setModalVisible={toggleIsVisible}
+    />
+};
+
+//#endregion
+
+//#region Review Details Row
+
+const getReviewDetailRow = (
+  thesisGuid: string,
+  thesisActions: ThesisActions,
+  currentUser: CurrentUser,
+  user: User,
+  toggleModalVisible: () => void,
+  review?: Review) => {
+
+  return {
+    guid: review?.guid,
+    name: `${user.firstName} ${user.lastName}`,
+    grade: review?.grade ?? "Brak oceny",
+    action: getReviewActions(currentUser, user, thesisGuid, thesisActions, review),
+    showModal: review ? toggleModalVisible : undefined
+  };
+}
 
 //#endregion
