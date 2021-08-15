@@ -3,8 +3,10 @@ import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } fr
 import { AppSettings } from "../../AppSettings";
 import { SetCourseRequestData, useApi } from "../../shared/api/Api";
 import { useCourse } from '../../shared/Hooks';
-import { TextField, AdminPanel } from "../../Components";
+import { TextField, AdminPanel, Loader } from "../../Components";
 import { useForm } from "react-hook-form";
+import { Redirect } from "react-router-dom";
+import { RouteNames } from "../../shared/Consts";
 
 interface Form {
   courseCode: string,
@@ -13,14 +15,20 @@ interface Form {
 export const AdminPanelCourse: React.FC = () => {
   const api = useApi();
   const [course, courseFetching] = useCourse();
-
   const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setIsSuccess] = useState<boolean>();
-
   const { handleSubmit, control, setValue } = useForm<Form>({
     reValidateMode: "onSubmit",
     mode: "all",
   });
+
+  if(courseFetching) {
+    return <Loader />
+  }
+
+  if(!course) {
+    return <Redirect to={RouteNames.error} />
+  }
 
   const onSave = () => {
     setIsSuccess(false);
@@ -45,31 +53,16 @@ export const AdminPanelCourse: React.FC = () => {
     )();
   };
 
-  useEffect(() => {
-    if (course) {
-      setValue("courseCode", course?.courseCode);
-    }
-  }, [course]);
+  //#region Messages
 
-  const warningMessageBar = (
+  const warningMessageBar = 
     <MessageBar messageBarType={MessageBarType.severeWarning}>
       Niektórzy użytkownicy mogą utracić dostęp do systemu po zmianie kursu.
     </MessageBar>
-  );
+  const errorMessageBar = <MessageBar messageBarType={MessageBarType.error}>{errorMessage}</MessageBar>
+  const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Nowy kurs został ustawiony.</MessageBar>
 
-  const errorMessageBar = (
-    <MessageBar messageBarType={MessageBarType.error}>
-      {errorMessage}
-    </MessageBar>
-  )
-
-  const successMessageBar = (
-    <MessageBar messageBarType={MessageBarType.success}>
-      Nowy kurs został ustawiony.
-    </MessageBar>
-  );
-
-  const tokens: IStackTokens = { childrenGap: 15 };
+  //#endregion Messages
 
   return (
     <AdminPanel>
@@ -89,8 +82,8 @@ export const AdminPanelCourse: React.FC = () => {
               }
             }
           }}
-          value={course?.courseCode}
-          //defaultValue={course?.courseCode}
+          defaultValue={course.courseCode}
+          value={course.courseCode}
           required
         />
       </StackItem>
@@ -102,3 +95,9 @@ export const AdminPanelCourse: React.FC = () => {
 };
 
 export default AdminPanelCourse;
+
+//#region Styles
+
+const tokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion

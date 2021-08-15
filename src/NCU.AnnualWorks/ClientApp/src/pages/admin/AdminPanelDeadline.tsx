@@ -1,69 +1,69 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
-import { useCurrentTerm } from '../../shared/Hooks';
-import { useDeadline } from '../../shared/Hooks';
-import { DatePicker, AdminPanel } from '../../Components';
+import { useCurrentTerm, useDeadline } from '../../shared/Hooks';
+import { DatePicker, AdminPanel, Loader } from '../../Components';
 import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
+import { Redirect } from "react-router-dom";
+import { RouteNames } from "../../shared/Consts";
+import { useForm } from "react-hook-form";
+
+interface Form {
+  deadline: Date,
+}
 
 export const AdminPanelDeadline: React.FC = () => {
-  const [date, setDate] = useState<Date>();
-  const [term, termFetching] = useCurrentTerm();
-  const [deadline, deadlineFetching] = useDeadline();
   const api = useApi();
-
+  const [deadline, deadlineFetching] = useDeadline();
+  const [term, termFetching] = useCurrentTerm();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setIsSuccess] = useState<boolean>();
+  const { handleSubmit, control, setValue } = useForm<Form>({
+    reValidateMode: "onSubmit",
+    mode: "all",
+  });
 
-  const onSelect = (date: Date | null | undefined) => {
-    if (date) {
-      setDate(date);
-    }
+  if(termFetching || deadlineFetching) {
+    return <Loader />
   }
 
-  useEffect(() => {
-    setDate(deadline);
-  }, [deadline]);
+  if(!term || !deadline) {
+    return <Redirect to={RouteNames.error} />
+  }
 
-  const save = () => {
+  const onSave = () => {
     setIsSuccess(false);
     setErrorMessage(undefined);
-    if (!date) {
-      setErrorMessage("Wybierz datę, aby zapisać nowy termin końcowy.");
-      return;
-    }
-    const request: SetDeadlineRequestData = {
-      deadline: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    }
-    api.put(AppSettings.API.Deadline.Base, request)
-      .then(res => {
-        setIsSuccess(true);
-      })
-      .catch(err => {
-        setIsSuccess(false);
-        setErrorMessage(err.data);
-      })
-  }
 
-  const warningMessageBar = (
+    handleSubmit(
+      (values) => {
+        const request: SetDeadlineRequestData = {
+          deadline: `${values.deadline.getFullYear()}-${values.deadline.getMonth() + 1}-${values.deadline.getDate()}`
+        }
+        api.put(AppSettings.API.Deadline.Base, request)
+          .then(res => {
+            setIsSuccess(true);
+          })
+          .catch(err => {
+            setIsSuccess(false);
+            setErrorMessage(err.data);
+          })
+      },
+      (err) => {
+      }
+    )();
+  };
+
+  //#region Messages
+
+  const warningMessageBar = 
     <MessageBar messageBarType={MessageBarType.warning}>
       Zmiana terminu końcowego może uniemożliwić niektórym użytkownikom dodanie nowych prac.
     </MessageBar>
-  );
+  const errorMessageBar = <MessageBar messageBarType={MessageBarType.error}>{errorMessage}</MessageBar>
+  const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Nowy termin końcowy został ustawiony.</MessageBar>
 
-  const errorMessageBar = (
-    <MessageBar messageBarType={MessageBarType.error}>
-      {errorMessage}
-    </MessageBar>
-  )
-
-  const successMessageBar = (
-    <MessageBar messageBarType={MessageBarType.success}>
-      Nowy termin końcowy został ustawiony.
-    </MessageBar>
-  );
-
-  const tokens: IStackTokens = { childrenGap: 15 };
+  //#endregion
 
   return (
     <AdminPanel>
@@ -72,18 +72,40 @@ export const AdminPanelDeadline: React.FC = () => {
       {errorMessage ? errorMessageBar : null}
       <StackItem tokens={tokens}>
         <DatePicker
+          control={control}
+          name="deadline"
           label="Wybierz termin końcowy"
-          placeholder="Wybierz..."
-          aria-placeholder="Wybierz datę..."
-          value={date}
-          onSelectDate={onSelect}
-          minDate={term?.startDate}
-          maxDate={term?.endDate}
+          value={deadline}
+          minDate={term.startDate}
+          maxDate={term.endDate}
+          rules={{
+            required: "Termin końcowy jest wymagany",
+            validate: (value: Date) => {
+              if(!value) {
+                return "Wybierz datę, aby zapisać nowy termin końcowy.";
+              }
+              else if (value > term.endDate) {
+                return "Termin końcowy nie może przekraczać daty końca semestru.";
+              }
+              else if (value < term.startDate) {
+                return "Termin końcowy nie może być wcześniejszy data startu semestru.";
+              }
+            }
+          }}
+          required
         />
-        <PrimaryButton text="Zatwierdź" onClick={save} />
+      </StackItem>
+      <StackItem>
+        <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
     </AdminPanel>
   );
 };
 
 export default AdminPanelDeadline;
+
+//#region Styles
+
+const tokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion
