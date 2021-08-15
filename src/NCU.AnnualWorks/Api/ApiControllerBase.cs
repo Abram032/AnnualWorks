@@ -3,7 +3,7 @@
 namespace NCU.AnnualWorks.Api
 {
     [AutoValidateAntiforgeryToken]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public abstract class ApiControllerBase : ControllerBase
     {
