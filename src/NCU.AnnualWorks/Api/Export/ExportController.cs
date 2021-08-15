@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Repositories;
-using NCU.AnnualWorks.Integrations.Usos.Core;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,18 +13,14 @@ namespace NCU.AnnualWorks.Api.Export
     public class ExportController : ApiControllerBase
     {
         private readonly IThesisRepository _thesisRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IUsosService _usosService;
-        public ExportController(IThesisRepository thesisRepository, IUserRepository userRepository,
-            IUsosService usosService)
+
+        public ExportController(IThesisRepository thesisRepository)
         {
             _thesisRepository = thesisRepository;
-            _userRepository = userRepository;
-            _usosService = usosService;
         }
 
-        [HttpGet("state")]
-        public async Task<IActionResult> GetState([FromQuery] string termId)
+        [HttpGet("validate")]
+        public async Task<IActionResult> GetValidationState([FromQuery] string termId)
         {
             if (string.IsNullOrWhiteSpace(termId))
             {

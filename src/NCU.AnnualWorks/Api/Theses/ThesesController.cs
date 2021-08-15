@@ -32,10 +32,7 @@ namespace NCU.AnnualWorks.Api.Theses
     {
         private readonly IUsosService _usosService;
         private readonly IMapper _mapper;
-        private readonly UsosServiceOptions _usosOptions;
-        private readonly ApplicationOptions _appOptions;
         private readonly IAsyncRepository<Keyword> _keywordRepository;
-        private readonly IAsyncRepository<Review> _reviewRepository;
 
         private readonly IThesisRepository _thesisRepository;
         private readonly IUserRepository _userRepository;
@@ -50,12 +47,9 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             _usosService = usosService;
             _mapper = mapper;
-            _usosOptions = usosOptions.Value;
-            _appOptions = appOptions.Value;
             _userRepository = userRepository;
             _thesisRepository = thesisRepository;
             _keywordRepository = keywordRepository;
-            _reviewRepository = reviewRepository;
             _fileService = fileService;
             _settingsService = settingsService;
         }

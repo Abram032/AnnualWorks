@@ -52,7 +52,7 @@ export namespace AppSettings {
     },
     Export: {
       Base: process.env.REACT_APP_API_EXPORT!,
-      State: process.env.REACT_APP_API_EXPORT_STATE!,
+      Validate: process.env.REACT_APP_API_EXPORT_VALIDATE!,
     }
   }
   export const Copyright = process.env.REACT_APP_COPYRIGHT!;

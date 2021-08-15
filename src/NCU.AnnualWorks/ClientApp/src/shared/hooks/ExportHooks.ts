@@ -20,7 +20,7 @@ export const useExportValidation = (termId: string | undefined): [boolean | unde
     }
 
     if (termId) {
-      api.get<boolean>(`${AppSettings.API.Export.State}?termId=${termId}`)
+      api.get<boolean>(`${AppSettings.API.Export.Validate}?termId=${termId}`)
         .then(response => {
           setValid(response.data);
           setIsFetching(false);

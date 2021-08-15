@@ -25,9 +25,7 @@ namespace NCU.AnnualWorks.Api.Reviews
         private readonly IUserRepository _userRepository;
         private readonly IReviewRepository _reviewRepository;
         private readonly IAsyncRepository<Question> _questionRepository;
-        private readonly IAsyncRepository<ThesisLog> _thesisLogRepository;
         private readonly IAsyncRepository<Answer> _answerRepository;
-        private readonly IFileService _fileService;
         private readonly ISettingsService _settingsService;
         public ReviewsController(IReviewRepository reviewRepository,
             IThesisRepository thesisRepository, IUserRepository userRepository,
@@ -40,9 +38,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             _thesisRepository = thesisRepository;
             _userRepository = userRepository;
             _questionRepository = questionRepository;
-            _thesisLogRepository = thesisLogRepository;
             _answerRepository = answerRepository;
-            _fileService = fileService;
             _settingsService = settingsService;
         }
 
