@@ -23,7 +23,6 @@ export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
     return <Redirect to={RouteNames.error} />
   }
 
-  //TODO: Implement saving reviews
   const onSave = (data: ReviewRequestData) => 
     api.post(AppSettings.API.Reviews.Base, data);
 

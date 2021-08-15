@@ -53,23 +53,10 @@ export default PeoplePicker;
 
 const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
 
-  const onFilterChanged = (
-    filter: string,
-    selectedItems?: IPersonaProps[]
-  ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+  const onFilterChanged = (filter: string, selectedItems?: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => 
+    filterPeople(filter, props.people, selectedItems, props.maxSuggestions);
 
-    return props.people.filter(p => (
-      p.text?.toLowerCase().includes(filter.toLowerCase()) ||
-      p.secondaryText?.toLowerCase().includes(filter.toLowerCase())
-    ) && !selectedItems?.includes(p))
-      .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
-      .slice(0, props.maxSuggestions);
-  };
-
-  const onEmptyFilter = (
-    selectedItems?: IPersonaProps[]
-  ): IPersonaProps[] | Promise<IPersonaProps[]> => {
-
+  const onEmptyFilter = (selectedItems?: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
     return props.people.filter(p => !selectedItems?.includes(p))
       .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
       .slice(0, props.maxSuggestions);
@@ -121,5 +108,14 @@ const suggestionProps: IBasePickerSuggestionsProps = {
   suggestionsAvailableAlertText: 'Sugerowane osoby',
   suggestionsContainerAriaLabel: 'Sugerowane osoby',
 };
+
+//#endregion
+
+//#region FilterPeople
+
+export const filterPeople = (filter: string, people: IPersonaProps[], selectedItems?: IPersonaProps[], maxSuggestions?: number): IPersonaProps[] => 
+  people.filter(p => 
+    (p.text?.toLowerCase().includes(filter.toLowerCase()) || p.secondaryText?.toLowerCase().includes(filter.toLowerCase())) && 
+    !selectedItems?.some(u => u.key === p.key)).sort((p1, p2) => p1.text!.localeCompare(p2.text!)).slice(0, maxSuggestions ?? 5);
 
 //#endregion

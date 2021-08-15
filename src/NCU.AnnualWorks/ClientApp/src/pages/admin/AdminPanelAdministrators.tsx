@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { mapUsersToPersona } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
-import { PeoplePicker, AdminPanel, Loader } from '../../Components';
+import { PeoplePicker, AdminPanel, Loader, filterPeople } from '../../Components';
 import { useAdmins, useDefaultAdmin, usePeoplePicker } from '../../shared/Hooks';
 import { SetAdminsRequestData, useApi } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
@@ -50,23 +50,13 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
     mode: "all"
   });
 
-  const maxSuggestions = 10;
-  const onFilterChanged = (
-    filter: string,
-    selectedItems?: IPersonaProps[]
-  ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+  const onFilterChanged = (filter: string, selectedItems?: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
     return api.get<User[]>(`${AppSettings.API.Users.Base}?search=${filter.trim()}`)
       .then(res => mapUsersToPersona(res.data))
-      .then(people => people.filter(p => (
-        p.text?.toLowerCase().startsWith(filter.toLowerCase()) ||
-        p.secondaryText?.toLowerCase().startsWith(filter.toLowerCase())
-      ) && !selectedItems?.some(u => u.key === p.key))
-        .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
-        .slice(0, maxSuggestions))
+      .then(people => filterPeople(filter, people, selectedItems))
       .catch(err => {
         setErrorMessage(err.data);
-        const empty: IPersonaProps[] = [];
-        return empty;
+        return [];
       });
   };
 
@@ -93,19 +83,8 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
     )();
   };
 
-  const errorMessageBar = (
-    <MessageBar messageBarType={MessageBarType.error}>
-      {errorMessage}
-    </MessageBar>
-  )
-
-  const successMessageBar = (
-    <MessageBar messageBarType={MessageBarType.success}>
-      Zapisano.
-    </MessageBar>
-  );
-
-  const tokens: IStackTokens = { childrenGap: 15 };
+  const errorMessageBar = <MessageBar messageBarType={MessageBarType.error}>{errorMessage}</MessageBar>;
+  const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Zapisano.</MessageBar>;
 
   return (
     <AdminPanel>
@@ -130,7 +109,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
           people={admins}
           selectedPeople={selectedAdmins}
           onChange={onChangeSelectedAdmins}
-          maxSuggestions={maxSuggestions}
+          maxSuggestions={5}
           resolveDelay={500}
           onFilterChanged={onFilterChanged}
           defaultValue={mapUsersToPersona(props.admins)}
@@ -142,3 +121,9 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
     </AdminPanel>
   );
 };
+
+//#region Styles
+
+const tokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion
