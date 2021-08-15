@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilePickerOptions } from '../../shared/Models';
+import { filePickerDefaultOptions } from '../../shared/Models';
 import { ThesisForm, Loader } from '../../Components';
 import { useThesis, useKeywords,useEmployees, useStudents, useCurrentUser } from '../../shared/Hooks';
 import { useApi } from '../../shared/api/Api';
@@ -30,12 +30,6 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
   if(!currentUser.isLecturer) {
     return <Redirect to={RouteNames.forbidden} />
   }
-
-  const filePickerOptions: FilePickerOptions = {
-    allowedExtensions: [".pdf"],
-    maxFileCount: 1,
-    maxSize: 10000000
-  };
   
   const onSave = (formData: FormData) => 
     api.put(`${AppSettings.API.Theses.Base}/${props.guid}`, formData, {
@@ -50,7 +44,7 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
       employees={employees}
       excludedUserIds={[currentUser.id]}
       onSave={onSave}
-      fileOptions={filePickerOptions}
+      fileOptions={filePickerDefaultOptions}
     />
   )
 };

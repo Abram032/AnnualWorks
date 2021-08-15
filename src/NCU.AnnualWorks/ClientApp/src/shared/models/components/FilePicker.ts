@@ -4,4 +4,8 @@ export type FilePickerOptions = {
   maxFileCount?: number
 };
 
-export default FilePickerOptions;
+export const filePickerDefaultOptions: FilePickerOptions = {
+  allowedExtensions: [".pdf"],
+  maxFileCount: 1,
+  maxSize: 10000000
+};
