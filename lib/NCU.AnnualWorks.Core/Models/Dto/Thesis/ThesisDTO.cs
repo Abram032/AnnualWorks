@@ -17,8 +17,8 @@ namespace NCU.AnnualWorks.Core.Models.Dto
         public DateTime CreatedAt { get; set; }
         public UserDTO Promoter { get; set; }
         public UserDTO Reviewer { get; set; }
-        public ReviewBasicDTO PromoterReview { get; set; }
-        public ReviewBasicDTO ReviewerReview { get; set; }
+        public ReviewDTO PromoterReview { get; set; }
+        public ReviewDTO ReviewerReview { get; set; }
         public List<UserDTO> ThesisAuthors { get; set; }
         public List<KeywordDTO> ThesisKeywords { get; set; }
         public ThesisActionsDTO Actions { get; set; }

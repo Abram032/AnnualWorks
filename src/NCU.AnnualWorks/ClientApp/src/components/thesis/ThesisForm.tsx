@@ -94,7 +94,9 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
           .then(result => {
             scrollToTop();
             setUploadSuccess(true);
-            if (!withReview) {
+            if(withReview && props.thesis?.promoterReview?.guid) {
+              history.push(RouteNames.editReviewPath(props.thesis.guid, props.thesis.promoterReview.guid));
+            } else if (!withReview) {
               history.push(RouteNames.detailsPath(result.data))
             } else {
               history.push(RouteNames.addReviewPath(result.data))
@@ -105,7 +107,9 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             setUploadSuccess(false);
           });
       },
-      (err) => { }
+      (err) => { 
+        setErrorMessage("Popraw błędy walidacyjne przed zapisem pracy.");
+      }
     )();
   };
 

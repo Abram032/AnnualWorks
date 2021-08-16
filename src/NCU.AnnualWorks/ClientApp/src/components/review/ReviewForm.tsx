@@ -56,7 +56,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
           setUploadSuccess(false);
         })
       },
-      (err) => { }
+      (err) => { 
+        setErrorMessage("Popraw błędy walidacyjne przed zapisem recenzji.");
+      }
     )();
   };
 

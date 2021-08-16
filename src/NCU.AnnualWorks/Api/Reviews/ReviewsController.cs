@@ -131,7 +131,7 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             if (thesis.Reviews.Any(r => r.CreatedBy == currentUser))
             {
-                return new ConflictObjectResult("Recenzja dla tej pracy została już istnieje.");
+                return new ConflictObjectResult("Recenzja dla tej pracy już istnieje.");
             }
 
             var questionIds = request.QnAs.Keys;

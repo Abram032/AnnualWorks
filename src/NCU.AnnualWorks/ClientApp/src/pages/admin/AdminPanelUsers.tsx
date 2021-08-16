@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { mapUsersToPersona } from "../../shared/Utils";
+import { mapUsersToPersona, scrollToTop } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
 import { PeoplePicker, AdminPanel, Loader, filterPeople } from '../../Components';
@@ -38,7 +38,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   const api = useApi();
   const [users, selectedUsers, onChangeSelectedUsers] = usePeoplePicker(props.users);
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [success, setIsSuccess] = useState<boolean>();
+  const [uploadSuccess, setUploadSuccess] = useState<boolean>();
 
   const { handleSubmit, control } = useForm<Form, any>({
     defaultValues: {
@@ -62,7 +62,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   };
 
   const onSave = () => {
-    setIsSuccess(false);
+    setUploadSuccess(false);
     setErrorMessage(undefined);
 
     handleSubmit(
@@ -72,14 +72,17 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
         }
         api.put(AppSettings.API.Users.Custom, request)
           .then(res => {
-            setIsSuccess(true);
+            scrollToTop();
+            setUploadSuccess(true);
           })
           .catch(err => {
-            setIsSuccess(false);
+            scrollToTop();
+            setUploadSuccess(false);
             setErrorMessage(err.data);
           })
       },
       (err) => {
+        setErrorMessage("Popraw błędy walidacyjne przed zapisem.")
       }
     )();
   };
@@ -94,7 +97,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   return (
     <AdminPanel>
       {errorMessage ? errorMessageBar : null}
-      {success ? successMessageBar : null}
+      {uploadSuccess ? successMessageBar : null}
       <StackItem tokens={tokens}>
         <PeoplePicker
           required={true}

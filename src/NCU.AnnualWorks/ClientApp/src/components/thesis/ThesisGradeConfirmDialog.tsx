@@ -49,6 +49,9 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
   });
 
   const onSave = () => {
+    setErrorMessage(undefined);
+    setUploadSuccess(false);
+    
     handleSubmit(
       (values) => {
         var body: ConfirmGradeRequestData = {
@@ -62,10 +65,11 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
           })
           .catch(err => {
             setErrorMessage(err.data);
+            setUploadSuccess(false);
           })
       },
       (err) => {
-        console.log(err);
+        setErrorMessage("Popraw błędy walidacyjne przed zatwierdzeniem oceny.");
       }
     )();
   };

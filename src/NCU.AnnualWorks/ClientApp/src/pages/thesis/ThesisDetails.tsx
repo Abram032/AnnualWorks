@@ -188,7 +188,7 @@ const onRenderItemColumn = (
 //#region Review Modal
 
 const getReviewModal = (user: User, isVisible: boolean, toggleIsVisible: () => void, review?: Review) => {
-  return !review?.guid ? null :
+  return !review?.guid || !review.isConfirmed ? null :
     <ReviewModal
       guid={review.guid!}
       person={`${user.firstName} ${user.lastName}`}
@@ -214,7 +214,7 @@ const getReviewDetailRow = (
     name: `${user.firstName} ${user.lastName}`,
     grade: review?.grade ?? "Brak oceny",
     action: getReviewActions(currentUser, user, thesisGuid, thesisActions, review),
-    showModal: review ? toggleModalVisible : undefined
+    showModal: review && review.isConfirmed ? toggleModalVisible : undefined
   };
 }
 

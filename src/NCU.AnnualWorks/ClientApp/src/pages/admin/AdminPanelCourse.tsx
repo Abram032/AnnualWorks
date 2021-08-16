@@ -7,6 +7,7 @@ import { TextField, AdminPanel, Loader } from "../../Components";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../../shared/Consts";
+import { scrollToTop } from "../../shared/Utils";
 
 interface Form {
   courseCode: string,
@@ -16,7 +17,7 @@ export const AdminPanelCourse: React.FC = () => {
   const api = useApi();
   const [course, courseFetching] = useCourse();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [success, setIsSuccess] = useState<boolean>();
+  const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const { handleSubmit, control, setValue } = useForm<Form>({
     reValidateMode: "onSubmit",
     mode: "all",
@@ -31,7 +32,7 @@ export const AdminPanelCourse: React.FC = () => {
   }
 
   const onSave = () => {
-    setIsSuccess(false);
+    setUploadSuccess(false);
     setErrorMessage(undefined);
 
     handleSubmit(
@@ -41,14 +42,17 @@ export const AdminPanelCourse: React.FC = () => {
         }
         api.put(AppSettings.API.Course.Base, request)
           .then(res => {
-            setIsSuccess(true);
+            scrollToTop();
+            setUploadSuccess(true);
           })
           .catch(err => {
-            setIsSuccess(false);
+            scrollToTop();
+            setUploadSuccess(false);
             setErrorMessage(err.data);
           })
       },
       (err) => {
+        setErrorMessage("Popraw błędy walidacyjne przed zmianą kursu.");
       }
     )();
   };
@@ -67,7 +71,7 @@ export const AdminPanelCourse: React.FC = () => {
   return (
     <AdminPanel>
       {warningMessageBar}
-      {success ? successMessageBar : null}
+      {uploadSuccess ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
       <StackItem tokens={tokens}>
         <TextField

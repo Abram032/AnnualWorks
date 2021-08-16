@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
+using NCU.AnnualWorks.Core.Models;
 using System.Linq;
 
 namespace NCU.AnnualWorks.Core.Extensions
@@ -27,22 +28,33 @@ namespace NCU.AnnualWorks.Core.Extensions
                 OAuthCallback = callback
             };
 
-        public static string CurrentUserUsosId(this HttpContext context)
-            => context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Id))?.Value;
+        public static long CurrentUserUsosId(this HttpContext context)
+            => long.TryParse(context?.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.Id))?.Value, out var id) ? id : default;
 
         public static bool IsCurrentUserParticipant(this HttpContext context)
-            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsParticipant))?.Value);
+            => bool.TryParse(context?.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsParticipant))?.Value, out var value) ? value : false;
 
         public static bool IsCurrentUserLecturer(this HttpContext context)
-            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsLecturer))?.Value);
+            => bool.TryParse(context?.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsLecturer))?.Value, out var value) ? value : false;
 
         public static bool IsCurrentUserAdmin(this HttpContext context)
-            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsAdmin))?.Value);
+            => bool.TryParse(context?.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsAdmin))?.Value, out var value) ? value : false;
 
         public static bool IsCurrentUserCustom(this HttpContext context)
-            => bool.Parse(context.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsCustom))?.Value);
+            => bool.TryParse(context?.User?.Claims?.FirstOrDefault(c => c.Type == nameof(AuthClaims.IsCustom))?.Value, out var value) ? value : false;
 
         public static bool IsCurrentUserEmployee(this HttpContext context)
             => context.IsCurrentUserLecturer() || context.IsCurrentUserAdmin() || context.IsCurrentUserCustom();
+
+        public static CurrentUser GetCurrentUser(this HttpContext context) =>
+            new CurrentUser
+            {
+                Id = context.CurrentUserUsosId(),
+                IsParticipant = context.IsCurrentUserParticipant(),
+                IsLecturer = context.IsCurrentUserLecturer(),
+                IsAdmin = context.IsCurrentUserAdmin(),
+                IsCustom = context.IsCurrentUserCustom(),
+                IsEmployee = context.IsCurrentUserEmployee()
+            };
     }
 }

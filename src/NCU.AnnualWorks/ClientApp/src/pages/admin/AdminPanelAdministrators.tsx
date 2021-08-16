@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { mapUsersToPersona } from "../../shared/Utils";
+import { mapUsersToPersona, scrollToTop } from "../../shared/Utils";
 import { IPersonaProps, IStackTokens, Label, MessageBar, MessageBarType, Persona, PrimaryButton, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
 import { PeoplePicker, AdminPanel, Loader, filterPeople } from '../../Components';
@@ -40,7 +40,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   const api = useApi();
   const [admins, selectedAdmins, onChangeSelectedAdmins] = usePeoplePicker(props.admins);
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [success, setIsSuccess] = useState<boolean>();
+  const [uploadSuccess, setUploadSuccess] = useState<boolean>();
 
   const { handleSubmit, control } = useForm<Form, any>({
     defaultValues: {
@@ -61,7 +61,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   };
 
   const onSave = () => {
-    setIsSuccess(false);
+    setUploadSuccess(false);
     setErrorMessage(undefined);
 
     handleSubmit(
@@ -71,14 +71,17 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
         }
         api.put(AppSettings.API.Users.Admins.Base, request)
           .then(res => {
-            setIsSuccess(true);
+            scrollToTop();
+            setUploadSuccess(true);
           })
           .catch(err => {
-            setIsSuccess(false);
+            scrollToTop();
+            setUploadSuccess(false);
             setErrorMessage(err.data);
           })
       },
       (err) => {
+        setErrorMessage("Popraw błędy walidacyjne przed zapisem.");
       }
     )();
   };
@@ -89,7 +92,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   return (
     <AdminPanel>
       {errorMessage ? errorMessageBar : null}
-      {success ? successMessageBar : null}
+      {uploadSuccess ? successMessageBar : null}
       <StackItem tokens={tokens}>
         <Label>Główny administrator</Label>
         <Persona

@@ -1,22 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Theses.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
+using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
-using NCU.AnnualWorks.Core.Models.Dto.Reviews;
 using NCU.AnnualWorks.Core.Models.Dto.Thesis;
-using NCU.AnnualWorks.Core.Models.Dto.Users;
 using NCU.AnnualWorks.Core.Models.Enums;
-using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
-using NCU.AnnualWorks.Integrations.Usos.Core.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,11 +35,10 @@ namespace NCU.AnnualWorks.Api.Theses
 
         private readonly IFileService _fileService;
         private readonly ISettingsService _settingsService;
-        public ThesesController(IUsosService usosService, IMapper mapper, IOptions<UsosServiceOptions> usosOptions,
-            IOptions<ApplicationOptions> appOptions, IUserRepository userRepository,
-            IThesisRepository thesisRepository, IAsyncRepository<Review> reviewRepository,
-            IAsyncRepository<Keyword> keywordRepository, IFileService fileService,
-            ISettingsService settingsService)
+
+        public ThesesController(IUsosService usosService, IMapper mapper, IUserRepository userRepository,
+            IThesisRepository thesisRepository, IAsyncRepository<Keyword> keywordRepository,
+            IFileService fileService, ISettingsService settingsService)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -184,7 +179,6 @@ namespace NCU.AnnualWorks.Api.Theses
         public async Task<IActionResult> GetThesis(Guid id)
         {
             var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-
             var thesis = await _thesisRepository.GetAsync(id);
 
             if (thesis == null)
@@ -192,79 +186,52 @@ namespace NCU.AnnualWorks.Api.Theses
                 return new NotFoundResult();
             }
 
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-            var isEmployee = HttpContext.IsCurrentUserEmployee();
-
+            var currentUser = HttpContext.GetCurrentUser();
             var isAuthor = thesis.ThesisAuthors.Select(p => p.AuthorId).Contains(currentUser.Id);
             var isReviewer = thesis.Reviewer.Id == currentUser.Id;
             var isPromoter = thesis.Promoter.Id == currentUser.Id;
 
-            if (!isEmployee && !isAuthor && !isReviewer && !isPromoter)
+            if (!currentUser.IsEmployee && !isAuthor && !isReviewer && !isPromoter)
             {
                 return new ForbidResult();
             }
 
-            var oauthRequest = HttpContext.BuildOAuthRequest();
-            //TODO: Run in parallel
-            var promoter = await _usosService.GetUser(oauthRequest, thesis.Promoter.UsosId);
-            var reviewer = await _usosService.GetUser(oauthRequest, thesis.Reviewer.UsosId);
-            var authors = await _usosService.GetUsers(oauthRequest, thesis.ThesisAuthors.Select(p => p.Author.UsosId));
+            var getPromoter = _usosService.GetUser(HttpContext.BuildOAuthRequest(), thesis.Promoter.UsosId);
+            var getReviewer = _usosService.GetUser(HttpContext.BuildOAuthRequest(), thesis.Reviewer.UsosId);
+            var getAuthors = _usosService.GetUsers(HttpContext.BuildOAuthRequest(), thesis.ThesisAuthors.Select(p => p.Author.UsosId));
+            await Task.WhenAll(getPromoter, getReviewer, getAuthors);
 
-            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter && p.IsConfirmed);
-            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer && p.IsConfirmed);
+            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter);
+            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer);
 
             //Mapping
-            var thesisDto = _mapper.Map<ThesisDTO>(thesis);
-            thesisDto.ThesisAuthors = _mapper.Map<List<UserDTO>>(authors);
-            thesisDto.Promoter = _mapper.Map<UserDTO>(promoter);
-            thesisDto.Reviewer = _mapper.Map<UserDTO>(reviewer);
-            thesisDto.FileGuid = thesis.File.Guid;
-            thesisDto.ReviewGuid = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == currentUser)?.Guid;
-            thesisDto.PromoterReview = promoterReview == null ? null : new ReviewBasicDTO
-            {
-                Guid = promoterReview.Guid,
-                Grade = promoterReview.Grade
-            };
-            thesisDto.ReviewerReview = reviewerReview == null ? null : new ReviewBasicDTO
-            {
-                Guid = reviewerReview.Guid,
-                Grade = reviewerReview.Grade
-            };
+            var thesisDto = thesis.ToBasicDto();
+            thesisDto.ThesisAuthors = getAuthors.Result.ToDto().ToList();
+            thesisDto.Promoter = getPromoter.Result.ToDto();
+            thesisDto.Reviewer = getReviewer.Result.ToDto();
+            thesisDto.ReviewGuid = thesis.Reviews.FirstOrDefault(r => r.CreatedBy.Id == currentUser.Id)?.Guid;
+            thesisDto.PromoterReview = promoterReview == null ? null : promoterReview.ToBasicDto();
+            thesisDto.ReviewerReview = reviewerReview == null ? null : reviewerReview.ToBasicDto();
             thesisDto.Actions = new ThesisActionsDTO
             {
-                //TODO: Check if review exists
-                CanAddReview = (isPromoter || isReviewer) &&
-                    !thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
-                    DateTime.Now < deadline,
-                CanDownload = true,
-                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) &&
-                    DateTime.Now < deadline,
-                //TODO: Check if review exists
-                CanEditReview = (isPromoter || isReviewer) &&
-                    thesis.Reviews.Any(r => r.CreatedBy == currentUser && !r.IsConfirmed) &&
-                    DateTime.Now < deadline,
-                CanPrint = true,
-                CanView = true,
+                CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id) && DateTime.Now < deadline,
+                CanDownload = currentUser.IsEmployee || isAuthor,
+                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
+                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id && !r.IsConfirmed) && DateTime.Now < deadline,
+                CanPrint = currentUser.IsEmployee || isAuthor,
+                CanView = currentUser.IsEmployee || isAuthor,
                 CanEditGrade = isPromoter &&
                     thesis.Grade == null &&
                     thesis.Reviews.All(r => r.IsConfirmed) &&
-                    thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
+                    thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id) &&
                     thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer) &&
                     DateTime.Now < deadline
             };
-            foreach (var additionalFile in thesisDto.ThesisAdditionalFiles)
-            {
-                additionalFile.Actions = new ThesisFileActionsDTO
-                {
-                    CanDelete = isPromoter,
-                    CanDownload = true
-                };
-            };
 
-            if (HttpContext.IsCurrentUserEmployee())
+            if (currentUser.IsEmployee)
             {
-                var usosUsersFromLogs = await _usosService.GetUsers(oauthRequest, thesis.ThesisLogs.Select(p => p.User.UsosId));
-                var usersFromLogs = _mapper.Map<List<UsosUser>, List<UserDTO>>(usosUsersFromLogs);
+                var usosUsersFromLogs = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), thesis.ThesisLogs.Select(p => p.User.UsosId).Distinct());
+                var usersFromLogs = usosUsersFromLogs.ToDto().ToList();
 
                 thesisDto.ThesisLogs = thesis.ThesisLogs.Select(p => new ThesisLogDTO
                 {
@@ -293,7 +260,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var currentUserUsosId = HttpContext.CurrentUserUsosId();
             var currentTermId = await _usosService.GetCurrentTerm(oauthRequest);
 
-            if (currentUserUsosId == requestData.ReviewerUsosId)
+            if (currentUserUsosId.ToString() == requestData.ReviewerUsosId)
             {
                 return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
@@ -430,7 +397,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var currentUserUsosId = HttpContext.CurrentUserUsosId();
             var currentUser = await _userRepository.GetAsync(currentUserUsosId);
 
-            if (requestData.ReviewerUsosId == currentUserUsosId)
+            if (requestData.ReviewerUsosId == currentUserUsosId.ToString())
             {
                 return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
