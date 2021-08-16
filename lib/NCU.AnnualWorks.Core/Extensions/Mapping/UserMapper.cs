@@ -19,9 +19,9 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
             };
         }
 
-        public static IEnumerable<UserDTO> ToDto(this IEnumerable<UsosUser> usosUsers)
+        public static List<UserDTO> ToDto(this IEnumerable<UsosUser> usosUsers)
         {
-            return usosUsers.Select(u => u.ToDto());
+            return usosUsers.Select(u => u.ToDto()).ToList();
         }
     }
 }

@@ -16,9 +16,9 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
             };
         }
 
-        public static IEnumerable<KeywordDTO> ToDto(this IEnumerable<Keyword> keywords)
+        public static List<KeywordDTO> ToDto(this IEnumerable<Keyword> keywords)
         {
-            return keywords.Select(k => k.ToDto());
+            return keywords.Select(k => k.ToDto()).ToList();
         }
 
         public static KeywordDTO ToDto(this ThesisKeyword thesisKeyword)
@@ -30,9 +30,9 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
             };
         }
 
-        public static IEnumerable<KeywordDTO> ToDto(this IEnumerable<ThesisKeyword> thesisKeywords)
+        public static List<KeywordDTO> ToDto(this IEnumerable<ThesisKeyword> thesisKeywords)
         {
-            return thesisKeywords.Select(k => k.ToDto());
+            return thesisKeywords.Select(k => k.ToDto()).ToList();
         }
     }
 }

@@ -6,7 +6,6 @@ using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
-using NCU.AnnualWorks.Core.Models.Dto;
 using NCU.AnnualWorks.Core.Models.Dto.Thesis;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
@@ -35,10 +34,11 @@ namespace NCU.AnnualWorks.Api.Theses
 
         private readonly IFileService _fileService;
         private readonly ISettingsService _settingsService;
+        private readonly IThesisService _thesisService;
 
         public ThesesController(IUsosService usosService, IMapper mapper, IUserRepository userRepository,
             IThesisRepository thesisRepository, IAsyncRepository<Keyword> keywordRepository,
-            IFileService fileService, ISettingsService settingsService)
+            IFileService fileService, ISettingsService settingsService, IThesisService thesisService)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -47,35 +47,25 @@ namespace NCU.AnnualWorks.Api.Theses
             _keywordRepository = keywordRepository;
             _fileService = fileService;
             _settingsService = settingsService;
+            _thesisService = thesisService;
         }
 
         [HttpGet("promoted")]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> GetPromotedTheses()
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var currentUser = HttpContext.GetCurrentUser();
 
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisRepository.GetAll()
-                .Where(p => p.Promoter == currentUser && p.TermId == currentTerm.Id)
-                .Select(p => new ThesisBasicDTO
-                {
-                    Guid = p.Guid,
-                    Title = p.Title,
-                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
-                    FileGuid = p.File.Guid,
-                    Actions = new ThesisActionsDTO
-                    {
-                        CanView = true,
-                        CanEdit = (!p.Reviews.Any(r => r.IsConfirmed) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
-                        CanPrint = true,
-                        CanDownload = true,
-                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) && DateTime.Now < deadline,
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) && DateTime.Now < deadline
-                    }
-                }).ToList();
+            var theses = _thesisService.GetPromotedTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            foreach (var thesis in theses)
+            {
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
+            }
 
             return new OkObjectResult(theses);
         }
@@ -84,29 +74,18 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> GetReviewedTheses()
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var currentUser = HttpContext.GetCurrentUser();
 
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisRepository.GetAll()
-                .Where(p => p.Reviewer == currentUser && p.TermId == currentTerm.Id)
-                .Select(p => new ThesisBasicDTO
-                {
-                    Guid = p.Guid,
-                    Title = p.Title,
-                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
-                    FileGuid = p.File.Guid,
-                    Actions = new ThesisActionsDTO
-                    {
-                        CanView = true,
-                        CanEdit = HttpContext.IsCurrentUserAdmin() && DateTime.Now < deadline,
-                        CanPrint = true,
-                        CanDownload = true,
-                        CanAddReview = !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) && DateTime.Now < deadline,
-                        CanEditReview = p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) && DateTime.Now < deadline
-                    }
-                }).ToList();
+            var theses = _thesisService.GetReviewedTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            foreach (var thesis in theses)
+            {
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
+            }
 
             return new OkObjectResult(theses);
         }
@@ -115,61 +94,38 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetAuthoredTheses()
         {
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var currentUser = HttpContext.GetCurrentUser();
 
-            var theses = _thesisRepository.GetAll()
-                .Where(p => p.ThesisAuthors.Select(p => p.Author).Contains(currentUser) && p.TermId == currentTerm.Id)
-                .Select(p => new ThesisBasicDTO
-                {
-                    Guid = p.Guid,
-                    Title = p.Title,
-                    FileGuid = p.File.Guid,
-                    Actions = new ThesisActionsDTO
-                    {
-                        CanView = true,
-                        CanPrint = true,
-                        CanDownload = true,
-                    }
-                }).ToList();
+            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var thesesDto = _mapper.Map<List<ThesisBasicDTO>>(theses);
+            var theses = _thesisService.GetAuthoredTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            foreach (var thesis in theses)
+            {
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
+            }
 
-            return new OkObjectResult(thesesDto);
+            return new OkObjectResult(theses);
         }
 
         [HttpGet]
         [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetTheses()
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var currentUser = HttpContext.GetCurrentUser();
 
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-            var currentTerm = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
-            var isEmployee = HttpContext.IsCurrentUserEmployee();
+            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisRepository.GetAll()
-                .Where(p => p.TermId == currentTerm.Id)
-                .Select(p => new ThesisBasicDTO
-                {
-                    Guid = p.Guid,
-                    Title = p.Title,
-                    ReviewGuid = p.Reviews.FirstOrDefault(r => r.ThesisId == p.Id && r.CreatedBy == currentUser).Guid,
-                    FileGuid = p.File.Guid,
-                    Actions = new ThesisActionsDTO
-                    {
-                        CanView = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanPrint = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanDownload = isEmployee || p.ThesisAuthors.Select(a => a.Author).Contains(currentUser),
-                        CanEdit = ((p.Promoter == currentUser && !p.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
-                        CanAddReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
-                            !p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser) &&
-                            DateTime.Now < deadline,
-                        CanEditReview = (p.Reviewer == currentUser || p.Promoter == currentUser) &&
-                            p.Reviews.Any(r => r.ThesisId == p.Id && r.CreatedBy == currentUser && !r.IsConfirmed) &&
-                            DateTime.Now < deadline,
-                    }
-                });
+            var theses = _thesisService.GetThesesByTerm(getCurrentTerm.Result.Id).ToBasicDto();
+            foreach (var thesis in theses)
+            {
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
+            }
 
             return new OkObjectResult(theses);
         }
@@ -178,60 +134,42 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AtLeastStudent)]
         public async Task<IActionResult> GetThesis(Guid id)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            var thesis = await _thesisRepository.GetAsync(id);
-
-            if (thesis == null)
+            if (!_thesisService.ThesisExists(id))
             {
                 return new NotFoundResult();
             }
 
+            var thesis = await _thesisRepository.GetAsync(id);
             var currentUser = HttpContext.GetCurrentUser();
             var isAuthor = thesis.ThesisAuthors.Select(p => p.AuthorId).Contains(currentUser.Id);
             var isReviewer = thesis.Reviewer.Id == currentUser.Id;
             var isPromoter = thesis.Promoter.Id == currentUser.Id;
 
-            if (!currentUser.IsEmployee && !isAuthor && !isReviewer && !isPromoter)
+            if (!isAuthor && !currentUser.IsEmployee)
             {
                 return new ForbidResult();
             }
 
+            var getDeadline = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             var getPromoter = _usosService.GetUser(HttpContext.BuildOAuthRequest(), thesis.Promoter.UsosId);
             var getReviewer = _usosService.GetUser(HttpContext.BuildOAuthRequest(), thesis.Reviewer.UsosId);
             var getAuthors = _usosService.GetUsers(HttpContext.BuildOAuthRequest(), thesis.ThesisAuthors.Select(p => p.Author.UsosId));
-            await Task.WhenAll(getPromoter, getReviewer, getAuthors);
-
-            var promoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter);
-            var reviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer);
+            await Task.WhenAll(getPromoter, getReviewer, getAuthors, getDeadline);
 
             //Mapping
-            var thesisDto = thesis.ToBasicDto();
-            thesisDto.ThesisAuthors = getAuthors.Result.ToDto().ToList();
+            var thesisDto = thesis.ToDto();
+            thesisDto.ThesisAuthors = getAuthors.Result.ToDto();
             thesisDto.Promoter = getPromoter.Result.ToDto();
             thesisDto.Reviewer = getReviewer.Result.ToDto();
-            thesisDto.ReviewGuid = thesis.Reviews.FirstOrDefault(r => r.CreatedBy.Id == currentUser.Id)?.Guid;
-            thesisDto.PromoterReview = promoterReview == null ? null : promoterReview.ToBasicDto();
-            thesisDto.ReviewerReview = reviewerReview == null ? null : reviewerReview.ToBasicDto();
-            thesisDto.Actions = new ThesisActionsDTO
-            {
-                CanAddReview = (isPromoter || isReviewer) && !thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id) && DateTime.Now < deadline,
-                CanDownload = currentUser.IsEmployee || isAuthor,
-                CanEdit = ((isPromoter && !thesis.Reviews.Any(r => r.IsConfirmed)) || HttpContext.IsCurrentUserAdmin()) && DateTime.Now < deadline,
-                CanEditReview = (isPromoter || isReviewer) && thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id && !r.IsConfirmed) && DateTime.Now < deadline,
-                CanPrint = currentUser.IsEmployee || isAuthor,
-                CanView = currentUser.IsEmployee || isAuthor,
-                CanEditGrade = isPromoter &&
-                    thesis.Grade == null &&
-                    thesis.Reviews.All(r => r.IsConfirmed) &&
-                    thesis.Reviews.Any(r => r.CreatedBy.Id == currentUser.Id) &&
-                    thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer) &&
-                    DateTime.Now < deadline
-            };
+            thesisDto.PromoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter)?.ToBasicDto();
+            thesisDto.ReviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer)?.ToBasicDto();
+            thesisDto.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
+            thesisDto.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadline.Result);
 
             if (currentUser.IsEmployee)
             {
                 var usosUsersFromLogs = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), thesis.ThesisLogs.Select(p => p.User.UsosId).Distinct());
-                var usersFromLogs = usosUsersFromLogs.ToDto().ToList();
+                var usersFromLogs = usosUsersFromLogs.ToDto();
 
                 thesisDto.ThesisLogs = thesis.ThesisLogs.Select(p => new ThesisLogDTO
                 {
