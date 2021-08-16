@@ -54,7 +54,8 @@ namespace NCU.AnnualWorks.Core.Extensions
                 IsLecturer = context.IsCurrentUserLecturer(),
                 IsAdmin = context.IsCurrentUserAdmin(),
                 IsCustom = context.IsCurrentUserCustom(),
-                IsEmployee = context.IsCurrentUserEmployee()
+                IsEmployee = context.IsCurrentUserEmployee(),
+                OAuthCredentials = context.BuildOAuthRequest(),
             };
     }
 }

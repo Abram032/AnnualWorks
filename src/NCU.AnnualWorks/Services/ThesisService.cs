@@ -1,8 +1,11 @@
-﻿using NCU.AnnualWorks.Core.Models;
+﻿using NCU.AnnualWorks.Core.Extensions.Mapping;
+using NCU.AnnualWorks.Core.Models;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
+using NCU.AnnualWorks.Core.Models.Dto.Thesis;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
+using NCU.AnnualWorks.Integrations.Usos.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +16,12 @@ namespace NCU.AnnualWorks.Services
     public class ThesisService : IThesisService
     {
         private readonly IThesisRepository _thesisRepository;
+        private readonly IUsosService _usosService;
 
-        public ThesisService(IThesisRepository thesisRepository)
+        public ThesisService(IThesisRepository thesisRepository, IUsosService usosService)
         {
             _thesisRepository = thesisRepository;
+            _usosService = usosService;
         }
 
         public ThesisActionsDTO GetAvailableActions(Thesis thesis, CurrentUser currentUser, DateTime deadline)
@@ -70,21 +75,35 @@ namespace NCU.AnnualWorks.Services
             }
         }
 
-        public List<Thesis> GetThesesByTerm(string termId) =>
-            _thesisRepository.GetAll().Where(t => t.TermId == termId).ToList();
+        public List<ThesisDTO> GetThesesByTerm(string termId) =>
+            _thesisRepository.GetAll().Where(t => t.TermId == termId).ToBasicDto();
 
-        public List<Thesis> GetPromotedTheses(long userId, string termId) =>
-            _thesisRepository.GetAll().Where(t => t.Promoter.Id == userId && t.TermId == termId).ToList();
+        public List<ThesisDTO> GetPromotedTheses(long userId, string termId) =>
+            _thesisRepository.GetAll().Where(t => t.Promoter.Id == userId && t.TermId == termId).ToBasicDto();
 
-        public List<Thesis> GetReviewedTheses(long userId, string termId) =>
-            _thesisRepository.GetAll().Where(t => t.Reviewer.Id == userId && t.TermId == termId).ToList();
+        public List<ThesisDTO> GetReviewedTheses(long userId, string termId) =>
+            _thesisRepository.GetAll().Where(t => t.Reviewer.Id == userId && t.TermId == termId).ToBasicDto();
 
-        public List<Thesis> GetAuthoredTheses(long userId, string termId) =>
-            _thesisRepository.GetAll().Where(t => t.ThesisAuthors.Select(a => a.AuthorId).Contains(userId) && t.TermId == termId).ToList();
+        public List<ThesisDTO> GetAuthoredTheses(long userId, string termId) =>
+            _thesisRepository.GetAll().Where(t => t.ThesisAuthors.Select(a => a.AuthorId).Contains(userId) && t.TermId == termId).ToBasicDto();
 
         public async Task<Guid?> GetReviewGuid(Guid thesisGuid, long userId) =>
             (await _thesisRepository.GetAsync(thesisGuid))?.Reviews?.FirstOrDefault(r => r.CreatedBy.Id == userId)?.Guid;
 
         public bool ThesisExists(Guid thesisGuid) => _thesisRepository.GetAll().Any(p => p.Guid == thesisGuid);
+
+        public async Task<List<ThesisLogDTO>> GetThesisLogs(Guid thesisGuid, CurrentUser currentUser)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var usosUsersFromLogs = await _usosService.GetUsers(currentUser.OAuthCredentials, thesis.ThesisLogs.Select(p => p.User.UsosId).Distinct());
+            var usersFromLogs = usosUsersFromLogs.ToDto();
+
+            return thesis.ThesisLogs.Select(p => new ThesisLogDTO
+            {
+                Timestamp = p.Timestamp,
+                ModificationType = p.ModificationType,
+                User = usersFromLogs.FirstOrDefault(u => u.UsosId == p.User.UsosId)
+            }).ToList();
+        }
     }
 }

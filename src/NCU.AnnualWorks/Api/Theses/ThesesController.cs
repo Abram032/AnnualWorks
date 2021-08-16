@@ -6,7 +6,6 @@ using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
-using NCU.AnnualWorks.Core.Models.Dto.Thesis;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
@@ -60,7 +59,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisService.GetPromotedTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            var theses = _thesisService.GetPromotedTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
                 thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
@@ -80,7 +79,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisService.GetReviewedTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            var theses = _thesisService.GetReviewedTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
                 thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
@@ -100,7 +99,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisService.GetAuthoredTheses(currentUser.Id, getCurrentTerm.Result.Id).ToBasicDto();
+            var theses = _thesisService.GetAuthoredTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
                 thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
@@ -120,7 +119,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
-            var theses = _thesisService.GetThesesByTerm(getCurrentTerm.Result.Id).ToBasicDto();
+            var theses = _thesisService.GetThesesByTerm(getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
                 thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
@@ -168,15 +167,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             if (currentUser.IsEmployee)
             {
-                var usosUsersFromLogs = await _usosService.GetUsers(HttpContext.BuildOAuthRequest(), thesis.ThesisLogs.Select(p => p.User.UsosId).Distinct());
-                var usersFromLogs = usosUsersFromLogs.ToDto();
-
-                thesisDto.ThesisLogs = thesis.ThesisLogs.Select(p => new ThesisLogDTO
-                {
-                    Timestamp = p.Timestamp,
-                    ModificationType = p.ModificationType,
-                    User = usersFromLogs.FirstOrDefault(u => u.UsosId == p.User.UsosId)
-                }).ToList();
+                thesisDto.ThesisLogs = await _thesisService.GetThesisLogs(thesisDto.Guid, currentUser);
             }
 
             return new OkObjectResult(thesisDto);
