@@ -9,6 +9,7 @@ using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
+using NCU.AnnualWorks.Core.Utils;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using Newtonsoft.Json;
@@ -173,42 +174,40 @@ namespace NCU.AnnualWorks.Api.Theses
             return new OkObjectResult(thesisDto);
         }
 
+        //TODO: To refactor
         [HttpPost]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> CreateThesis([FromForm] ThesisRequest request)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            if (DateTime.Now > deadline)
+            var currentUser = HttpContext.GetCurrentUser();
+            var getDeadline = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            await Task.WhenAll(getCurrentTerm, getDeadline);
+
+            if (DateTime.Now > getDeadline.Result)
             {
                 return new BadRequestObjectResult("Nie można dodać pracy po upływie terminu końcowego.");
             }
 
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
-
-            var oauthRequest = HttpContext.BuildOAuthRequest();
-            var currentUserUsosId = HttpContext.CurrentUserUsosId();
-            var currentTermId = await _usosService.GetCurrentTerm(oauthRequest);
-
-            if (currentUserUsosId.ToString() == requestData.ReviewerUsosId)
+            if (currentUser.Id.ToString() == requestData.ReviewerUsosId)
             {
                 return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
 
-            var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
-
             //Getting/Creating users
-            var promoter = currentUser;
+            var promoter = await _userRepository.GetAsync(currentUser.Id);
             var reviewer = await _userRepository.GetAsync(requestData.ReviewerUsosId);
 
             if (reviewer == null)
             {
-                var usosUser = await _usosService.GetUser(oauthRequest, requestData.ReviewerUsosId);
+                var usosUser = await _usosService.GetUser(HttpContext.BuildOAuthRequest(), requestData.ReviewerUsosId);
                 if (usosUser == null)
                 {
                     return new BadRequestObjectResult("Użytkownik nie istnieje.");
                 }
 
-                reviewer = _mapper.Map<UsosUser, User>(usosUser);
+                reviewer = usosUser.ToDbModel();
             }
 
             var authors = _userRepository.GetAll().Where(p => requestData.AuthorUsosIds.Contains(p.UsosId)).ToList();
@@ -220,7 +219,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 {
                     return new BadRequestObjectResult("Użytkownik nie istnieje.");
                 }
-                var newAuthors = _mapper.Map<List<User>>(newUsosUsers);
+                var newAuthors = newUsosUsers.ToDbModel();
                 await _userRepository.AddRangeAsync(newAuthors);
                 authors.AddRange(newAuthors);
             }
@@ -233,7 +232,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 .Select(k => new Keyword
                 {
                     Text = k,
-                    CreatedBy = currentUser
+                    CreatedBy = promoter
                 });
             if (newKeywords.Count() != 0)
             {
@@ -257,7 +256,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 new ThesisLog
                 {
                     ModificationType = ModificationType.Created,
-                    User = currentUser
+                    User = promoter
                 }
             };
             //TODO: Save files locally
@@ -269,7 +268,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 Extension = Path.GetExtension(request.ThesisFile.FileName),
                 Path = Path.Combine(thesisGuid.ToString(), fileGuid.ToString()),
                 ContentType = request.ThesisFile.ContentType,
-                CreatedBy = currentUser,
+                CreatedBy = promoter,
                 Size = request.ThesisFile.Length,
                 Checksum = _fileService.GenerateChecksum(request.ThesisFile.OpenReadStream())
             };
@@ -278,7 +277,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var thesis = new Thesis()
             {
                 Guid = thesisGuid,
-                TermId = currentTermId.Id,
+                TermId = getCurrentTerm.Result.Id,
                 Title = requestData.Title,
                 Abstract = requestData.Abstract,
                 Promoter = promoter,
@@ -287,7 +286,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 ThesisKeywords = thesisKeywords,
                 ThesisLogs = thesisLogs,
                 File = thesisFile,
-                CreatedBy = currentUser,
+                CreatedBy = promoter,
             };
 
             await _thesisRepository.AddAsync(thesis);
@@ -295,6 +294,7 @@ namespace NCU.AnnualWorks.Api.Theses
             return new CreatedResult("/theses", thesisGuid);
         }
 
+        //TODO: Refactor
         [HttpPut("{id:guid}")]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> EditThesis(Guid id, [FromForm] ThesisRequest request)
@@ -448,31 +448,42 @@ namespace NCU.AnnualWorks.Api.Theses
             return new OkObjectResult(thesis.Guid);
         }
 
-
+        //TODO: Refactor
         [HttpPost("grade/{id:guid}")]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> ConfirmGrade(Guid id, [FromBody] ConfirmGradeRequest request)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var currentUser = HttpContext.GetCurrentUser();
+            var getDeadline = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var getThesis = _thesisRepository.GetAsync(id);
+            await Task.WhenAll(getDeadline, getThesis);
+
+            var deadline = getDeadline.Result;
+            var thesis = getThesis.Result;
+
             if (DateTime.Now > deadline)
             {
                 return new BadRequestObjectResult("Nie wystawić oceny po upływie terminu końcowego.");
             }
 
-            var thesis = await _thesisRepository.GetAsync(id);
-            var currentUserUsosId = HttpContext.CurrentUserUsosId();
-            var currentUser = await _userRepository.GetAsync(currentUserUsosId);
             var regex = new Regex(@"(^2$)|(^3$)|(^3\.5$)|(^4$)|(^4\.5$)|(^5$)");
 
-            if (thesis.Promoter == currentUser &&
+            var isPromoter = thesis.Promoter.Id == currentUser.Id;
+            var promoterReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter);
+            var reviewerReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer);
+            var canBeAveraged = GradeUtils.TryGetAverageGrade(new List<string>() { promoterReview.Grade, reviewerReview.Grade }, out var grade);
+
+            if (isPromoter &&
                 thesis.Grade == null &&
-                thesis.Reviews.All(r => r.IsConfirmed) &&
-                thesis.Reviews.Any(r => r.CreatedBy == currentUser) &&
-                thesis.Reviews.Any(r => r.CreatedBy == thesis.Reviewer) &&
+                promoterReview != null &&
+                reviewerReview != null &&
+                promoterReview.IsConfirmed &&
+                reviewerReview.IsConfirmed &&
+                !canBeAveraged &&
                 regex.IsMatch(request.Grade))
             {
                 thesis.Grade = request.Grade;
-                thesis.LogChange(currentUser, ModificationType.GradeConfirmed);
+                thesis.LogChange(thesis.Promoter, ModificationType.GradeConfirmed);
                 await _thesisRepository.UpdateAsync(thesis);
 
                 return new OkResult();
