@@ -39,19 +39,19 @@ namespace NCU.AnnualWorks.Core.Middleware
                 switch (exception)
                 {
                     case UsosConnectionException e:
-                        message = "Brak połączenia z serwisem USOS";
+                        message = "Unable to connect to USOS service.";
                         break;
                     case UsosUnauthorizedException e:
                         response.Cookies.Delete(AuthenticationCookies.SecureAuth, _jwtService.GetAuthCookieOptions());
                         response.Cookies.Delete(AuthenticationCookies.SecureUser, _jwtService.GetUserCookieOptions());
                         response.Cookies.Delete(AuthenticationCookies.SecureToken, _jwtService.GetTokenCookieOptions());
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        message = "Błąd autoryzacyjny serwisu USOS";
+                        message = "Authorization error from USOS service.";
                         break;
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        message = "Wewnętrzny błąd serwera";
+                        message = "Internal Server Error";
                         break;
                 }
 

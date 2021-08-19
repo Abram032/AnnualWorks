@@ -16,15 +16,14 @@ export const Nav: React.FC = () => {
     <MeControl user={currentUser!} /> :
     <NavLink label="Zaloguj się" href={RouteNames.signIn} />;
 
-  const searchTheses = isAuthenticated ?
+  const searchTheses = isAuthenticated && currentUser?.isEmployee ?
     <NavLink label="Wyszukiwanie prac" href={RouteNames.search} /> : null;
 
   const addThesis = isAuthenticated && currentUser?.isLecturer && deadline && deadline > new Date() ?
     <NavLink label="Dodaj pracę" href={RouteNames.addThesis} /> : null;
 
-  const adminPanel = !isAuthenticated || !currentUser || !currentUser.isAdmin ? null : (
-    <NavLink label="Panel administracyjny" href={RouteNames.adminPanel} />
-  );
+  const adminPanel = isAuthenticated && currentUser?.isAdmin ?
+    <NavLink label="Panel administracyjny" href={RouteNames.adminPanel} /> : null;
 
   const links = (
     <>

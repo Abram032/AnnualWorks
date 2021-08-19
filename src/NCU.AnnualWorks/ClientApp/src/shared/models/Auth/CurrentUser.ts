@@ -6,6 +6,7 @@ export type CurrentUser = {
   isLecturer: boolean;
   isAdmin: boolean;
   isCustom: boolean;
+  isEmployee: boolean;
   avatarUrl: string;
 };
 

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from '@fluentui/react';
+import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from '@fluentui/react';
 import { useCurrentTerm, useDeadline } from '../../shared/Hooks';
-import { DatePicker, AdminPanel, Loader } from '../../Components';
-import { SetDeadlineRequestData, useApi } from "../../shared/api/Api";
+import { DatePicker, Loader } from '../../Components';
+import { SetDeadlineRequestData, Api } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../../shared/Consts";
@@ -14,7 +14,6 @@ interface Form {
 }
 
 export const AdminPanelDeadline: React.FC = () => {
-  const api = useApi();
   const [deadline, deadlineFetching] = useDeadline();
   const [term, termFetching] = useCurrentTerm();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -41,7 +40,7 @@ export const AdminPanelDeadline: React.FC = () => {
         const request: SetDeadlineRequestData = {
           deadline: `${values.deadline.getFullYear()}-${values.deadline.getMonth() + 1}-${values.deadline.getDate()}`
         }
-        api.put(AppSettings.API.Deadline.Base, request)
+        Api.put(AppSettings.API.Deadline.Base, request)
           .then(res => {
             scrollToTop();
             setUploadSuccess(true);
@@ -70,7 +69,7 @@ export const AdminPanelDeadline: React.FC = () => {
   //#endregion
 
   return (
-    <AdminPanel>
+    <Stack>
       {warningMessageBar}
       {uploadSuccess ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
@@ -102,7 +101,7 @@ export const AdminPanelDeadline: React.FC = () => {
       <StackItem>
         <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
-    </AdminPanel>
+    </Stack>
   );
 };
 

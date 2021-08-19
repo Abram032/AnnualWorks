@@ -28,7 +28,7 @@ export const Home: React.FC = () => {
   const promotedList = currentUser?.isLecturer ?
     <ThesisList title='Promowane prace' items={promotedTheses} isCollapsed={false}/> : null;
 
-  const reviewedList = currentUser?.isLecturer || currentUser?.isCustom || currentUser?.isAdmin ?
+  const reviewedList = currentUser?.isEmployee ?
     <ThesisList title='Recenzowane prace' items={reviewedTheses} isCollapsed={false}/> : null;
 
   const addThesisButton = currentUser?.isLecturer && deadline && deadline > new Date() ? 

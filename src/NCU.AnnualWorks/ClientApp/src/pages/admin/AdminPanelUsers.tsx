@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { mapUsersToPersona, scrollToTop } from "../../shared/Utils";
-import { IPersonaProps, IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
+import { IPersonaProps, IStackTokens, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from "@fluentui/react";
 import { useForm } from "react-hook-form";
-import { PeoplePicker, AdminPanel, Loader, filterPeople } from '../../Components';
+import { PeoplePicker, Loader, filterPeople } from '../../Components';
 import { useCustomUsers, usePeoplePicker } from '../../shared/Hooks';
-import { SetCustomUsersRequestData, useApi } from "../../shared/api/Api";
+import { SetCustomUsersRequestData, Api } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
 import { User } from "../../shared/Models";
 import { RouteNames } from "../../shared/Consts";
@@ -35,7 +35,6 @@ interface AdminPanelUsersFormProps {
 }
 
 const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
-  const api = useApi();
   const [users, selectedUsers, onChangeSelectedUsers] = usePeoplePicker(props.users);
   const [errorMessage, setErrorMessage] = useState<string>();
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
@@ -52,7 +51,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
     filter: string,
     selectedItems?: IPersonaProps[]
   ): IPersonaProps[] | Promise<IPersonaProps[]> => {
-    return api.get<User[]>(`${AppSettings.API.Users.Base}?search=${filter.trim()}`)
+    return Api.get<User[]>(`${AppSettings.API.Users.Base}?search=${filter.trim()}`)
     .then(res => mapUsersToPersona(res.data))
     .then(people => filterPeople(filter, people, selectedItems))
     .catch(err => {
@@ -70,7 +69,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
         const request: SetCustomUsersRequestData = {
           userIds: values.users.map<string>(u => u.key!.toString())
         }
-        api.put(AppSettings.API.Users.Custom, request)
+        Api.put(AppSettings.API.Users.Custom, request)
           .then(res => {
             scrollToTop();
             setUploadSuccess(true);
@@ -95,7 +94,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   //#endregion
 
   return (
-    <AdminPanel>
+    <Stack>
       {errorMessage ? errorMessageBar : null}
       {uploadSuccess ? successMessageBar : null}
       <StackItem tokens={tokens}>
@@ -116,7 +115,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
       <StackItem tokens={tokens}>
         <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
-    </AdminPanel>
+    </Stack>
   );
 };
 

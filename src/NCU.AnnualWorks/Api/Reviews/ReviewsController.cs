@@ -251,7 +251,6 @@ namespace NCU.AnnualWorks.Api.Reviews
             review.ModifiedBy = currentUser;
             review.Grade = request.Grade;
             review.IsConfirmed = request.IsConfirmed;
-            //TODO: Generate new file and save it
             //Getting current answers for future removal
             var answersToRemove = review.ReviewQnAs.Select(a => a.Answer).ToList();
             review.ReviewQnAs.Clear();

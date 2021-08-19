@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { Keyword } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { ITag } from '@fluentui/react';
@@ -7,7 +7,6 @@ import { useIsAuthenticated } from './AuthHooks';
 import { mapKeywordsToTags } from '../Utils';
 
 export const useKeywords = (): [Keyword[], boolean] => {
-  const api = useApi();
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
@@ -22,7 +21,7 @@ export const useKeywords = (): [Keyword[], boolean] => {
       return;
     }
 
-    api.get<Keyword[]>(AppSettings.API.Keywords.Base)
+    Api.get<Keyword[]>(AppSettings.API.Keywords.Base)
       .then(response => {
         setKeywords(response.data);
         setIsFetching(false);

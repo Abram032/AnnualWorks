@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { User } from '../../shared/Models';
 import { IPersonaProps } from '@fluentui/react';
 import { useIsAuthenticated } from './AuthHooks';
 
 const useUsers = <T>(endpoint: string, query?: string): [T | undefined, boolean] => {
-  const api = useApi();
   const [users, setUsers] = useState<T>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
@@ -21,7 +20,7 @@ const useUsers = <T>(endpoint: string, query?: string): [T | undefined, boolean]
       return;
     }
 
-    api.get<T>(endpoint)
+    Api.get<T>(endpoint)
       .then(response => {
         setUsers(response.data);
         setIsFetching(false);

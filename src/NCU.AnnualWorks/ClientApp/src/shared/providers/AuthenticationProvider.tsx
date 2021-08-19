@@ -25,14 +25,22 @@ export const AuthenticationProvider: React.FC = (props) => {
     const userToken = cookies[CookieNames.user];
     try {
       const userClaims = jwtDecode<UserClaims>(userToken);
+      
+      const isParticipant = (userClaims.IsParticipant.toLowerCase() === 'true');
+      const isLecturer = (userClaims.IsLecturer.toLowerCase() === 'true');
+      const isAdmin = (userClaims.IsAdmin.toLowerCase() === 'true');
+      const isCustom = (userClaims.IsCustom.toLowerCase() === 'true');
+      const isEmployee = isLecturer || isCustom || isAdmin;
+
       setCurrentUser({
         id: userClaims.Id,
         name: userClaims.Name,
         avatarUrl: userClaims.AvatarUrl,
-        isParticipant: (userClaims.IsParticipant.toLowerCase() === 'true'),
-        isLecturer: (userClaims.IsLecturer.toLowerCase() === 'true'),
-        isAdmin: (userClaims.IsAdmin.toLowerCase() === 'true'),
-        isCustom: (userClaims.IsCustom.toLowerCase() === 'true'),
+        isParticipant: isParticipant,
+        isLecturer: isLecturer,
+        isAdmin: isAdmin,
+        isCustom: isCustom,
+        isEmployee: isEmployee,
         email: userClaims.Email,
       });
       setIsAuthenticated(!!userClaims.Id);

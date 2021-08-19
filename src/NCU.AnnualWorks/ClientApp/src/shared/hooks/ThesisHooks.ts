@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { Thesis } from '../Models';
 import { AppSettings } from '../../AppSettings';
-import { useIsAuthenticated } from './AuthHooks';
+import { useCurrentUser, useIsAuthenticated } from './AuthHooks';
 
 export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
   const [thesis, setThesis] = useState<Thesis>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
-  const api = useApi();
+  const currentUser = useCurrentUser();
 
   useEffect(() => {
     if (isAuthenticated === null) {
@@ -21,7 +21,7 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
     }
 
     setIsFetching(true);
-    api.get<Thesis>(`${AppSettings.API.Theses.Base}/${guid}`)
+    Api.get<Thesis>(`${AppSettings.API.Theses.Base}/${guid}`)
       .then(response => {
         setThesis(response.data);
         setIsFetching(false);
@@ -30,29 +30,29 @@ export const useThesis = (guid: string): [Thesis | undefined, boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, currentUser]);
 
   return [thesis, isFetching];
 };
 
-const useTheses = (endpoint: string): [Thesis[], boolean] => {
+const useTheses = (endpoint: string, verifyEmployee?: boolean): [Thesis[], boolean] => {
   const [thesis, setThesis] = useState<Thesis[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
-  const api = useApi();
+  const currentUser = useCurrentUser();
 
   useEffect(() => {
     if (isAuthenticated === null) {
       return;
     }
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || (verifyEmployee && !currentUser?.isEmployee)) {
       setIsFetching(false);
       return;
     }
 
     setIsFetching(true);
-    api.get<Thesis[]>(endpoint)
+    Api.get<Thesis[]>(endpoint)
       .then(response => {
         setThesis(response.data);
         setIsFetching(false);
@@ -61,12 +61,12 @@ const useTheses = (endpoint: string): [Thesis[], boolean] => {
         console.error(error);
         setIsFetching(false)
       });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, currentUser]);
 
   return [thesis, isFetching];
 };
 
 export const useCurrentTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Base);
-export const usePromotedTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Promoted);
-export const useReviewedTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Reviewed);
+export const usePromotedTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Promoted, true);
+export const useReviewedTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Reviewed, true);
 export const useAuthoredTheses = (): [Thesis[], boolean] => useTheses(AppSettings.API.Theses.Authored);

@@ -2,14 +2,13 @@ import React from 'react';
 import { filePickerDefaultOptions } from '../../shared/Models';
 import { ThesisForm } from '../../components/thesis/ThesisForm';
 import { useKeywords, useEmployees, useStudents, useCurrentUser } from '../../shared/Hooks';
-import { useApi } from '../../shared/api/Api';
+import { Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Loader } from '../../Components';
 import { Redirect } from 'react-router-dom';
 import { RouteNames } from '../../shared/Consts';
 
 export const ThesisCreateForm: React.FC = () => {
-  const api = useApi();
   const currentUser = useCurrentUser();
   const [keywords, keywordsFetching] = useKeywords();
   const [students, studentsFetching] = useStudents();
@@ -28,7 +27,7 @@ export const ThesisCreateForm: React.FC = () => {
   }
 
   const onSave = (formData: FormData) => 
-    api.post(AppSettings.API.Theses.Base, formData, {
+    Api.post(AppSettings.API.Theses.Base, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

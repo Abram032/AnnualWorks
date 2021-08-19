@@ -1,39 +1,26 @@
-import axios, { AxiosInstance } from 'axios';
-import { useHistory } from 'react-router';
+import axios from 'axios';
 import { CsrfNames } from '../Consts';
-import { RouteNames } from '../Consts';
-import { Keyword, Review, Grade } from '../Models';
+import { Keyword, Grade } from '../Models';
 
-export const useApi = (): AxiosInstance => {
-  const history = useHistory();
-  const api = axios.create({
-    xsrfCookieName: CsrfNames.csrfCookie,
-    xsrfHeaderName: CsrfNames.csrfHeader
-  });
 
-  api.interceptors.response.use(response => response, error => {
-    switch (error.response.status) {
-      case 400:
-      case 409:
-      case 500:
-      case 401:
-      case 403:
-      case 404:
-        throw error.response;
-      //Only logging errors to show prompt to user.
-      // case 401:
-      //   return history.push(RouteNames.signIn);
-      // case 403:
-      //   return history.push(RouteNames.forbidden);
-      // case 404:
-      //   return history.push(RouteNames.notFound);
-      default:
-      //return history.push(RouteNames.error);
-    }
-  });
+export const Api = axios.create({
+  xsrfCookieName: CsrfNames.csrfCookie,
+  xsrfHeaderName: CsrfNames.csrfHeader
+});
 
-  return api;
-};
+Api.interceptors.response.use(response => response, error => {
+  //debugger;
+  switch (error.response.status) {
+    case 401:
+      throw new Error("401 - Unauthorized");
+    case 403:
+      throw new Error("403 - Forbidden");
+    case 404:
+      throw new Error("404 - Not found");
+    case 500:
+      throw new Error("500 - Internal Server Error");
+  }
+});
 export interface ThesisRequestData {
   title: string,
   abstract: string,

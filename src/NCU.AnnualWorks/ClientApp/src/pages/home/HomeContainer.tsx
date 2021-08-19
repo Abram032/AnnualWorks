@@ -8,10 +8,7 @@ import { useCurrentUser, useIsAuthenticated } from "../../shared/Hooks";
 export const HomeContainer: React.FC = () => {
   const isAuthenticated = useIsAuthenticated();
   const currentUser = useCurrentUser();
-  const hasAccess = currentUser?.isParticipant || 
-    currentUser?.isLecturer || 
-    currentUser?.isCustom || 
-    currentUser?.isAdmin;
+  const hasAccess = currentUser?.isParticipant || currentUser?.isEmployee;
     
   if(isAuthenticated === null) {
     return <Loader label={'Ładowanie...'} size='medium' />

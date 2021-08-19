@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { AppSettings } from '../../AppSettings';
-import { ConfirmGradeRequestData, useApi } from '../../shared/api/Api';
+import { ConfirmGradeRequestData, Api } from '../../shared/api/Api';
 import { RouteNames } from '../../shared/Consts';
 import { Dropdown } from '../../Components';
 import { Grade, GradeList } from '../../shared/Models';
@@ -21,7 +21,6 @@ interface ThesisGradeConfirmDialogProps {
 }
 
 export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> = (props) => {
-  const api = useApi();
   const history = useHistory();
 
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
@@ -51,13 +50,13 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
   const onSave = () => {
     setErrorMessage(undefined);
     setUploadSuccess(false);
-    
+
     handleSubmit(
       (values) => {
         var body: ConfirmGradeRequestData = {
           grade: values.grade
         };
-        api.post(`${AppSettings.API.Theses.Grade}/${props.guid}`, body)
+        Api.post(`${AppSettings.API.Theses.Grade}/${props.guid}`, body)
           .then(res => {
             setUploadSuccess(true);
             props.toggleIsVisible();

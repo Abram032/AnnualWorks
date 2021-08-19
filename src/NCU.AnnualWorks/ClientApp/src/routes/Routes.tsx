@@ -16,7 +16,7 @@ import { Error } from '../pages/Error';
 import { Privacy } from '../pages/Privacy';
 import { About } from '../pages/About';
 import { Search } from '../pages/Search';
-import { AdminPanel, AuthenticatedWrapper } from '../Components';
+import { AdminPanel, AuthenticatedWrapper, ExceptionHandler } from '../Components';
 import { AdminPanelAdministrators } from '../pages/admin/AdminPanelAdministrators';
 import { AdminPanelUsers } from '../pages/admin/AdminPanelUsers';
 import { AdminPanelDeadline } from '../pages/admin/AdminPanelDeadline';
@@ -77,31 +77,41 @@ export const Routes: React.FC = () => (
 
     <Route exact path={RouteNames.adminPanelAdmins} render={props => (
       <AuthenticatedWrapper>
-        <AdminPanelAdministrators />
+        <AdminPanel>
+          <AdminPanelAdministrators />
+        </AdminPanel>
       </AuthenticatedWrapper>
     )} />
 
     <Route exact path={RouteNames.adminPanelUsers} render={props => (
       <AuthenticatedWrapper>
-        <AdminPanelUsers />
+        <AdminPanel>
+          <AdminPanelUsers />
+        </AdminPanel>
       </AuthenticatedWrapper>
     )} />
 
     <Route exact path={RouteNames.adminPanelDeadline} render={props => (
       <AuthenticatedWrapper>
-        <AdminPanelDeadline />
+        <AdminPanel>
+          <AdminPanelDeadline />
+        </AdminPanel>
       </AuthenticatedWrapper>
     )} />
 
     <Route exact path={RouteNames.adminPanelCourse} render={props => (
       <AuthenticatedWrapper>
-        <AdminPanelCourse />
+        <AdminPanel>
+          <AdminPanelCourse />
+        </AdminPanel>
       </AuthenticatedWrapper>
     )} />
 
     <Route exact path={RouteNames.adminPanelExport} render={props => (
       <AuthenticatedWrapper>
-        <AdminPanelExport />
+        <AdminPanel>
+          <AdminPanelExport />
+        </AdminPanel>
       </AuthenticatedWrapper>
     )} />
 

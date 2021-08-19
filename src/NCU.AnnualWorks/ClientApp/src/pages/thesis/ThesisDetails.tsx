@@ -5,7 +5,7 @@ import { RouteNames } from '../../shared/Consts';
 import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
-import { CurrentUser, Review, Thesis, ThesisActions, User } from '../../shared/Models';
+import { CurrentUser, Review, Thesis, ThesisActions, ThesisLog, User } from '../../shared/Models';
 import { ThesisHistoryLog } from '../../components/Index';
 
 interface ThesisDetailsProps {
@@ -72,9 +72,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
           {getReviewModal(thesis.reviewer, isReviewerReviewVisible, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
           <Label style={{ fontSize: FontSizes.size20 }}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
         </Stack>
-        <Stack tokens={stackTokens}>
-          <ThesisHistoryLog thesisLogs={thesis.thesisLogs} />
-        </Stack>
+        {getThesisLogs(currentUser, thesis.thesisLogs)}
       </Tile>
       <Stack horizontal tokens={stackTokens}>
         <StackItem>
@@ -216,6 +214,22 @@ const getReviewDetailRow = (
     action: getReviewActions(currentUser, user, thesisGuid, thesisActions, review),
     showModal: review && review.isConfirmed ? toggleModalVisible : undefined
   };
+}
+
+//#endregion
+
+//#region Thesis Logs
+
+const getThesisLogs = (currentUser: CurrentUser, thesisLogs: ThesisLog[]) => {
+  if(currentUser.isEmployee && thesisLogs) {
+    return (
+      <Stack tokens={stackTokens}>
+        <ThesisHistoryLog thesisLogs={thesisLogs} />
+      </Stack>
+    )
+  }
+
+  return null;
 }
 
 //#endregion

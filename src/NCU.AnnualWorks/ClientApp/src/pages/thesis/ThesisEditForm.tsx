@@ -2,7 +2,7 @@ import React from 'react';
 import { filePickerDefaultOptions } from '../../shared/Models';
 import { ThesisForm, Loader } from '../../Components';
 import { useThesis, useKeywords,useEmployees, useStudents, useCurrentUser } from '../../shared/Hooks';
-import { useApi } from '../../shared/api/Api';
+import { Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Redirect } from 'react-router-dom';
 import { RouteNames } from '../../shared/Consts';
@@ -12,7 +12,6 @@ interface ThesisEditFormProps {
 };
 
 export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
-  const api = useApi();
   const currentUser = useCurrentUser();
   const [thesis, thesisFetching] = useThesis(props.guid);
   const [keywords, keywordsFetching] = useKeywords();
@@ -32,7 +31,7 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
   }
   
   const onSave = (formData: FormData) => 
-    api.put(`${AppSettings.API.Theses.Base}/${props.guid}`, formData, {
+    Api.put(`${AppSettings.API.Theses.Base}/${props.guid}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

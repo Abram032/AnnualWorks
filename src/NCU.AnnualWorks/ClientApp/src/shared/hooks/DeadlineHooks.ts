@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useIsAuthenticated } from './AuthHooks';
 
 export const useDeadline = (): [Date | undefined, boolean] => {
-  const api = useApi();
   const [date, setDate] = useState<Date>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
@@ -19,7 +18,7 @@ export const useDeadline = (): [Date | undefined, boolean] => {
       return;
     }
 
-    api.get<Date>(AppSettings.API.Deadline.Base)
+    Api.get<Date>(AppSettings.API.Deadline.Base)
       .then(response => {
         setDate(new Date(response.data));
         setIsFetching(false);

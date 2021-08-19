@@ -1,7 +1,16 @@
 import React from "react";
 import { Label, Stack, FontSizes, IStackTokens } from "@fluentui/react";
+import { useCurrentUser } from "../shared/Hooks";
+import { Redirect } from "react-router-dom";
+import { RouteNames } from "../shared/Consts";
 
 export const Search: React.FC = () => {
+  const currentUser = useCurrentUser();
+
+  if(!currentUser?.isEmployee) {
+    return <Redirect to={RouteNames.forbidden} />
+  }
+
   return (
     <Stack tokens={stackTokens}>
       <Stack.Item align="center" tokens={stackTokens}>

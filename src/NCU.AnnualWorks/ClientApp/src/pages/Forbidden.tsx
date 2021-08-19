@@ -16,7 +16,7 @@ export const Forbidden: React.FC = () => {
       </Stack.Item>
       <Stack.Item align="center" tokens={stackTokens}>
         <Label style={{ fontSize: FontSizes.size24 }}>
-          Brak uprawnień do danego zasobu.
+          Brak uprawnień do danego zasobu. 👮‍♂️
         </Label>
       </Stack.Item>
     </Stack>

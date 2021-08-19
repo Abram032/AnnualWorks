@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReviewForm, Loader } from '../../Components';
-import { ReviewRequestData, useApi } from '../../shared/api/Api';
+import { ReviewRequestData, Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { useThesis, useActiveQuestions } from '../../shared/Hooks';
 import { Redirect } from 'react-router-dom';
@@ -11,7 +11,6 @@ interface ReviewCreateFormProps {
 }
 
 export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
-  const api = useApi();
   const [questions, questionsFetching] = useActiveQuestions();
   const [thesis, thesisFetching] = useThesis(props.thesisGuid);
 
@@ -23,8 +22,7 @@ export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
     return <Redirect to={RouteNames.error} />
   }
 
-  const onSave = (data: ReviewRequestData) => 
-    api.post(AppSettings.API.Reviews.Base, data);
+  const onSave = (data: ReviewRequestData) =>  Api.post(AppSettings.API.Reviews.Base, data);
 
   return (
     <ReviewForm 

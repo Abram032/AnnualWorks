@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
+import React, { useState } from "react";
+import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from "@fluentui/react";
 import { AppSettings } from "../../AppSettings";
-import { SetCourseRequestData, useApi } from "../../shared/api/Api";
+import { SetCourseRequestData, Api } from "../../shared/api/Api";
 import { useCourse } from '../../shared/Hooks';
-import { TextField, AdminPanel, Loader } from "../../Components";
+import { TextField, Loader } from "../../Components";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../../shared/Consts";
@@ -14,7 +14,6 @@ interface Form {
 }
 
 export const AdminPanelCourse: React.FC = () => {
-  const api = useApi();
   const [course, courseFetching] = useCourse();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
@@ -40,7 +39,7 @@ export const AdminPanelCourse: React.FC = () => {
         const request: SetCourseRequestData = {
           courseCode: values.courseCode
         }
-        api.put(AppSettings.API.Course.Base, request)
+        Api.put(AppSettings.API.Course.Base, request)
           .then(res => {
             scrollToTop();
             setUploadSuccess(true);
@@ -69,7 +68,7 @@ export const AdminPanelCourse: React.FC = () => {
   //#endregion Messages
 
   return (
-    <AdminPanel>
+    <Stack>
       {warningMessageBar}
       {uploadSuccess ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
@@ -94,7 +93,7 @@ export const AdminPanelCourse: React.FC = () => {
       <StackItem>
         <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
-    </AdminPanel>
+    </Stack>
   );
 };
 

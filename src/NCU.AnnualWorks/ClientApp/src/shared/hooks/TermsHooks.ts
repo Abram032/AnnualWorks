@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { Term } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { useIsAuthenticated } from './AuthHooks';
 
 export const useCurrentTerm = (): [Term | undefined, boolean] => {
-  const api = useApi();
   const [term, setTerm] = useState<Term>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
+    
     if (isAuthenticated === null) {
       return;
     }
@@ -20,7 +20,7 @@ export const useCurrentTerm = (): [Term | undefined, boolean] => {
       return;
     }
 
-    api.get<Term>(AppSettings.API.Terms.Current)
+    Api.get<Term>(AppSettings.API.Terms.Current)
       .then(response => {
         setTerm({
           id: response.data.id,

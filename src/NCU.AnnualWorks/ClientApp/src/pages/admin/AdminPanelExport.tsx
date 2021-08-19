@@ -1,6 +1,5 @@
 import React from "react";
-import { AdminPanel } from '../../Components';
-import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, StackItem } from "@fluentui/react";
+import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from "@fluentui/react";
 import { useExportValidation, useCurrentTerm } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";
 import { Loader } from "../../components/Index";
@@ -32,13 +31,13 @@ export const AdminPanelExport: React.FC = () => {
   //#endregion
 
   return (
-    <AdminPanel>
+    <Stack>
       {!isExportValid ? warningMessageBar : null}
       <StackItem tokens={tokens}>
         <Label>Eksport ocen - {term?.names.pl}</Label>
         <PrimaryButton text="Pobierz" href={`${AppSettings.API.Export.Base}?termId=${term?.id}`} target='_blank' />
       </StackItem>
-    </AdminPanel>
+    </Stack>
   );
 };
 

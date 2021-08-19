@@ -3,10 +3,16 @@ import { Tile } from '../../Components';
 import { Stack, IStackTokens, IStackStyles, INavLinkGroup } from "@fluentui/react";
 import AdminNav from './AdminNav';
 import { RouteNames } from "../../shared/Consts";
-import { useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
+import { useCurrentUser } from "../../shared/Hooks";
 
 export const AdminPanel: React.FC = (props) => {
   const history = useHistory();
+  const currentUser = useCurrentUser();
+
+  if(!currentUser?.isAdmin) {
+    return <Redirect to={RouteNames.forbidden} />
+  }
 
   return (
     <Tile title='Panel administracyjny' padding='0'>

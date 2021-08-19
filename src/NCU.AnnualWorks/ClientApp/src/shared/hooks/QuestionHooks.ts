@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../api/Api';
+import { Api } from '../api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Question } from '../Models';
 import { useIsAuthenticated } from './AuthHooks';
@@ -8,7 +8,6 @@ export const useActiveQuestions = (): [Question[], boolean] => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
-  const api = useApi();
 
   useEffect(() => {
     if (isAuthenticated === null) {
@@ -20,7 +19,7 @@ export const useActiveQuestions = (): [Question[], boolean] => {
       return;
     }
 
-    api.get<Question[]>(AppSettings.API.Questions.Active)
+    Api.get<Question[]>(AppSettings.API.Questions.Active)
       .then(response => {
         setQuestions(response.data);
         setIsFetching(false);
