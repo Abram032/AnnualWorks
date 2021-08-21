@@ -16,7 +16,7 @@ import { Error } from '../pages/Error';
 import { Privacy } from '../pages/Privacy';
 import { About } from '../pages/About';
 import { Search } from '../pages/Search';
-import { AdminPanel, AuthenticatedWrapper, ExceptionHandler } from '../Components';
+import { AdminPanel, AuthenticatedWrapper } from '../Components';
 import { AdminPanelAdministrators } from '../pages/admin/AdminPanelAdministrators';
 import { AdminPanelUsers } from '../pages/admin/AdminPanelUsers';
 import { AdminPanelDeadline } from '../pages/admin/AdminPanelDeadline';

@@ -3,9 +3,14 @@ import { Label, Stack, FontSizes, IStackTokens } from "@fluentui/react";
 import { useCurrentUser } from "../shared/Hooks";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../shared/Consts";
+import { Loader } from "../Components";
 
 export const Search: React.FC = () => {
   const currentUser = useCurrentUser();
+  
+  if(currentUser === null) {
+    return <Loader />
+  }
 
   if(!currentUser?.isEmployee) {
     return <Redirect to={RouteNames.forbidden} />
