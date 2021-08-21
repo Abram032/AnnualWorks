@@ -208,6 +208,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 }
 
                 reviewer = usosUser.ToDbModel();
+                await _userRepository.AddAsync(reviewer);
             }
 
             var authors = _userRepository.GetAll().Where(p => requestData.AuthorUsosIds.Contains(p.UsosId)).ToList();
@@ -300,6 +301,8 @@ namespace NCU.AnnualWorks.Api.Theses
         public async Task<IActionResult> EditThesis(Guid id, [FromForm] ThesisRequest request)
         {
             var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
+            var currentUserUsosId = HttpContext.CurrentUserUsosId();
+            var currentUser = await _userRepository.GetAsync(currentUserUsosId);
             if (DateTime.Now > deadline)
             {
                 return new BadRequestObjectResult("Nie można zaktualizować pracy po upływie terminu końcowego.");
@@ -307,6 +310,11 @@ namespace NCU.AnnualWorks.Api.Theses
 
             var thesis = await _thesisRepository.GetAsync(id);
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
+
+            if (thesis.Promoter.Id != currentUser.Id)
+            {
+                return new ForbidResult();
+            }
 
             if (thesis == null)
             {
@@ -322,9 +330,6 @@ namespace NCU.AnnualWorks.Api.Theses
             {
                 return new BadRequestObjectResult("Nie można edytować pracy z zatwierdzoną recenzją.");
             }
-
-            var currentUserUsosId = HttpContext.CurrentUserUsosId();
-            var currentUser = await _userRepository.GetAsync(currentUserUsosId);
 
             if (requestData.ReviewerUsosId == currentUserUsosId.ToString())
             {
@@ -411,6 +416,7 @@ namespace NCU.AnnualWorks.Api.Theses
                     }
 
                     reviewer = _mapper.Map<UsosUser, User>(usosUser);
+                    await _userRepository.AddAsync(reviewer);
                 }
 
                 thesis.Reviewer = reviewer;

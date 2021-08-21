@@ -204,6 +204,12 @@ namespace NCU.AnnualWorks.Api.Reviews
             var isPromoter = thesis.Promoter == currentUser;
             var isReviewer = thesis.Reviewer == currentUser;
 
+            //Current user is not a creator of review
+            if (currentUser != review.CreatedBy)
+            {
+                return new ForbidResult();
+            }
+
             //Current user is nor promoter neither reviewer
             if (!isPromoter && !isReviewer)
             {

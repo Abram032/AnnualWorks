@@ -31,6 +31,11 @@ namespace NCU.AnnualWorks.Api.Files
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             var file = await _fileRepository.GetAsync(id);
 
+            if (file == null)
+            {
+                return new NotFoundResult();
+            }
+
             if (!file.Thesis.ThesisAuthors.Any(p => p.Author == currentUser) && !HttpContext.IsCurrentUserEmployee())
             {
                 return new ForbidResult();
