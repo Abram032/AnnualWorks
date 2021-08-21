@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReviewForm, Loader } from '../../Components';
-import { useActiveQuestions, useReview, useThesis } from '../../shared/Hooks';
+import { useActiveQuestions, useCurrentUser, useReview, useThesis } from '../../shared/Hooks';
 import { ReviewRequestData, Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
 import { Redirect } from 'react-router-dom';
@@ -12,12 +12,17 @@ interface ReviewEditFormProps {
 }
 
 export const ReviewEditForm: React.FC<ReviewEditFormProps> = (props) => {
+  const currentUser = useCurrentUser();
   const [questions, questionsFetching] = useActiveQuestions();
   const [thesis, thesisFetching] = useThesis(props.thesisGuid);
   const [review, reviewFetching] = useReview(props.reviewGuid);
 
   if (thesisFetching || reviewFetching || questionsFetching) {
     return <Loader />
+  }
+
+  if(!currentUser?.isEmployee) {
+    return <Redirect to={RouteNames.forbidden} />
   }
 
   if (!thesis || !review || !questions) {

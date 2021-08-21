@@ -18,13 +18,14 @@ export const ThesisCreateForm: React.FC = () => {
     return <Loader />
   }
 
+  if(!currentUser?.isLecturer) {
+    return <Redirect to={RouteNames.forbidden} />
+  }
+
   if(!keywords || !students || !employees || !currentUser) {
     return <Redirect to={RouteNames.error} />
   }
-
-  if(!currentUser.isLecturer) {
-    return <Redirect to={RouteNames.forbidden} />
-  }
+  
 
   const onSave = (formData: FormData) => 
     Api.post(AppSettings.API.Theses.Base, formData, {

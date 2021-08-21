@@ -1,14 +1,19 @@
 import React from "react";
-import { Tile } from '../../Components';
+import { Loader, Tile } from '../../Components';
 import { Stack, IStackTokens, IStackStyles, INavLinkGroup } from "@fluentui/react";
 import AdminNav from './AdminNav';
 import { RouteNames } from "../../shared/Consts";
 import { Redirect, useHistory } from "react-router-dom";
-import { useCurrentUser } from "../../shared/Hooks";
+import { useCurrentUser, useIsAuthenticated } from "../../shared/Hooks";
 
 export const AdminPanel: React.FC = (props) => {
   const history = useHistory();
   const currentUser = useCurrentUser();
+  const isAuthenticated = useIsAuthenticated();
+
+  if(isAuthenticated === null) {
+    return <Loader />
+  }
 
   if(!currentUser?.isAdmin) {
     return <Redirect to={RouteNames.forbidden} />

@@ -2,7 +2,7 @@ import React from 'react';
 import { ReviewForm, Loader } from '../../Components';
 import { ReviewRequestData, Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
-import { useThesis, useActiveQuestions } from '../../shared/Hooks';
+import { useThesis, useActiveQuestions, useCurrentUser } from '../../shared/Hooks';
 import { Redirect } from 'react-router-dom';
 import { RouteNames } from '../../shared/Consts';
 
@@ -11,11 +11,16 @@ interface ReviewCreateFormProps {
 }
 
 export const ReviewCreateForm: React.FC<ReviewCreateFormProps> = (props) => {
+  const currentUser = useCurrentUser();
   const [questions, questionsFetching] = useActiveQuestions();
   const [thesis, thesisFetching] = useThesis(props.thesisGuid);
 
   if(questionsFetching || thesisFetching) {
     return <Loader />
+  }
+
+  if(!currentUser?.isEmployee) {
+    return <Redirect to={RouteNames.forbidden} />
   }
   
   if(!questions || !thesis) {

@@ -22,12 +22,12 @@ export const ThesisEditForm: React.FC<ThesisEditFormProps> = (props) => {
     return <Loader />
   }
 
-  if(!thesis || !keywords || !students || !employees || !currentUser) {
-    return <Redirect to={RouteNames.error} />
+  if(!currentUser?.isLecturer) {
+    return <Redirect to={RouteNames.forbidden} />
   }
 
-  if(!currentUser.isLecturer) {
-    return <Redirect to={RouteNames.forbidden} />
+  if(!thesis || !keywords || !students || !employees || !currentUser) {
+    return <Redirect to={RouteNames.error} />
   }
   
   const onSave = (formData: FormData) => 
