@@ -184,7 +184,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
               label="Słowa kluczowe"
               name={"tags"}
               control={control}
-              itemLimit={50}
+              itemLimit={10}
               tags={tags}
               selectedTags={selectedTags}
               separator={";"}

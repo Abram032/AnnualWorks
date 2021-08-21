@@ -42,11 +42,12 @@ namespace NCU.AnnualWorks.Services
                 CanPrint = isAuthor || currentUser.IsEmployee,
                 CanAddReview = currentUser.IsEmployee && (isPromoter || isReviewer) && !userReviewExists && !isPastDeadline,
                 CanEditReview = currentUser.IsEmployee && (isPromoter || isReviewer) && userReviewExists && !userReview.IsConfirmed && !isPastDeadline,
-                CanEdit = (!isPastDeadline && currentUser.IsAdmin) ||
+                CanEdit = (!isPastDeadline && currentUser.IsAdmin && thesis.Grade == null) ||
                     (
                         currentUser.IsEmployee &&
                         !isPastDeadline &&
                         isPromoter &&
+                        thesis.Grade == null &&
                         (promoterReview == null || !promoterReview.IsConfirmed) &&
                         (reviewerReview == null || !reviewerReview.IsConfirmed)
                     ),
