@@ -103,7 +103,7 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
             }
           }).catch(error => {
             scrollToTop();
-            setErrorMessage(error.data);
+            setErrorMessage(error.data ?? error.message);
             setUploadSuccess(false);
           });
       },

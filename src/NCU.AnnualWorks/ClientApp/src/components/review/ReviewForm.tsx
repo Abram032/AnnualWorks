@@ -52,7 +52,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
           history.push(RouteNames.detailsPath(props.thesis.guid))
         }).catch(error => {
           scrollToTop();
-          setErrorMessage(error.data);
+          setErrorMessage(error.data ?? error.message);
           setUploadSuccess(false);
         })
       },
@@ -88,7 +88,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
 
   return (
     <Stack style={{ width: '100%' }} tokens={stackTokens}>
-      <Tile title={`Recenzja pracy - ${props.thesis.title}`}>
+      <Tile title={`Recenzja pracy - "${props.thesis.title}"`}>
         {errorMessage ? errorMessageBar : null}
         {uploadSuccess ? successMessageBar : null}
         <CommandBar className='theses-simple-list-actions' items={actionItems} />
