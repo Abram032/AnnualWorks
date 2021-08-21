@@ -28,7 +28,7 @@ export const viewAction = (props: ActionProps): ICommandBarItemProps => {
     onClick: props.onClick,
     href: props.href,
     disabled: props.disabled ?? false,
-    visible: props.visible ?? false,
+    visible: props.visible ?? false
   }
 };
 
@@ -190,12 +190,12 @@ export const addActions = (thesis: Thesis, iconOnly: boolean): ICommandBarItemPr
       href: RouteNames.editThesisPath(thesis?.guid)
     }));
   }
-  if (thesis?.actions.canPrint) {
-    items.push(printAction({
-      iconOnly: iconOnly,
-      disabled: true
-    }));
-  }
+  // if (thesis?.actions.canPrint) {
+  //   items.push(printAction({
+  //     iconOnly: iconOnly,
+  //     disabled: true
+  //   }));
+  // }
   if (thesis?.actions.canAddReview) {
     items.push(addReviewAction({
       iconOnly: iconOnly,
