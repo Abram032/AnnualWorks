@@ -36,7 +36,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = (props) => {
 
   const form = (
     <StackItem>
-      <Label style={{ fontSize: FontSizes.size20 }}>Recenzja - {props.person}</Label>
+      <Label style={{ fontSize: FontSizes.size20 }}>Recenzja - "{props.person}"</Label>
       {qnas}
       <Label>Ocena: {review?.grade}</Label>
     </StackItem>

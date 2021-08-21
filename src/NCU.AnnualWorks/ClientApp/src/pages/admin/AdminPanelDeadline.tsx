@@ -69,7 +69,7 @@ export const AdminPanelDeadline: React.FC = () => {
   //#endregion
 
   return (
-    <Stack>
+    <Stack tokens={tokens}>
       {warningMessageBar}
       {uploadSuccess ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
@@ -98,7 +98,7 @@ export const AdminPanelDeadline: React.FC = () => {
           required
         />
       </StackItem>
-      <StackItem>
+      <StackItem tokens={tokens}>
         <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
     </Stack>

@@ -31,7 +31,7 @@ export const AdminPanelExport: React.FC = () => {
   //#endregion
 
   return (
-    <Stack>
+    <Stack tokens={tokens}>
       {!isExportValid ? warningMessageBar : null}
       <StackItem tokens={tokens}>
         <Label>Eksport ocen - {term?.names.pl}</Label>

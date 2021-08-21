@@ -89,7 +89,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
   const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Zapisano.</MessageBar>;
 
   return (
-    <Stack>
+    <Stack tokens={tokens}>
       {errorMessage ? errorMessageBar : null}
       {uploadSuccess ? successMessageBar : null}
       <StackItem tokens={tokens}>

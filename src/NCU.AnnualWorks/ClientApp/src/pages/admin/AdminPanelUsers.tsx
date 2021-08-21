@@ -94,7 +94,7 @@ const AdminPanelUsersForm: React.FC<AdminPanelUsersFormProps> = (props) => {
   //#endregion
 
   return (
-    <Stack>
+    <Stack tokens={tokens}>
       {errorMessage ? errorMessageBar : null}
       {uploadSuccess ? successMessageBar : null}
       <StackItem tokens={tokens}>

@@ -68,7 +68,7 @@ export const AdminPanelCourse: React.FC = () => {
   //#endregion Messages
 
   return (
-    <Stack>
+    <Stack tokens={tokens}>
       {warningMessageBar}
       {uploadSuccess ? successMessageBar : null}
       {errorMessage ? errorMessageBar : null}
@@ -90,7 +90,7 @@ export const AdminPanelCourse: React.FC = () => {
           required
         />
       </StackItem>
-      <StackItem>
+      <StackItem tokens={tokens}>
         <PrimaryButton text="Zatwierdź" onClick={onSave} />
       </StackItem>
     </Stack>
