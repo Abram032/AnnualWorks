@@ -17,7 +17,8 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
                 ThesisKeywords = thesis.ThesisKeywords.ToDto().ToList(),
                 FileGuid = thesis.File.Guid,
                 CreatedAt = thesis.CreatedAt,
-                Grade = thesis.Grade
+                Grade = thesis.Grade,
+                Hidden = thesis.Hidden
             };
         }
 
@@ -28,6 +29,7 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
                 Guid = thesis.Guid,
                 Title = thesis.Title,
                 FileGuid = thesis.File.Guid,
+                Hidden = thesis.Hidden
             };
         }
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
-using NCU.AnnualWorks.Core.Models;
 using System.Linq;
 
 namespace NCU.AnnualWorks.Core.Extensions
@@ -46,8 +45,8 @@ namespace NCU.AnnualWorks.Core.Extensions
         public static bool IsCurrentUserEmployee(this HttpContext context)
             => context.IsCurrentUserLecturer() || context.IsCurrentUserAdmin() || context.IsCurrentUserCustom();
 
-        public static CurrentUser GetCurrentUser(this HttpContext context) =>
-            new CurrentUser
+        public static Models.CurrentUser GetCurrentUser(this HttpContext context) =>
+            new Models.CurrentUser
             {
                 Id = context.CurrentUserUsosId(),
                 IsParticipant = context.IsCurrentUserParticipant(),

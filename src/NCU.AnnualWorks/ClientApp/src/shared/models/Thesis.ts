@@ -11,6 +11,8 @@ export interface ThesisActions {
   canAddReview: boolean,
   canEditReview: boolean,
   canEditGrade: boolean,
+  canHide: boolean,
+  canUnhide: boolean;
 }
 
 export interface ThesisLog {
@@ -36,7 +38,7 @@ export type Thesis = {
   fileGuid: string,
   thesisAdditionalFiles: File[],
   thesisLogs: ThesisLog[],
-  hidden: boolean | null,
+  hidden: boolean,
   createdAt: Date,
 };
 

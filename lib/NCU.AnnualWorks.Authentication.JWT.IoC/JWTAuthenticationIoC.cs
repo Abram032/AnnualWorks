@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NCU.AnnualWorks.Authentication.JWT.Core;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Authentication.JWT.Core.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Options;
@@ -13,6 +14,7 @@ namespace NCU.AnnualWorks.Authentication.JWT.IoC
         {
             services.Configure<JWTAuthenticationOptions>(options => configuration.GetSection(nameof(JWTAuthenticationOptions)).Bind(options));
             services.AddSingleton<IJWTAuthenticationService, JWTAuthenticationService>();
+            services.AddScoped<IUserContext, UserContext>();
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = AuthenticationSchemes.JWTAuthenticationScheme;

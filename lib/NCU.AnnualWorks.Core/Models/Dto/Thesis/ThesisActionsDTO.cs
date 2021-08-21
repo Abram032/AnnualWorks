@@ -9,5 +9,7 @@
         public bool CanAddReview { get; set; }
         public bool CanEditReview { get; set; }
         public bool CanEditGrade { get; set; }
+        public bool CanHide { get; set; }
+        public bool CanUnhide { get; set; }
     }
 }

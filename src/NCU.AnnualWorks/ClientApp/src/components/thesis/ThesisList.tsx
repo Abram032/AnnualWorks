@@ -33,7 +33,7 @@ export const ThesisList: React.FC<ThesisListProps> = (props) => {
     switch (column?.key) {
       case 'title':
         if (item.actions.canView) {
-          return <Link style={{ fontSize: FontSizes.size16 }} href={RouteNames.detailsPath(item.guid)}>{item.title}</Link>
+          return <Link style={{ fontSize: FontSizes.size16 }} href={RouteNames.detailsPath(item.guid)}>{item.title} {item.hidden ? "(Ukryta)" : null}</Link>
         } else {
           return <Label>{item.title}</Label>
         }

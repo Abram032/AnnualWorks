@@ -30,3 +30,4 @@ export * from './thesis/ThesisGradeConfirmDialog';
 export * from './thesis/ThesisList';
 export * from './auth/AuthenticatedWrapper';
 export * from './thesis/ThesisHistoryLog';
+export * from './thesis/ThesisHideConfirmDialog';

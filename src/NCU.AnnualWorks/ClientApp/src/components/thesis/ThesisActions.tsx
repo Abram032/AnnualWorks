@@ -135,14 +135,49 @@ export const editGradeAction = (props: ActionProps): ICommandBarItemProps => {
   }
 };
 
+export const hideThesisAction = (props: ActionProps): ICommandBarItemProps => {
+  return {
+    key: 'hideThesis',
+    text: 'Ukryj pracę',
+    iconProps: {
+      iconName: 'Hide3',
+      className: `${iconStyles}`
+    },
+    ariaLabel: 'Hide thesis',
+    iconOnly: props.iconOnly ?? true,
+    onClick: props.onClick,
+    href: props.href,
+    disabled: props.disabled ?? false,
+    visible: props.visible ?? false
+  }
+};
+
+export const unhideThesisAction = (props: ActionProps): ICommandBarItemProps => {
+  return {
+    key: 'unhideThesis',
+    text: 'Odkryj pracę',
+    iconProps: {
+      iconName: 'View',
+      className: `${iconStyles}`
+    },
+    ariaLabel: 'Unhide thesis',
+    iconOnly: props.iconOnly ?? true,
+    onClick: props.onClick,
+    href: props.href,
+    disabled: props.disabled ?? false,
+    visible: props.visible ?? false
+  }
+};
+
 export const addActions = (thesis: Thesis, iconOnly: boolean): ICommandBarItemProps[] => {
   const items: ICommandBarItemProps[] = [];
-  if (thesis?.actions.canView) {
-    items.push(viewAction({
-      iconOnly: iconOnly,
-      disabled: true
-    }));
-  }
+  // if (thesis?.actions.canView) {
+  //   items.push(viewAction({
+  //     iconOnly: iconOnly,
+  //     disabled: true,
+  //     visible: false
+  //   }));
+  // }
   if (thesis?.actions.canDownload) {
     items.push(downloadAction({
       iconOnly: iconOnly,

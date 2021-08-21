@@ -9,4 +9,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NCU.AnnualWorks.Authentication.OAuth.Core\NCU.AnnualWorks.Authentication.OAuth.Core.csproj" />
+  </ItemGroup>
+
 </Project>

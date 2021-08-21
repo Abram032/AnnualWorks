@@ -1,12 +1,12 @@
 import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React from 'react';
-import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog } from '../../Components';
+import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog, ThesisHideConfirmDialog } from '../../Components';
 import { RouteNames } from '../../shared/Consts';
 import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
 import { CurrentUser, Review, Thesis, ThesisActions, ThesisLog, User } from '../../shared/Models';
-import { ThesisHistoryLog } from '../../components/Index';
+import { hideThesisAction, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
 
 interface ThesisDetailsProps {
   guid: string
@@ -18,6 +18,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [isPromoterReviewVisible, { toggle: toggleIsPromoterReviewVisible }] = useBoolean(false);
   const [isReviewerReviewVisible, { toggle: toggleIsReviewerReviewVisible }] = useBoolean(false);
   const [confirmDialogIsVisible, { toggle: toggleConfirmDialogIsVisible }] = useBoolean(false);
+  const [hideDialogIsVisible, { toggle: toggleHideDialogIsVisible }] = useBoolean(false);
 
   if (thesisFetching) {
     return <Loader size='medium' label={"Ładowanie..."} />
@@ -31,12 +32,14 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
     <Stack className={containerStyles} tokens={containerStackTokens}>
       <Tile title={thesis.title}>
         {thesis.promoterReview?.grade && thesis.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
+        {thesis?.hidden ? hiddenMessageBar : null}
         <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} toggleIsVisible={toggleConfirmDialogIsVisible} />
+        <ThesisHideConfirmDialog guid={thesis.guid} isThesisHidden={thesis.hidden} isVisible={hideDialogIsVisible} toggleIsVisible={toggleHideDialogIsVisible} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar
             className='theses-simple-list-actions'
-            items={getThesisActions(thesis, toggleConfirmDialogIsVisible)}
+            items={getThesisActions(thesis, toggleConfirmDialogIsVisible, toggleHideDialogIsVisible)}
           />
         </Stack>
         <Stack tokens={stackTokens}>
@@ -116,6 +119,14 @@ const gradeConflictMessageBar = (
   </Stack>
 );
 
+const hiddenMessageBar = (
+  <Stack tokens={stackTokens}>
+    <MessageBar messageBarType={MessageBarType.warning} isMultiline>
+      Ta praca została ukryta przez administratora. Ocena z tej pracy nie zostanie wyeksportowana.
+    </MessageBar>
+  </Stack>
+)
+
 //#endregion
 
 //#region Review Actions
@@ -136,7 +147,7 @@ const getReviewActions = (currentUser: CurrentUser, user: User, thesisGuid: stri
 
 //#region Thesis Actions 
 
-const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void): ICommandBarItemProps[] => {
+const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void, toggleHideThesisDialog: () => void): ICommandBarItemProps[] => {
   //Adding available actions
   const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
 
@@ -147,6 +158,19 @@ const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void):
     }))
   }
 
+  if(thesis.actions.canHide) {
+    actionItems.push(hideThesisAction({
+      iconOnly: false,
+      onClick: toggleHideThesisDialog
+    }))
+  }
+
+  if(thesis.actions.canUnhide) {
+    actionItems.push(unhideThesisAction({
+      iconOnly: false,
+      onClick: toggleHideThesisDialog
+    }))
+  }
   return actionItems;
 }
 

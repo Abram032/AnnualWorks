@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Authentication.JWT.Core;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Authentication.JWT.Core.Options;
 using System.Linq;
@@ -14,12 +15,15 @@ namespace NCU.AnnualWorks.Authentication.JWT
     public class JWTAuthenticationHandler : AuthenticationHandler<JWTAuthenticationOptions>
     {
         private readonly IJWTAuthenticationService _jwtService;
+        private readonly IUserContext _userContext;
+
         public JWTAuthenticationHandler(IOptionsMonitor<JWTAuthenticationOptions> options,
             ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock,
-            IJWTAuthenticationService jwtService)
+            IJWTAuthenticationService jwtService, IUserContext userContext)
             : base(options, logger, encoder, clock)
         {
             _jwtService = jwtService;
+            _userContext = userContext;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -63,6 +67,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
 
             var identity = new ClaimsIdentity(jwt.Claims, nameof(JWTAuthenticationHandler));
             Context.User.AddIdentity(identity);
+            _userContext.SetCurrentUser(Context);
 
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);
             return AuthenticateResult.Success(ticket);

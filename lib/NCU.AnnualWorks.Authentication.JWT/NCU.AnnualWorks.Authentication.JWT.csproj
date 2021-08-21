@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NCU.AnnualWorks.Authentication.JWT.Core\NCU.AnnualWorks.Authentication.JWT.Core.csproj" />
+    <ProjectReference Include="..\NCU.AnnualWorks.Authentication.OAuth.Core\NCU.AnnualWorks.Authentication.OAuth.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCU.AnnualWorks.Api.Theses.Models;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Extensions.Mapping;
@@ -36,9 +37,12 @@ namespace NCU.AnnualWorks.Api.Theses
         private readonly ISettingsService _settingsService;
         private readonly IThesisService _thesisService;
 
+        private readonly IUserContext _userContext;
+
         public ThesesController(IUsosService usosService, IMapper mapper, IUserRepository userRepository,
             IThesisRepository thesisRepository, IAsyncRepository<Keyword> keywordRepository,
-            IFileService fileService, ISettingsService settingsService, IThesisService thesisService)
+            IFileService fileService, ISettingsService settingsService, IThesisService thesisService,
+            IUserContext userContext)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -48,6 +52,7 @@ namespace NCU.AnnualWorks.Api.Theses
             _fileService = fileService;
             _settingsService = settingsService;
             _thesisService = thesisService;
+            _userContext = userContext;
         }
 
         [HttpGet("promoted")]
@@ -63,7 +68,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var theses = _thesisService.GetPromotedTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
-                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadlne.Result);
                 thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
             }
 
@@ -83,7 +88,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var theses = _thesisService.GetReviewedTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
-                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadlne.Result);
                 thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
             }
 
@@ -103,7 +108,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var theses = _thesisService.GetAuthoredTheses(currentUser.Id, getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
-                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadlne.Result);
                 thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
             }
 
@@ -123,7 +128,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var theses = _thesisService.GetThesesByTerm(getCurrentTerm.Result.Id);
             foreach (var thesis in theses)
             {
-                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadlne.Result);
+                thesis.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadlne.Result);
                 thesis.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
             }
 
@@ -164,11 +169,11 @@ namespace NCU.AnnualWorks.Api.Theses
             thesisDto.PromoterReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Promoter)?.ToBasicDto();
             thesisDto.ReviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer)?.ToBasicDto();
             thesisDto.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
-            thesisDto.Actions = await _thesisService.GetAvailableActions(thesis.Guid, currentUser, getDeadline.Result);
+            thesisDto.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadline.Result);
 
             if (currentUser.IsEmployee)
             {
-                thesisDto.ThesisLogs = await _thesisService.GetThesisLogs(thesisDto.Guid, currentUser);
+                thesisDto.ThesisLogs = await _thesisService.GetThesisLogs(thesisDto.Guid);
             }
 
             return new OkObjectResult(thesisDto);
@@ -498,6 +503,54 @@ namespace NCU.AnnualWorks.Api.Theses
             {
                 return new BadRequestObjectResult("Ocena została już wystawiona lub nie posiadasz uprawnień do jej wystawienia.");
             }
+        }
+
+        [HttpPost("hide/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AdminOnly)]
+        public async Task<IActionResult> HideThesis(Guid id)
+        {
+            var thesis = await _thesisRepository.GetAsync(id);
+            var user = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+
+            if (thesis == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (thesis.Hidden)
+            {
+                return new BadRequestObjectResult("Praca została już ukryta.");
+            }
+
+            thesis.LogChange(user, ModificationType.Hidden);
+            thesis.Hidden = true;
+            await _thesisRepository.UpdateAsync(thesis);
+
+            return new OkResult();
+        }
+
+        [HttpPost("unhide/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AdminOnly)]
+        public async Task<IActionResult> UnhideThesis(Guid id)
+        {
+            var thesis = await _thesisRepository.GetAsync(id);
+            var user = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+
+            if (thesis == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (!thesis.Hidden)
+            {
+                return new BadRequestObjectResult("Praca nie jest ukryta.");
+            }
+
+            thesis.LogChange(user, ModificationType.Visible);
+            thesis.Hidden = false;
+            await _thesisRepository.UpdateAsync(thesis);
+
+            return new OkResult();
         }
     }
 }
