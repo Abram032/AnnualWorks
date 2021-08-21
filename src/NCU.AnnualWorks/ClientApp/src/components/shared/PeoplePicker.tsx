@@ -57,9 +57,9 @@ const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
     filterPeople(filter, props.people, selectedItems, props.maxSuggestions);
 
   const onEmptyFilter = (selectedItems?: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
-    return props.people.filter(p => !selectedItems?.includes(p))
-      .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
-      .slice(0, props.maxSuggestions);
+    return props.people.filter(p => !selectedItems?.map(i => i.key).includes(p.key))
+    .sort((p1, p2) => p1.text!.localeCompare(p2.text!))
+    .slice(0, props.maxSuggestions);
   }
 
   //#region Styles
@@ -88,6 +88,7 @@ const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
         defaultSelectedItems={props.defaultValue}
         resolveDelay={props.resolveDelay ?? 500}
         onInputChange={props.onInputChange}
+        selectedItems={props.selectedPeople}
       />
       {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
     </>
