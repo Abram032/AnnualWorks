@@ -1,6 +1,6 @@
 import React from 'react';
-import { DetailsList, IColumn, Icon, IGroup, mergeStyles, SelectionMode } from '@fluentui/react';
-import { ModificationType, ModificationTypeDescription, ModificationTypeIcons, ThesisLog } from '../../shared/Models';
+import { DetailsList, IColumn, Icon, IGroup, mergeStyles, Persona, PersonaSize, SelectionMode, Stack } from '@fluentui/react';
+import { ModificationTypeDescription, ModificationTypeIcons, ThesisLog } from '../../shared/Models';
 
 interface ThesisHistoryLogProps {
   thesisLogs: ThesisLog[] 
@@ -30,11 +30,29 @@ export const ThesisHistoryLog: React.FC<ThesisHistoryLogProps> = (props) => {
   ): React.ReactNode => {
     switch (column?.key) {
       case 'modificationType':
-        return <Icon iconName={ModificationTypeIcons[item.modificationType]} className={iconClass} />;
+        return (
+          <Stack verticalAlign="center" horizontalAlign="center" horizontal>
+            <Icon iconName={ModificationTypeIcons[item.modificationType]} className={iconClass} />
+          </Stack>
+        )
       case 'timestamp':
-        return `${new Date(item.timestamp).toLocaleDateString()} ${new Date(item.timestamp).toLocaleTimeString()}`
+        return (
+          <Stack verticalAlign="center" horizontalAlign="center" horizontal>
+            {`${new Date(item.timestamp).toLocaleDateString()} ${new Date(item.timestamp).toLocaleTimeString()}`}
+          </Stack>
+        );
       case 'description':
-        return ModificationTypeDescription[item.modificationType](item.user);
+        return (
+          <Stack verticalAlign="center" horizontal>
+            <Persona 
+              imageUrl={item.user.photoUrl} 
+              imageAlt={`${item.user.firstName} ${item.user.lastName}`} 
+              imageInitials={`${item.user.firstName.substring(0, 1)}${item.user.lastName.substring(0, 1)}`} 
+              size={PersonaSize.size24}
+            />
+            {ModificationTypeDescription[item.modificationType](item.user)}
+          </Stack>
+        );
       default:
         return null;
     }

@@ -8,7 +8,6 @@ export const Api = axios.create({
 });
 
 Api.interceptors.response.use(response => response, error => {
-  debugger;
   switch (error.response.status) {
     case 400:
       throw new Error(error.response.data ?? "Nieprawidłowe zapytanie. (400 Bad Request)");
