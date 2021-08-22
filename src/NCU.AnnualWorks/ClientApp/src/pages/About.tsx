@@ -24,7 +24,7 @@ export const About: React.FC = () => {
 
   //#region Icons
 
-  const repo = <Link href="https://github.com/Abram032/AnnualWorks"><FontAwesomeIcon icon={faGithub} size="lg" /></Link>
+  const repo = <Link href="https://github.com/Abram032/AnnualWorks">GitHub</Link>
 
   //#endregion Icons
 
@@ -38,7 +38,7 @@ export const About: React.FC = () => {
       </Stack.Item>
       <Stack.Item align="center" tokens={stackTokens}>
         <Label className={regularFontStyle}>
-          Kod źródłowy jest w pełni otwarty i dostępny w repozytorium GitHub. {repo}
+          Kod źródłowy jest w pełni otwarty i dostępny w repozytorium {repo}. 
         </Label>
       </Stack.Item>
       <Stack.Item align="center" tokens={stackTokens}>
