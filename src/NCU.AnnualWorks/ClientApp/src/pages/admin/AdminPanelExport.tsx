@@ -1,20 +1,22 @@
-import React from "react";
-import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from "@fluentui/react";
-import { useExportValidation, useCurrentTerm } from '../../shared/Hooks';
+import React, { useState } from "react";
+import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem, Dropdown, IDropdownOption } from "@fluentui/react";
+import { useExportValidation, useCurrentTerm, useExportTerms } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";
-import { Loader } from "../../components/Index";
+import { Loader,  } from "../../Components";
 import { RouteNames } from "../../shared/Consts";
 import { Redirect } from "react-router-dom";
 
 export const AdminPanelExport: React.FC = () => {
-  const [term, termFetching] = useCurrentTerm();
-  const [isExportValid, exportValidationFetching] = useExportValidation(term?.id);
+  const [currentTerm, currentTermFetching] = useCurrentTerm();
+  const [exportTerms, exportTermsFetching] = useExportTerms();
+  const [isExportValid, exportValidationFetching] = useExportValidation(currentTerm?.id);
+  const [selectedTerm, setSelectedTerm] = useState<IDropdownOption>();
 
-  if (termFetching || exportValidationFetching) {
+  if (currentTermFetching || exportValidationFetching || exportTermsFetching) {
     return <Loader />
   }
 
-  if (isExportValid === undefined) {
+  if (isExportValid === undefined || !currentTerm || !exportTerms) {
     return <Redirect to={RouteNames.error} />
   }
 
@@ -34,8 +36,18 @@ export const AdminPanelExport: React.FC = () => {
     <Stack tokens={tokens}>
       {!isExportValid ? warningMessageBar : null}
       <StackItem tokens={tokens}>
-        <Label>Eksport ocen - {term?.names.pl}</Label>
-        <PrimaryButton text="Pobierz" href={`${AppSettings.API.Export.Base}?termId=${term?.id}`} target='_blank' />
+        <Label>Eksport ocen</Label>
+        <Dropdown
+          title="Semestr"
+          selectedKey={selectedTerm ? selectedTerm.key : undefined}
+          options={exportTerms.map(t => ({ key: t.id, text: t.names.pl }))}
+          defaultSelectedKey={currentTerm.id}
+          onChange={(e, item) => setSelectedTerm(item)}
+          required
+        />
+      </StackItem>
+      <StackItem tokens={tokens}>
+        <PrimaryButton text="Pobierz" href={`${AppSettings.API.Export.Base}?termId=${selectedTerm?.key}`} target='_blank' />
       </StackItem>
     </Stack>
   );

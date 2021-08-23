@@ -15,7 +15,8 @@ export namespace AppSettings {
     },
     Terms: {
       Base: process.env.REACT_APP_API_TERMS!,
-      Current: process.env.REACT_APP_API_TERMS_CURRENT!
+      Current: process.env.REACT_APP_API_TERMS_CURRENT!,
+      Export: process.env.REACT_APP_API_TERMS_EXPORT!
     },
     Users: {
       Base: process.env.REACT_APP_API_USERS_BASE!,
