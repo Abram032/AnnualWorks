@@ -9,8 +9,8 @@ import { Redirect } from "react-router-dom";
 export const AdminPanelExport: React.FC = () => {
   const [currentTerm, currentTermFetching] = useCurrentTerm();
   const [exportTerms, exportTermsFetching] = useExportTerms();
-  const [isExportValid, exportValidationFetching] = useExportValidation(currentTerm?.id);
   const [selectedTerm, setSelectedTerm] = useState<IDropdownOption>();
+  const [isExportValid, exportValidationFetching] = useExportValidation(selectedTerm?.key ? selectedTerm.key.toString() : currentTerm?.id);
 
   if (currentTermFetching || exportValidationFetching || exportTermsFetching) {
     return <Loader />
