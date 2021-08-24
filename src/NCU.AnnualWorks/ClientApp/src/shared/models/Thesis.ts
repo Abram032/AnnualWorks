@@ -40,6 +40,7 @@ export type Thesis = {
   thesisLogs: ThesisLog[],
   hidden: boolean,
   createdAt: Date,
+  termId: string
 };
 
 export default Thesis;

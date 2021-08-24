@@ -16,7 +16,7 @@ export namespace AppSettings {
     Terms: {
       Base: process.env.REACT_APP_API_TERMS!,
       Current: process.env.REACT_APP_API_TERMS_CURRENT!,
-      Export: process.env.REACT_APP_API_TERMS_EXPORT!
+      All: process.env.REACT_APP_API_TERMS_ALL!
     },
     Users: {
       Base: process.env.REACT_APP_API_USERS_BASE!,
@@ -26,7 +26,8 @@ export namespace AppSettings {
       Admins: {
         Base: process.env.REACT_APP_API_USERS_ADMINS!,
         Default: process.env.REACT_APP_API_USERS_ADMINS_DEFAULT!,
-      }
+      },
+      All: process.env.REACT_APP_API_USERS_ALL!
     },
     Theses: {
       Base: process.env.REACT_APP_API_THESES!,
@@ -35,7 +36,8 @@ export namespace AppSettings {
       Authored: process.env.REACT_APP_API_THESES_AUTHORED!,
       Grade: process.env.REACT_APP_API_THESES_GRADE!,
       Hide: process.env.REACT_APP_API_THESES_HIDE!,
-      Unhide: process.env.REACT_APP_API_THESES_UNHIDE!
+      Unhide: process.env.REACT_APP_API_THESES_UNHIDE!,
+      Search: process.env.REACT_APP_API_THESES_SEARCH!
     },
     Questions: {
       Base: process.env.REACT_APP_API_QUESTIONS!,

@@ -39,6 +39,7 @@ export const useEmployees = () => useUsers<User[]>(AppSettings.API.Users.Employe
 export const useAdmins = () => useUsers<User[]>(AppSettings.API.Users.Admins.Base);
 export const useDefaultAdmin = () => useUsers<User>(AppSettings.API.Users.Admins.Default);
 export const useCustomUsers = () => useUsers<User[]>(AppSettings.API.Users.Custom);
+export const useAllUsers = () => useUsers<User[]>(AppSettings.API.Users.All);
 
 export const usePeoplePicker = (users: User[], excludedIds?: any[]): [IPersonaProps[], IPersonaProps[], (people?: IPersonaProps[]) => void] => {
   const [people, setPeople] = useState<IPersonaProps[]>([]);

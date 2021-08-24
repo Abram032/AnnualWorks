@@ -41,9 +41,9 @@ namespace NCU.AnnualWorks.Api.Terms
             return new OkObjectResult(term);
         }
 
-        [HttpGet("Export")]
+        [HttpGet("All")]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> GetExportTerms()
+        public async Task<IActionResult> GetAllTerms()
         {
             var thesisTerms = _thesisRepository.GetAll().Select(t => t.TermId).Distinct().ToList();
             var terms = new List<TermDTO>();

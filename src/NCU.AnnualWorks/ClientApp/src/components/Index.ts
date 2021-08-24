@@ -32,3 +32,4 @@ export * from './auth/AuthenticatedWrapper';
 export * from './thesis/ThesisHistoryLog';
 export * from './thesis/ThesisHideConfirmDialog';
 export * from './shared/Card';
+export * from './search/MultiSearch';

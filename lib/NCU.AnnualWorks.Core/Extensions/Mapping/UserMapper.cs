@@ -38,5 +38,18 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
         {
             return usosUsers.Select(u => u.ToDbModel()).ToList();
         }
+
+        public static UserDTO ToDto(this User user)
+        {
+            return new UserDTO
+            {
+                UsosId = user.UsosId
+            };
+        }
+
+        public static List<UserDTO> ToDto(this IEnumerable<User> users)
+        {
+            return users.Select(u => u.ToDto()).ToList();
+        }
     }
 }

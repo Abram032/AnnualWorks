@@ -37,5 +37,24 @@ namespace NCU.AnnualWorks.Core.Extensions.Mapping
         {
             return theses.Select(t => t.ToBasicDto()).ToList();
         }
+
+        public static ThesisDTO ToExtendedDto(this Thesis thesis)
+        {
+            return new ThesisDTO
+            {
+                Guid = thesis.Guid,
+                Title = thesis.Title,
+                TermId = thesis.TermId,
+                Promoter = thesis.Promoter.ToDto(),
+                Reviewer = thesis.Reviewer.ToDto(),
+                ThesisAuthors = thesis.ThesisAuthors.Select(a => a.Author).ToDto()
+            };
+
+        }
+
+        public static List<ThesisDTO> ToExtendedDto(this IEnumerable<Thesis> theses)
+        {
+            return theses.Select(t => t.ToExtendedDto()).ToList();
+        }
     }
 }

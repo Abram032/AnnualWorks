@@ -1,14 +1,17 @@
 import React from "react";
-import { Label, Stack, FontSizes, IStackTokens } from "@fluentui/react";
-import { useCurrentUser } from "../shared/Hooks";
+import { Stack, IStackTokens, mergeStyles } from "@fluentui/react";
+import { useAllTerms, useAllUsers, useCurrentUser } from "../shared/Hooks";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../shared/Consts";
 import { Loader } from "../Components";
+import { MultiSearch, Tile } from "../components/Index";
 
 export const Search: React.FC = () => {
   const currentUser = useCurrentUser();
+  const [allTerms, allTermsIsFetching] = useAllTerms();
+  const [allUsers, allUsersIsFetching] = useAllUsers();
   
-  if(currentUser === null) {
+  if(currentUser === null || allTermsIsFetching || allUsersIsFetching) {
     return <Loader />
   }
 
@@ -16,18 +19,18 @@ export const Search: React.FC = () => {
     return <Redirect to={RouteNames.forbidden} />
   }
 
+  if(!allTerms || !allUsers) {
+    return <Redirect to={RouteNames.error} />
+  }
+
   return (
-    <Stack tokens={stackTokens}>
-      <Stack.Item align="center" tokens={stackTokens}>
-        <Label style={{ fontSize: FontSizes.size24 }}>
-          Trwają prace nad funkcjonalnością.
-        </Label>
-      </Stack.Item>
-      <Stack.Item align="center" tokens={stackTokens}>
-        <Label style={{ fontSize: FontSizes.size24 }}>
-          Wkrótce będzie dostępna! 😉
-        </Label>
-      </Stack.Item>
+    <Stack className={container} tokens={stackTokens}>
+      <Tile title={"Wyszukiwarka prac"}>
+        <MultiSearch 
+          terms={allTerms}
+          users={allUsers}
+        />
+      </Tile>
     </Stack>
   );
 };
@@ -37,5 +40,10 @@ export default Search;
 //#region Styles
 
 const stackTokens: IStackTokens = { childrenGap: 15 };
+
+const container = mergeStyles({
+  width: "100%"
+});
+
 
 //#endregion

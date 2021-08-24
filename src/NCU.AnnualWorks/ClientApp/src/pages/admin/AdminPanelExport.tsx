@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem, Dropdown, IDropdownOption } from "@fluentui/react";
-import { useExportValidation, useCurrentTerm, useExportTerms } from '../../shared/Hooks';
+import { useExportValidation, useCurrentTerm, useAllTerms } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";
 import { Loader,  } from "../../Components";
 import { RouteNames } from "../../shared/Consts";
@@ -8,7 +8,7 @@ import { Redirect } from "react-router-dom";
 
 export const AdminPanelExport: React.FC = () => {
   const [currentTerm, currentTermFetching] = useCurrentTerm();
-  const [exportTerms, exportTermsFetching] = useExportTerms();
+  const [exportTerms, exportTermsFetching] = useAllTerms();
   const [selectedTerm, setSelectedTerm] = useState<IDropdownOption>();
   const [isExportValid, exportValidationFetching] = useExportValidation(selectedTerm?.key ? selectedTerm.key.toString() : currentTerm?.id);
 

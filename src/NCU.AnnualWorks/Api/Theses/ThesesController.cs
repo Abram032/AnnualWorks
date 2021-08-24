@@ -552,5 +552,39 @@ namespace NCU.AnnualWorks.Api.Theses
 
             return new OkResult();
         }
+
+        [HttpGet("search")]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        public async Task<IActionResult> SearchTheses(
+            [FromQuery] string terms,
+            [FromQuery] string text,
+            [FromQuery] string users,
+            [FromQuery] string keywords,
+            [FromQuery] int page,
+            [FromQuery] int count)
+        {
+            var termIds = terms?.Split(';');
+            var userIds = users?.Split(';');
+            var keywordIds = keywords?.Split(';');
+
+            var query = _thesisRepository.GetAll().Where(t => !t.Hidden);
+
+            query = termIds == null ? query : query.Where(t => termIds.Contains(t.TermId));
+            query = text == null ? query : query.Where(t =>
+                t.Title.Contains(text) ||
+                t.Abstract.Contains(text)); //||
+                                            //keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
+            query = userIds == null ? query : query.Where(t =>
+                userIds.Contains(t.Promoter.Id.ToString()) ||
+                userIds.Contains(t.Reviewer.Id.ToString()) ||
+                userIds.Contains(t.ThesisAuthors.Select(a => a.AuthorId).ToString()));
+            query = keywordIds == null ? query : query.Where(t => keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
+
+            query = query.Skip(page * count).Take(count);
+
+            var result = query.ToExtendedDto();
+
+            return new OkObjectResult(result);
+        }
     }
 }

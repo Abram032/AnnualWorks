@@ -4,7 +4,7 @@ import { Term } from '../Models';
 import { AppSettings } from '../../AppSettings';
 import { useIsAuthenticated } from './AuthHooks';
 
-export const useExportTerms = (): [Term[] | undefined, boolean] => {
+export const useAllTerms = (): [Term[] | undefined, boolean] => {
   const [terms, setTerms] = useState<Term[]>();
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const isAuthenticated = useIsAuthenticated();
@@ -20,7 +20,7 @@ export const useExportTerms = (): [Term[] | undefined, boolean] => {
       return;
     }
 
-    Api.get<Term[]>(AppSettings.API.Terms.Export)
+    Api.get<Term[]>(AppSettings.API.Terms.All)
       .then(response => {
         const mappedTerms = response.data.map<Term>(t => ({
           id: t.id,

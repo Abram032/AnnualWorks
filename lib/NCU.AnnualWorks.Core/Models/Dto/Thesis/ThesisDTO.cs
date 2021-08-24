@@ -15,6 +15,7 @@ namespace NCU.AnnualWorks.Core.Models.Dto
         public string Abstract { get; set; }
         public string Grade { get; set; }
         public bool Hidden { get; set; }
+        public string TermId { get; set; }
         public DateTime CreatedAt { get; set; }
         public UserDTO Promoter { get; set; }
         public UserDTO Reviewer { get; set; }

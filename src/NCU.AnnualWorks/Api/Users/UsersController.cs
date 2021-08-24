@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Api.Users.Models;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
+using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto.Users;
 using NCU.AnnualWorks.Core.Options;
@@ -24,13 +26,16 @@ namespace NCU.AnnualWorks.Api.Users
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly ApplicationOptions _options;
+        private readonly IUserContext _userContext;
         public UsersController(IUsosService usosService, IMapper mapper,
-            IUserRepository userRepository, IOptions<ApplicationOptions> options)
+            IUserRepository userRepository, IOptions<ApplicationOptions> options,
+            IUserContext userContext)
         {
             _usosService = usosService;
             _mapper = mapper;
             _userRepository = userRepository;
             _options = options.Value;
+            _userContext = userContext;
         }
 
         [HttpGet("Students")]
@@ -183,6 +188,15 @@ namespace NCU.AnnualWorks.Api.Users
             var users = _mapper.Map<List<UsosUser>, List<UserDTO>>(usosUsers);
 
             return new OkObjectResult(users);
+        }
+
+        [HttpGet("All")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = _userRepository.GetAll().Select(u => u.UsosId).ToList();
+            var usosUsers = await _usosService.GetUsers(_userContext.GetCredentials(), users);
+
+            return new OkObjectResult(usosUsers.ToDto());
         }
     }
 }
