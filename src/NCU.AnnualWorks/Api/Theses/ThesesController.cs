@@ -580,11 +580,14 @@ namespace NCU.AnnualWorks.Api.Theses
                 userIds.Contains(t.ThesisAuthors.Select(a => a.AuthorId).ToString()));
             query = keywordIds == null ? query : query.Where(t => keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
 
-            query = query.Skip(page * count).Take(count);
-
             var result = query.ToExtendedDto();
+            var resultCount = result.Count;
 
-            return new OkObjectResult(result);
+            return new OkObjectResult(new
+            {
+                theses = result.Skip(page * count).Take(count).ToList(),
+                itemCount = resultCount
+            });
         }
     }
 }

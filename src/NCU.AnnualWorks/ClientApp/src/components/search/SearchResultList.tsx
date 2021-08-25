@@ -1,4 +1,4 @@
-import { DetailsList, FontSizes, IColumn, IStackTokens, Link, merge, mergeStyles, Persona, PersonaSize, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import { DetailsList, FontSizes, IColumn, IStackTokens, Label, Link, merge, mergeStyles, Persona, PersonaSize, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React from 'react';
 import { RouteNames } from '../../shared/Consts';
 import { Term, Thesis, User } from '../../shared/Models';
@@ -30,37 +30,36 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props) => {
     {
       key: 'title',
       name: 'Tytuł',
-      minWidth: 200,
+      minWidth: 600,
       onRender: (item: Thesis) => (
         <Link href={RouteNames.detailsPath(item.guid)} className={fontStyles}>{item.title}</Link>
       )
     },
     {
-      key: 'authors',
-      name: 'Autorzy',
-      minWidth: 200,
+      key: 'users',
+      name: 'Osoby',
+      minWidth: 400,
       onRender: (item: Thesis) => (
         <Stack tokens={tokens}>
-          {getPersonas(item.thesisAuthors)}
+          <Stack horizontal tokens={tokens}>
+            <Label>{item.thesisAuthors.length === 1 ? "Autor" : "Autorzy"}</Label>
+            {getPersonas(item.thesisAuthors)}
+          </Stack>
+          <Stack horizontal tokens={tokens}>
+            <Label>Promotor</Label>
+            {getPersona(item.promoter)}
+          </Stack>
+          <Stack horizontal tokens={tokens}>
+            <Label>Recenzent</Label>
+            {getPersona(item.reviewer)}
+          </Stack>
         </Stack>
       )
     },
     {
-      key: 'promoter',
-      name: 'Promotor',
-      minWidth: 200,
-      onRender: (item: Thesis) => getPersona(item.promoter)
-    },
-    {
-      key: 'reviewer',
-      name: 'Recenzent',
-      minWidth: 200,
-      onRender: (item: Thesis) => getPersona(item.reviewer)
-    },
-    {
       key: 'term',
       name: 'Semestr',
-      minWidth: 200,
+      minWidth: 150,
       onRender: (item: Thesis) => (
         <span className={fontStyles}>{props.terms.filter(t => t.id === item.termId)?.shift()?.names.pl}</span>
       )
