@@ -2,15 +2,23 @@ import React, { useState } from "react";
 import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem, Dropdown, IDropdownOption } from "@fluentui/react";
 import { useExportValidation, useCurrentTerm, useAllTerms } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";
-import { Loader,  } from "../../Components";
+import { Loader } from "../../Components";
 import { RouteNames } from "../../shared/Consts";
 import { Redirect } from "react-router-dom";
+import { mapTermToDropdownOptions, mapTermsToDropdownOptions } from "../../shared/Utils";
+import { useEffect } from "react";
 
 export const AdminPanelExport: React.FC = () => {
   const [currentTerm, currentTermFetching] = useCurrentTerm();
   const [exportTerms, exportTermsFetching] = useAllTerms();
   const [selectedTerm, setSelectedTerm] = useState<IDropdownOption>();
   const [isExportValid, exportValidationFetching] = useExportValidation(selectedTerm?.key ? selectedTerm.key.toString() : currentTerm?.id);
+
+  useEffect(() => {
+    if(currentTerm) {
+      setSelectedTerm(mapTermToDropdownOptions(currentTerm));
+    }
+  }, [currentTerm]);
 
   if (currentTermFetching || exportValidationFetching || exportTermsFetching) {
     return <Loader />
@@ -39,10 +47,9 @@ export const AdminPanelExport: React.FC = () => {
         <Label>Eksport ocen</Label>
         <Dropdown
           title="Semestr"
-          selectedKey={selectedTerm ? selectedTerm.key : undefined}
-          options={exportTerms.map(t => ({ key: t.id, text: t.names.pl }))}
-          defaultSelectedKey={currentTerm.id}
-          onChange={(e, item) => setSelectedTerm(item)}
+          selectedKey={selectedTerm?.key}
+          options={mapTermsToDropdownOptions(exportTerms)}
+          onChange={(e, item) => item ? setSelectedTerm(item) : setSelectedTerm(undefined)}
           required
         />
       </StackItem>
@@ -59,4 +66,4 @@ export default AdminPanelExport;
 
 const tokens: IStackTokens = { childrenGap: 15 };
 
-//#endregion
+//#endregion Styles
