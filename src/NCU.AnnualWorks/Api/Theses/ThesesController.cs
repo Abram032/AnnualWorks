@@ -170,11 +170,8 @@ namespace NCU.AnnualWorks.Api.Theses
             thesisDto.ReviewerReview = thesis.Reviews.FirstOrDefault(p => p.CreatedBy == thesis.Reviewer)?.ToBasicDto();
             thesisDto.ReviewGuid = await _thesisService.GetReviewGuid(thesis.Guid, currentUser.Id);
             thesisDto.Actions = await _thesisService.GetAvailableActions(thesis.Guid, getDeadline.Result);
-
-            if (currentUser.IsEmployee)
-            {
-                thesisDto.ThesisLogs = await _thesisService.GetThesisLogs(thesisDto.Guid);
-            }
+            thesisDto.AvailableGradeRange = string.IsNullOrEmpty(thesisDto.Grade) ? await _thesisService.GetAvailableGrades(thesis.Guid) : null;
+            thesisDto.ThesisLogs = currentUser.IsEmployee ? await _thesisService.GetThesisLogs(thesisDto.Guid) : null;
 
             return new OkObjectResult(thesisDto);
         }

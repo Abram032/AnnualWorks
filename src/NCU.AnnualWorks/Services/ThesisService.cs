@@ -122,5 +122,26 @@ namespace NCU.AnnualWorks.Services
                 User = usersFromLogs.FirstOrDefault(u => u.UsosId == p.User.UsosId)
             }).ToList();
         }
+
+        public async Task<List<string>> GetAvailableGrades(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var grades = new List<string>() { "2", "3", "3.5", "4", "4.5", "5" };
+            var promoterGrade = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter && r.IsConfirmed)?.Grade;
+            var reviewerGrade = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer && r.IsConfirmed)?.Grade;
+
+            if (string.IsNullOrEmpty(promoterGrade) || string.IsNullOrEmpty(reviewerGrade))
+            {
+                return null;
+            }
+
+            var promoterGradeIndex = grades.IndexOf(promoterGrade);
+            var reviewerGradeIndex = grades.IndexOf(reviewerGrade);
+
+            var start = promoterGradeIndex > reviewerGradeIndex ? reviewerGradeIndex : promoterGradeIndex;
+            var end = promoterGradeIndex > reviewerGradeIndex ? promoterGradeIndex : reviewerGradeIndex;
+
+            return grades.GetRange(start, end - start + 1);
+        }
     }
 }

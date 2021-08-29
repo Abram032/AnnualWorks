@@ -19,5 +19,6 @@ namespace NCU.AnnualWorks.Core.Services
         Task<Guid?> GetReviewGuid(Guid thesisGuid, long userId);
         bool ThesisExists(Guid thesisGuid);
         Task<List<ThesisLogDTO>> GetThesisLogs(Guid thesisGuid);
+        Task<List<string>> GetAvailableGrades(Guid thesisGuid);
     }
 }

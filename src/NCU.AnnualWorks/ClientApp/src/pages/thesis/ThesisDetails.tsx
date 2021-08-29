@@ -33,7 +33,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
       <Tile title={thesis.title}>
         {thesis.promoterReview?.grade && thesis.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
         {thesis?.hidden ? hiddenMessageBar : null}
-        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} toggleIsVisible={toggleConfirmDialogIsVisible} />
+        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} availableGrades={thesis.availableGradeRange} toggleIsVisible={toggleConfirmDialogIsVisible} />
         <ThesisHideConfirmDialog guid={thesis.guid} isThesisHidden={thesis.hidden} isVisible={hideDialogIsVisible} toggleIsVisible={toggleHideDialogIsVisible} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>

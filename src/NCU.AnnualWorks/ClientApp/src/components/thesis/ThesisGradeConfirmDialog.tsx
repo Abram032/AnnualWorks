@@ -17,7 +17,8 @@ interface Form {
 interface ThesisGradeConfirmDialogProps {
   guid: string,
   isVisible: boolean,
-  toggleIsVisible: () => void
+  toggleIsVisible: () => void,
+  availableGrades?: Grade[] | null,
 }
 
 export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> = (props) => {
@@ -105,7 +106,7 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
           required: "Ocena jest wymagana."
         }}
         placeholder='Wybierz ocenę'
-        options={mapGradesToDropdownOptions(GradeList)}
+        options={props.availableGrades ? mapGradesToDropdownOptions(props.availableGrades) : mapGradesToDropdownOptions(GradeList)}
         required
       />
       <DialogFooter>

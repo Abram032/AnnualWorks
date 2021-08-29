@@ -2,6 +2,7 @@ import User from './User';
 import Keyword from './Keyword';
 import File from './File';
 import Review from './Review';
+import { Grade } from './Grades';
 
 export interface ThesisActions {
   canView: boolean,
@@ -27,6 +28,7 @@ export type Thesis = {
   title: string,
   abstract: string,
   grade?: string | null,
+  availableGradeRange?: Grade[] | null,
   promoter: User,
   reviewer: User,
   promoterReview?: Review,
