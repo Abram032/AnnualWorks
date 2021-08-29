@@ -1,12 +1,12 @@
 import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React from 'react';
-import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog, ThesisHideConfirmDialog } from '../../Components';
+import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog, ThesisHideConfirmDialog, ThesisCancelGradeDialog } from '../../Components';
 import { RouteNames } from '../../shared/Consts';
 import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
 import { CurrentUser, Review, Thesis, ThesisActions, ThesisLog, User } from '../../shared/Models';
-import { hideThesisAction, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
+import { cancelGradeAction, hideThesisAction, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
 
 interface ThesisDetailsProps {
   guid: string
@@ -18,6 +18,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [isPromoterReviewVisible, { toggle: toggleIsPromoterReviewVisible }] = useBoolean(false);
   const [isReviewerReviewVisible, { toggle: toggleIsReviewerReviewVisible }] = useBoolean(false);
   const [confirmDialogIsVisible, { toggle: toggleConfirmDialogIsVisible }] = useBoolean(false);
+  const [cancelDialogIsVisible, { toggle: toggleCancelDialogIsVisible }] = useBoolean(false);
   const [hideDialogIsVisible, { toggle: toggleHideDialogIsVisible }] = useBoolean(false);
 
   if (thesisFetching) {
@@ -35,11 +36,12 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
         {thesis?.hidden ? hiddenMessageBar : null}
         <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} availableGrades={thesis.availableGradeRange} toggleIsVisible={toggleConfirmDialogIsVisible} />
         <ThesisHideConfirmDialog guid={thesis.guid} isThesisHidden={thesis.hidden} isVisible={hideDialogIsVisible} toggleIsVisible={toggleHideDialogIsVisible} />
+        <ThesisCancelGradeDialog guid={thesis.guid} isVisible={cancelDialogIsVisible} toggleIsVisible={toggleCancelDialogIsVisible} />
         {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
         <Stack>
           <CommandBar
             className='theses-simple-list-actions'
-            items={getThesisActions(thesis, toggleConfirmDialogIsVisible, toggleHideDialogIsVisible)}
+            items={getThesisActions(thesis, toggleConfirmDialogIsVisible, toggleHideDialogIsVisible, toggleCancelDialogIsVisible)}
           />
         </Stack>
         <Stack tokens={stackTokens}>
@@ -112,7 +114,7 @@ const iconStyles = mergeStyles({
 const gradeConflictMessageBar = (
   <Stack tokens={stackTokens}>
     <MessageBar messageBarType={MessageBarType.blocked} isMultiline>
-      Oceny wystawione w recenzjach nie pozwalają na wyliczenie średniej, która może zostać wpisana do systemu USOS.
+      Oceny wystawione w recenzjach nie pozwalają na wyliczenie średniej, która może zostać wpisana do systemu USOS lub ocena została anulowana przez administratora.
       Skontaktuj się z promotorem lub recenzentem i wspólnie ustalcie końcową ocenę pracy.
       Ostatecznie ocena musi zostać zatwierdzona w systemie przez promotora przy wykorzystaniu akcji 'wystaw ocenę'.
     </MessageBar>
@@ -147,7 +149,10 @@ const getReviewActions = (currentUser: CurrentUser, user: User, thesisGuid: stri
 
 //#region Thesis Actions 
 
-const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void, toggleHideThesisDialog: () => void): ICommandBarItemProps[] => {
+const getThesisActions = (thesis: Thesis, 
+  toggleGradeConfrimDialog: () => void, 
+  toggleHideThesisDialog: () => void, 
+  toggleGradeCancelDialog: () => void): ICommandBarItemProps[] => {
   //Adding available actions
   const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
 
@@ -155,6 +160,13 @@ const getThesisActions = (thesis: Thesis, toggleGradeConfrimDialog: () => void, 
     actionItems.push(editGradeAction({
       iconOnly: false,
       onClick: toggleGradeConfrimDialog
+    }))
+  }
+
+  if(thesis.actions.canCancelGrade) {
+    actionItems.push(cancelGradeAction({
+      iconOnly: false,
+      onClick: toggleGradeCancelDialog
     }))
   }
 

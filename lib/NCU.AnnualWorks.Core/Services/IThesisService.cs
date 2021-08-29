@@ -9,7 +9,7 @@ namespace NCU.AnnualWorks.Core.Services
 {
     public interface IThesisService
     {
-        ThesisActionsDTO GetAvailableActions(Thesis thesis, DateTime deadline);
+        Task<ThesisActionsDTO> GetAvailableActions(Thesis thesis, DateTime deadline);
         Task<ThesisActionsDTO> GetAvailableActions(Guid thesisGuid, DateTime deadline);
         Task IncludeAvailableActions(IEnumerable<ThesisDTO> theses, DateTime deadline);
         List<ThesisDTO> GetPromotedTheses(long userId, string termId);

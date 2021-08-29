@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCU.AnnualWorks.Api.Reviews.Models;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
@@ -10,6 +11,7 @@ using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Core.Utils;
+using NCU.AnnualWorks.Integrations.Usos.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +28,14 @@ namespace NCU.AnnualWorks.Api.Reviews
         private readonly IAsyncRepository<Question> _questionRepository;
         private readonly IAsyncRepository<Answer> _answerRepository;
         private readonly ISettingsService _settingsService;
+        private readonly IUserContext _userContext;
+        private readonly IUsosService _usosService;
         public ReviewsController(IReviewRepository reviewRepository,
             IThesisRepository thesisRepository, IUserRepository userRepository,
             IAsyncRepository<Question> questionRepository,
             IAsyncRepository<ThesisLog> thesisLogRepository,
             IFileService fileService, IAsyncRepository<Answer> answerRepository,
-            ISettingsService settingsService)
+            ISettingsService settingsService, IUserContext userContext, IUsosService usosService)
         {
             _reviewRepository = reviewRepository;
             _thesisRepository = thesisRepository;
@@ -39,6 +43,8 @@ namespace NCU.AnnualWorks.Api.Reviews
             _questionRepository = questionRepository;
             _answerRepository = answerRepository;
             _settingsService = settingsService;
+            _userContext = userContext;
+            _usosService = usosService;
         }
 
         [HttpGet("{id:guid}")]
@@ -82,13 +88,15 @@ namespace NCU.AnnualWorks.Api.Reviews
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> CreateReview([FromBody] ReviewRequest request)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            if (DateTime.Now > deadline)
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
+
+            if (DateTime.Now > deadline && thesis.TermId != currentTerm.Id)
             {
                 return new BadRequestObjectResult("Nie można dodać recenzji po upływie terminu końcowego.");
             }
 
-            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
 
             if (thesis == null)
@@ -183,8 +191,11 @@ namespace NCU.AnnualWorks.Api.Reviews
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> UpdateReview(Guid id, ReviewRequest request)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            if (DateTime.Now > deadline)
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
+
+            if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
                 return new BadRequestObjectResult("Nie można zaktualizować recenzji po upływie terminu końcowego.");
             }
@@ -195,7 +206,6 @@ namespace NCU.AnnualWorks.Api.Reviews
                 return new NotFoundResult();
             }
 
-            var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var currentUser = await _userRepository.GetAsync(HttpContext.CurrentUserUsosId());
             if (thesis == null)
             {

@@ -169,6 +169,23 @@ export const unhideThesisAction = (props: ActionProps): ICommandBarItemProps => 
   }
 };
 
+export const cancelGradeAction = (props: ActionProps): ICommandBarItemProps => {
+  return {
+    key: 'cancelGrade',
+    text: 'Anuluj ocenę',
+    iconProps: {
+      iconName: 'RibbonSolid',
+      className: iconStyles
+    },
+    ariaLabel: 'Cancel grade',
+    iconOnly: props.iconOnly ?? true,
+    onClick: props.onClick,
+    href: props.href,
+    disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
+  }
+}
+
 export const addActions = (thesis: Thesis, iconOnly: boolean): ICommandBarItemProps[] => {
   const items: ICommandBarItemProps[] = [];
   // if (thesis?.actions.canView) {

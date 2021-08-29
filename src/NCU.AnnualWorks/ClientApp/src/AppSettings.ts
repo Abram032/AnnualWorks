@@ -34,7 +34,10 @@ export namespace AppSettings {
       Promoted: process.env.REACT_APP_API_THESES_PROMOTED!,
       Reviewed: process.env.REACT_APP_API_THESES_REVIEWED!,
       Authored: process.env.REACT_APP_API_THESES_AUTHORED!,
-      Grade: process.env.REACT_APP_API_THESES_GRADE!,
+      Grade: {
+        Confirm: process.env.REACT_APP_API_THESES_GRADE_CONFIRM!,
+        Cancel: process.env.REACT_APP_API_THESES_GRADE_CANCEL!,
+      },
       Hide: process.env.REACT_APP_API_THESES_HIDE!,
       Unhide: process.env.REACT_APP_API_THESES_UNHIDE!,
       Search: process.env.REACT_APP_API_THESES_SEARCH!

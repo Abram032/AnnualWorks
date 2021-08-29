@@ -302,15 +302,16 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> EditThesis(Guid id, [FromForm] ThesisRequest request)
         {
-            var deadline = await _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            var currentUserUsosId = HttpContext.CurrentUserUsosId();
-            var currentUser = await _userRepository.GetAsync(currentUserUsosId);
-            if (DateTime.Now > deadline)
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+            var currentUser = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var thesis = await _thesisRepository.GetAsync(id);
+
+            if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
                 return new BadRequestObjectResult("Nie można zaktualizować pracy po upływie terminu końcowego.");
             }
 
-            var thesis = await _thesisRepository.GetAsync(id);
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
 
             if (thesis.Promoter.Id != currentUser.Id)
@@ -333,7 +334,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 return new BadRequestObjectResult("Nie można edytować pracy z zatwierdzoną recenzją.");
             }
 
-            if (requestData.ReviewerUsosId == currentUserUsosId.ToString())
+            if (requestData.ReviewerUsosId == currentUser.UsosId.ToString())
             {
                 return new ConflictObjectResult("Promotor nie może być jednocześnie recenzentem.");
             }
@@ -457,26 +458,22 @@ namespace NCU.AnnualWorks.Api.Theses
         }
 
         //TODO: Refactor
-        [HttpPost("grade/{id:guid}")]
+        [HttpPost("grade/confirm/{id:guid}")]
         [Authorize(AuthorizationPolicies.LecturersOnly)]
         public async Task<IActionResult> ConfirmGrade(Guid id, [FromBody] ConfirmGradeRequest request)
         {
-            var currentUser = HttpContext.GetCurrentUser();
-            var getDeadline = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            var getThesis = _thesisRepository.GetAsync(id);
-            await Task.WhenAll(getDeadline, getThesis);
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+            var thesis = await _thesisRepository.GetAsync(id);
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
 
-            var deadline = getDeadline.Result;
-            var thesis = getThesis.Result;
-
-            if (DateTime.Now > deadline)
+            if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
-                return new BadRequestObjectResult("Nie wystawić oceny po upływie terminu końcowego.");
+                return new BadRequestObjectResult("Nie można wystawić oceny po upływie terminu końcowego.");
             }
 
             var regex = new Regex(@"(^2$)|(^3$)|(^3\.5$)|(^4$)|(^4\.5$)|(^5$)");
 
-            var isPromoter = thesis.Promoter.Id == currentUser.Id;
+            var isPromoter = thesis.Promoter.Id == _userContext.CurrentUser.Id;
             var promoterReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter);
             var reviewerReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer);
             var canBeAveraged = GradeUtils.TryGetAverageGrade(new List<string>() { promoterReview.Grade, reviewerReview.Grade }, out var grade);
@@ -500,6 +497,32 @@ namespace NCU.AnnualWorks.Api.Theses
             {
                 return new BadRequestObjectResult("Ocena została już wystawiona lub nie posiadasz uprawnień do jej wystawienia.");
             }
+        }
+
+        [HttpPost("grade/cancel/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AdminOnly)]
+        public async Task<IActionResult> CancelGrade(Guid id)
+        {
+            var currentUser = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+            var thesis = await _thesisRepository.GetAsync(id);
+
+            if (string.IsNullOrEmpty(thesis.Grade))
+            {
+                return new BadRequestObjectResult("Praca nie posiada oceny.");
+            }
+
+            if (DateTime.Now > deadline || currentTerm.Id != thesis.TermId)
+            {
+                return new BadRequestObjectResult("Nie można anulować oceny po upływie terminu końcowego.");
+            }
+
+            thesis.Grade = null;
+            thesis.LogChange(currentUser, ModificationType.GradeCanceled);
+            await _thesisRepository.UpdateAsync(thesis);
+
+            return new OkResult();
         }
 
         [HttpPost("hide/{id:guid}")]

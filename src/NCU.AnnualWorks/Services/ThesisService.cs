@@ -26,8 +26,9 @@ namespace NCU.AnnualWorks.Services
             _userContext = userContext;
         }
 
-        public ThesisActionsDTO GetAvailableActions(Thesis thesis, DateTime deadline)
+        public async Task<ThesisActionsDTO> GetAvailableActions(Thesis thesis, DateTime deadline)
         {
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var currentUser = _userContext.CurrentUser;
             var isAuthor = thesis.ThesisAuthors.Any(a => a.AuthorId == currentUser.Id);
             var isPromoter = thesis.Promoter.Id == currentUser.Id;
@@ -37,22 +38,33 @@ namespace NCU.AnnualWorks.Services
             var userReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy.Id == currentUser.Id);
             var userReviewExists = userReview != null;
             var isPastDeadline = deadline < DateTime.Now;
+            var thesisTerm = thesis.TermId;
 
             return new ThesisActionsDTO
             {
                 CanView = isAuthor || currentUser.IsEmployee,
                 CanDownload = isAuthor || currentUser.IsEmployee,
                 CanPrint = isAuthor || currentUser.IsEmployee,
-                CanAddReview = currentUser.IsEmployee && (isPromoter || isReviewer) && !userReviewExists && !isPastDeadline,
-                CanEditReview = currentUser.IsEmployee && (isPromoter || isReviewer) && userReviewExists && !userReview.IsConfirmed && !isPastDeadline,
-                CanEdit = (!isPastDeadline && currentUser.IsAdmin && thesis.Grade == null) ||
+                CanAddReview = currentUser.IsEmployee &&
+                    (isPromoter || isReviewer) &&
+                    !userReviewExists &&
+                    !isPastDeadline &&
+                    currentTerm.Id == thesisTerm,
+                CanEditReview = currentUser.IsEmployee &&
+                    (isPromoter || isReviewer) &&
+                    userReviewExists &&
+                    !userReview.IsConfirmed &&
+                    !isPastDeadline &&
+                    currentTerm.Id == thesisTerm,
+                CanEdit = (!isPastDeadline && currentUser.IsAdmin && thesis.Grade == null && currentTerm.Id == thesisTerm) ||
                     (
                         currentUser.IsEmployee &&
                         !isPastDeadline &&
                         isPromoter &&
                         thesis.Grade == null &&
                         (promoterReview == null || !promoterReview.IsConfirmed) &&
-                        (reviewerReview == null || !reviewerReview.IsConfirmed)
+                        (reviewerReview == null || !reviewerReview.IsConfirmed) &&
+                        currentTerm.Id == thesisTerm
                     ),
                 CanEditGrade = currentUser.IsEmployee &&
                     isPromoter &&
@@ -61,16 +73,18 @@ namespace NCU.AnnualWorks.Services
                     reviewerReview != null &&
                     promoterReview.IsConfirmed &&
                     reviewerReview.IsConfirmed &&
-                    !isPastDeadline,
+                    !isPastDeadline &&
+                    currentTerm.Id == thesisTerm,
                 CanHide = currentUser.IsAdmin && thesis.Grade == null && !thesis.Hidden,
-                CanUnhide = currentUser.IsAdmin && thesis.Hidden
+                CanUnhide = currentUser.IsAdmin && thesis.Hidden,
+                CanCancelGrade = currentUser.IsAdmin && !string.IsNullOrEmpty(thesis.Grade) && !isPastDeadline && currentTerm.Id == thesisTerm
             };
         }
 
         public async Task<ThesisActionsDTO> GetAvailableActions(Guid thesisGuid, DateTime deadline)
         {
             var thesis = await _thesisRepository.GetAsync(thesisGuid);
-            return GetAvailableActions(thesis, deadline);
+            return await GetAvailableActions(thesis, deadline);
         }
 
         public async Task IncludeAvailableActions(IEnumerable<ThesisDTO> theses, DateTime deadline)

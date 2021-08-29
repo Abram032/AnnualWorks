@@ -14,6 +14,7 @@ export interface ThesisActions {
   canEditGrade: boolean,
   canHide: boolean,
   canUnhide: boolean;
+  canCancelGrade: boolean;
 }
 
 export interface ThesisLog {
@@ -64,7 +65,8 @@ export enum ModificationType {
   ReviewChanged,
   ReveiewQuestionsUpdated,
   ReviewConfirmed,
-  GradeConfirmed
+  GradeConfirmed,
+  GradeCanceled
 }
 
 export const ModificationTypeIcons = {
@@ -84,7 +86,8 @@ export const ModificationTypeIcons = {
   [ModificationType.ReviewChanged]: "PageEdit",
   [ModificationType.ReveiewQuestionsUpdated]: "PageLink",
   [ModificationType.ReviewConfirmed]: "PageLock",
-  [ModificationType.GradeConfirmed]: "Ribbon"
+  [ModificationType.GradeConfirmed]: "Ribbon",
+  [ModificationType.GradeCanceled]: "RibbonSolid"
 }
 
 export const ModificationTypeDescription = {
@@ -104,5 +107,6 @@ export const ModificationTypeDescription = {
   [ModificationType.ReviewChanged]: (user: User) => `${user.firstName} ${user.lastName} zmienił(a) recenzję`,
   [ModificationType.ReveiewQuestionsUpdated]: (user: User) => `${user.firstName} ${user.lastName} zaktualizował(a) pytania w recenzji`,
   [ModificationType.ReviewConfirmed]: (user: User) => `${user.firstName} ${user.lastName} zatwierdził(a) recenzję`,
-  [ModificationType.GradeConfirmed]: (user: User) => `${user.firstName} ${user.lastName} zatwierdził(a) ocenę pracy`
+  [ModificationType.GradeConfirmed]: (user: User) => `${user.firstName} ${user.lastName} zatwierdził(a) ocenę pracy`,
+  [ModificationType.GradeCanceled]: (user: User) => `${user.firstName} ${user.lastName} anulował(a) ocenę pracy`
 }

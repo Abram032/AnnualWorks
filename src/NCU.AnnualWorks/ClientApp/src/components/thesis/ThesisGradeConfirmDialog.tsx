@@ -57,7 +57,7 @@ export const ThesisGradeConfirmDialog: React.FC<ThesisGradeConfirmDialogProps> =
         var body: ConfirmGradeRequestData = {
           grade: values.grade
         };
-        Api.post(`${AppSettings.API.Theses.Grade}/${props.guid}`, body)
+        Api.post(`${AppSettings.API.Theses.Grade.Confirm}/${props.guid}`, body)
           .then(res => {
             setUploadSuccess(true);
             props.toggleIsVisible();
