@@ -118,8 +118,8 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
     },
     {
       key: "noGrade",
-      text: "Brak oceny",
-      disabled: true
+      text: "Prace bez ocen",
+      disabled: false
     }
   ];
 
@@ -132,6 +132,7 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
 
     let query = `page=${currentPage}&count=${searchCount}`;
     query += searchedText ? `&text=${searchedText}` : "";
+    query += searchType?.key === "noGrade" ? `&noGrade=true` : "";
 
     Api.get<ThesisSearchResponse>(`${AppSettings.API.Theses.Search}?${query}`)
       .then(response => response.data)

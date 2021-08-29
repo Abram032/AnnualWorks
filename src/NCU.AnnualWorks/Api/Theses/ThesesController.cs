@@ -580,6 +580,7 @@ namespace NCU.AnnualWorks.Api.Theses
             [FromQuery] string text,
             [FromQuery] string users,
             [FromQuery] string keywords,
+            [FromQuery] bool noGrade,
             [FromQuery] int page,
             [FromQuery] int count)
         {
@@ -589,15 +590,19 @@ namespace NCU.AnnualWorks.Api.Theses
 
             var query = _thesisRepository.GetAll().Where(t => !t.Hidden);
 
+            query = !noGrade ? query : query.Where(t => t.Grade == null);
+
             query = termIds == null ? query : query.Where(t => termIds.Contains(t.TermId));
+
             query = text == null ? query : query.Where(t =>
-                t.Title.Contains(text) ||
-                t.Abstract.Contains(text)); //||
-                                            //keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
+                t.Title.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
+                t.Abstract.Contains(text, StringComparison.InvariantCultureIgnoreCase));
+
             query = userIds == null ? query : query.Where(t =>
                 userIds.Contains(t.Promoter.Id.ToString()) ||
                 userIds.Contains(t.Reviewer.Id.ToString()) ||
                 userIds.Contains(t.ThesisAuthors.Select(a => a.AuthorId).ToString()));
+
             query = keywordIds == null ? query : query.Where(t => keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
 
             var result = query.ToExtendedDto();
