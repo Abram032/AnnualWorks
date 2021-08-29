@@ -6,6 +6,8 @@ import { ThesisSearchResponse } from '../../shared/api/models/ThesisSearchRespon
 import { AppSettings } from '../../AppSettings';
 import { SearchResultList } from './SearchResultList';
 import { Loader } from '../../Components';
+import { SearchPagination } from './SearchPagination';
+import { useEffect } from 'react';
 
 interface MultiSearchProps {
   terms: Term[],
@@ -18,8 +20,8 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchType, setSearchType] = useState<IDropdownOption>();
   const [searchTerms, setSearchTerms] = useState<IDropdownOption[]>(allTerms);
-  const [searchCount, setSearchCount] = useState<string>("10");
-  const [searchPage, setSearchPage] = useState<string>("0");
+  const [searchCount, setSearchCount] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [searchResults, setSearchResults] = useState<Thesis[]>([]);
   const [searchResultsCount, setSearchResultsCount] = useState<number>(0);
 
@@ -70,28 +72,32 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
 
   const searchCountOptions: IDropdownOption[] = [
     {
-      key: "5",
+      key: 5,
       text: "5"
     },
     {
-      key: "10",
+      key: 10,
       text: "10"
     },
     {
-      key: "15",
+      key: 15,
       text: "15"
     },
     {
-      key: "20",
+      key: 20,
       text: "20"
     },
     {
-      key: "25",
+      key: 25,
       text: "25"
     },
     {
-      key: "50",
+      key: 50,
       text: "50"
+    },
+    {
+      key: 100,
+      text: "100"
     }
   ];
 
@@ -109,6 +115,11 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
       key: "keywords",
       text: "Słowa kluczowe",
       disabled: true
+    },
+    {
+      key: "noGrade",
+      text: "Brak oceny",
+      disabled: true
     }
   ];
 
@@ -119,7 +130,7 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
   const onSearch = () => {
     setIsSearching(true);
 
-    let query = `page=${searchPage}&count=${searchCount}`;
+    let query = `page=${currentPage}&count=${searchCount}`;
     query += searchedText ? `&text=${searchedText}` : "";
 
     Api.get<ThesisSearchResponse>(`${AppSettings.API.Theses.Search}?${query}`)
@@ -134,6 +145,16 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
         setIsSearching(false);
       });
   }
+  
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchCount, searchTerms, searchType]);
+
+  useEffect(() => {
+    if(!isSearching) {
+      onSearch();
+    }
+  }, [currentPage, searchCount, searchTerms, searchType]);
 
   return (
     <>
@@ -166,12 +187,12 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
           />
         </StackItem>
         <StackItem className={countOptionField} tokens={tokens}>
-          <Label>Liczba wyników</Label>
+          <Label>Wyników na stronę</Label>
           <Dropdown
             options={searchCountOptions}
             selectedKey={searchCount}
-            defaultSelectedKey={"10"}
-            onChange={(e, value) => setSearchCount(value?.key.toString() ?? "10")}
+            defaultSelectedKey={10}
+            onChange={(e, value) => setSearchCount(value?.key ? parseInt(value.key.toString()) : 10)}
           />
         </StackItem>
         <StackItem tokens={tokens}>
@@ -183,7 +204,9 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
       </Stack>
       <Stack className={container} horizontal horizontalAlign="end" tokens={tokens}>
         <Label>Liczba wszystkich wyników: {searchResultsCount}</Label>
-        <Label>Liczba stron: {Math.ceil(searchResultsCount / parseInt(searchCount))}</Label>
+        <Label>Liczba stron: {Math.ceil(searchResultsCount / searchCount)}</Label>
+        <Label>Obecna strona: {currentPage + 1}</Label>
+        <SearchPagination currentPage={currentPage} totalPages={Math.ceil(searchResultsCount / searchCount)} setCurrentPage={setCurrentPage} />
       </Stack>
     </>
   );
@@ -207,8 +230,8 @@ const searchOptionField = mergeStyles({
 });
 
 const countOptionField = mergeStyles({
-  width: "75px",
-  maxWidth: "75px"
+  width: "100px",
+  maxWidth: "100px"
 });
 
 //#endregion Styles
