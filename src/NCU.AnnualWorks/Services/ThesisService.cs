@@ -3,6 +3,7 @@ using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
 using NCU.AnnualWorks.Core.Models.Dto.Thesis;
+using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Integrations.Usos.Core;
@@ -18,12 +19,14 @@ namespace NCU.AnnualWorks.Services
         private readonly IThesisRepository _thesisRepository;
         private readonly IUsosService _usosService;
         private readonly IUserContext _userContext;
+        private readonly IUserRepository _userRepository;
 
-        public ThesisService(IThesisRepository thesisRepository, IUsosService usosService, IUserContext userContext)
+        public ThesisService(IThesisRepository thesisRepository, IUsosService usosService, IUserContext userContext, IUserRepository userRepository)
         {
             _thesisRepository = thesisRepository;
             _usosService = usosService;
             _userContext = userContext;
+            _userRepository = userRepository;
         }
 
         public async Task<ThesisActionsDTO> GetAvailableActions(Thesis thesis, DateTime deadline)
@@ -77,7 +80,17 @@ namespace NCU.AnnualWorks.Services
                     currentTerm.Id == thesisTerm,
                 CanHide = currentUser.IsAdmin && thesis.Grade == null && !thesis.Hidden,
                 CanUnhide = currentUser.IsAdmin && thesis.Hidden,
-                CanCancelGrade = currentUser.IsAdmin && !string.IsNullOrEmpty(thesis.Grade) && !isPastDeadline && currentTerm.Id == thesisTerm
+                CanCancelGrade = currentUser.IsAdmin && !string.IsNullOrEmpty(thesis.Grade) && !isPastDeadline && currentTerm.Id == thesisTerm,
+                CanCancelPromoterReview = currentUser.IsAdmin &&
+                    promoterReview != null &&
+                    promoterReview.IsConfirmed &&
+                    !isPastDeadline &&
+                    currentTerm.Id == thesisTerm,
+                CanCancelReviewerReview = currentUser.IsAdmin &&
+                    reviewerReview != null &&
+                    reviewerReview.IsConfirmed &&
+                    !isPastDeadline &&
+                    currentTerm.Id == thesisTerm
             };
         }
 
@@ -156,6 +169,27 @@ namespace NCU.AnnualWorks.Services
             var end = promoterGradeIndex > reviewerGradeIndex ? promoterGradeIndex : reviewerGradeIndex;
 
             return grades.GetRange(start, end - start + 1);
+        }
+
+        public async Task CancelGrade(Guid thesisGuid)
+        {
+            var currentUser = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            thesis.Grade = null;
+            thesis.LogChange(currentUser, ModificationType.GradeCanceled);
+            await _thesisRepository.UpdateAsync(thesis);
+        }
+
+        public async Task<bool> HasGrade(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            return !string.IsNullOrEmpty(thesis.Grade);
+        }
+
+        public async Task<string> GetThesisTermId(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            return thesis.TermId;
         }
     }
 }

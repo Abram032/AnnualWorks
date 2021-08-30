@@ -92,9 +92,10 @@ namespace NCU.AnnualWorks
                 options.UseMySql(Configuration["DB_CONNECTION_STRING"]);
             });
 
-            services.AddSingleton<IFileService, FileService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<ISettingsService, SettingsService>();
             services.AddScoped<IThesisService, ThesisService>();
+            services.AddScoped<IReviewService, ReviewService>();
 
             //TODO: Figure out a way to move repositories to external assembly
             services.AddTransient<IAsyncRepository<Answer>, AsyncRepository<Answer>>();

@@ -30,12 +30,15 @@ namespace NCU.AnnualWorks.Api.Reviews
         private readonly ISettingsService _settingsService;
         private readonly IUserContext _userContext;
         private readonly IUsosService _usosService;
+        private readonly IReviewService _reviewService;
+        private readonly IThesisService _thesisService;
         public ReviewsController(IReviewRepository reviewRepository,
             IThesisRepository thesisRepository, IUserRepository userRepository,
             IAsyncRepository<Question> questionRepository,
             IAsyncRepository<ThesisLog> thesisLogRepository,
             IFileService fileService, IAsyncRepository<Answer> answerRepository,
-            ISettingsService settingsService, IUserContext userContext, IUsosService usosService)
+            ISettingsService settingsService, IUserContext userContext, IUsosService usosService,
+            IReviewService reviewService, IThesisService thesisService)
         {
             _reviewRepository = reviewRepository;
             _thesisRepository = thesisRepository;
@@ -45,6 +48,8 @@ namespace NCU.AnnualWorks.Api.Reviews
             _settingsService = settingsService;
             _userContext = userContext;
             _usosService = usosService;
+            _reviewService = reviewService;
+            _thesisService = thesisService;
         }
 
         [HttpGet("{id:guid}")]
@@ -297,6 +302,38 @@ namespace NCU.AnnualWorks.Api.Reviews
             await _thesisRepository.UpdateAsync(thesis);
 
             return new OkObjectResult(review.Guid);
+        }
+
+        [HttpPost("cancel/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AdminOnly)]
+        public async Task<IActionResult> CancelReview(Guid id)
+        {
+            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
+
+            if (!_reviewService.ReviewExists(id))
+            {
+                return new NotFoundObjectResult("Nie ma recenzji o podanym identyfikatorze.");
+            }
+
+            var review = await _reviewService.GetAsync(id);
+            if (!review.IsConfirmed)
+            {
+                return new BadRequestObjectResult("Nie można anulować niezatwierdzonej recenzji.");
+            }
+
+            if (DateTime.Now > deadline || currentTerm.Id != review.Thesis.TermId)
+            {
+                return new BadRequestObjectResult("Nie można anulować recenzji po upływie terminu końcowego.");
+            }
+
+            await _reviewService.CancelReviewConfirmation(id);
+            if (!string.IsNullOrEmpty(review.Thesis.Grade))
+            {
+                await _thesisService.CancelGrade(review.Thesis.Guid);
+            }
+
+            return new OkResult();
         }
     }
 }

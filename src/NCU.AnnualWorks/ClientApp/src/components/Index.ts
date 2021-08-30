@@ -34,3 +34,4 @@ export * from './thesis/ThesisHideConfirmDialog';
 export * from './shared/Card';
 export * from './search/MultiSearch';
 export * from './thesis/ThesisCancelGradeDialog';
+export * from './review/CancelReviewDialog';

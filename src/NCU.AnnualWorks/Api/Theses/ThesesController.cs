@@ -503,24 +503,27 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> CancelGrade(Guid id)
         {
-            var currentUser = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
             var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
-            var thesis = await _thesisRepository.GetAsync(id);
 
-            if (string.IsNullOrEmpty(thesis.Grade))
+            if (!_thesisService.ThesisExists(id))
+            {
+                return new NotFoundObjectResult("Nie ma pracy o podanym identyfikatorze.");
+            }
+
+            var hasGrade = await _thesisService.HasGrade(id);
+            if (!hasGrade)
             {
                 return new BadRequestObjectResult("Praca nie posiada oceny.");
             }
 
-            if (DateTime.Now > deadline || currentTerm.Id != thesis.TermId)
+            var thesisTermId = await _thesisService.GetThesisTermId(id);
+            if (DateTime.Now > deadline || currentTerm.Id != thesisTermId)
             {
                 return new BadRequestObjectResult("Nie można anulować oceny po upływie terminu końcowego.");
             }
 
-            thesis.Grade = null;
-            thesis.LogChange(currentUser, ModificationType.GradeCanceled);
-            await _thesisRepository.UpdateAsync(thesis);
+            await _thesisService.CancelGrade(id);
 
             return new OkResult();
         }

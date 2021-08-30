@@ -47,7 +47,8 @@ export namespace AppSettings {
       Active: process.env.REACT_APP_API_QUESTIONS_ACTIVE!,
     },
     Reviews: {
-      Base: process.env.REACT_APP_API_REVIEWS!
+      Base: process.env.REACT_APP_API_REVIEWS!,
+      Cancel: process.env.REACT_APP_API_REVIEWS_CANCEL!
     },
     Files: {
       Base: process.env.REACT_APP_API_FILES!

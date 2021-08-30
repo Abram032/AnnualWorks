@@ -12,5 +12,7 @@
         public bool CanCancelGrade { get; set; }
         public bool CanHide { get; set; }
         public bool CanUnhide { get; set; }
+        public bool CanCancelPromoterReview { get; set; }
+        public bool CanCancelReviewerReview { get; set; }
     }
 }

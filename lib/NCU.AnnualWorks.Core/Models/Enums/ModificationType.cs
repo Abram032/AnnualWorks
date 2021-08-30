@@ -20,5 +20,6 @@
         ReviewConfirmed,
         GradeConfirmed,
         GradeCanceled,
+        ReviewCanceled
     }
 }

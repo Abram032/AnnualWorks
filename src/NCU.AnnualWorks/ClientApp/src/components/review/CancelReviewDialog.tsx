@@ -6,23 +6,23 @@ import { AppSettings } from '../../AppSettings';
 import { Api } from '../../shared/api/Api';
 import { RouteNames } from '../../shared/Consts';
 
-interface ThesisCancelGradeDialogProps {
+interface CancelReviewDialogProps {
   guid: string,
   isVisible: boolean,
   toggleIsVisible: () => void
 }
 
-export const ThesisCancelGradeDialog: React.FC<ThesisCancelGradeDialogProps> = (props) => {
+export const CancelReviewDialog: React.FC<CancelReviewDialogProps> = (props) => {
   const history = useHistory();
 
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
-  const labelId: string = useId('ThesisCancelDialogLabelId');
-  const subTextId: string = useId('ThesisCancelDialogSubTextId');
+  const labelId: string = useId('CancelReviewDialogLabelId');
+  const subTextId: string = useId('CancelReviewDialogSubTextId');
   const dialogContentProps = {
     type: DialogType.normal,
-    title: 'Anuluj zatwierdzenie oceny',
+    title: 'Anuluj zatwierdzenie recenzji',
     closeButtonAriaLabel: 'Close'
   };
   const modalProps = React.useMemo(
@@ -38,7 +38,7 @@ export const ThesisCancelGradeDialog: React.FC<ThesisCancelGradeDialogProps> = (
     setErrorMessage(undefined);
     setUploadSuccess(false);
 
-    Api.post(`${AppSettings.API.Theses.Grade.Cancel}/${props.guid}`)
+    Api.post(`${AppSettings.API.Reviews.Cancel}/${props.guid}`)
       .then(res => {
         setUploadSuccess(true);
         props.toggleIsVisible();
@@ -60,13 +60,13 @@ export const ThesisCancelGradeDialog: React.FC<ThesisCancelGradeDialogProps> = (
 
   const successMessageBar = (
     <MessageBar messageBarType={MessageBarType.success}>
-      Ocena została anulowana, poinformuj promotora o potrzebie ponownego wystawienia oceny.
+      Recenzja została anulowana, poinformuj promotora o potrzebie ponownego wystawienia recenzji.
     </MessageBar>
   );
 
   const warningMessageBar = (
     <MessageBar messageBarType={MessageBarType.severeWarning}>  
-      Anulowanie oceny spowoduje, że będzie musiała ona ponownie zostać wyznaczona przez promotora pracy.
+      Anulowanie recenzji spowoduje, że będzie musiała ona ponownie zostać zatwierdzona przez promotora pracy. Jeżeli praca posiada już ocenę, zostanie ona również anulowana.
     </MessageBar>
   );
 
@@ -83,7 +83,7 @@ export const ThesisCancelGradeDialog: React.FC<ThesisCancelGradeDialogProps> = (
       {uploadSuccess ? successMessageBar : null}
       {warningMessageBar}
       <DialogFooter>
-        <PrimaryButton onClick={onSave} text={"Anuluj ocenę"} />
+        <PrimaryButton onClick={onSave} text={"Anuluj recenzję"} />
         <DefaultButton onClick={props.toggleIsVisible} text="Zamknij" />
       </DialogFooter>
     </Dialog>

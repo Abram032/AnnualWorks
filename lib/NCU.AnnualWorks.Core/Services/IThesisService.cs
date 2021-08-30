@@ -20,5 +20,8 @@ namespace NCU.AnnualWorks.Core.Services
         bool ThesisExists(Guid thesisGuid);
         Task<List<ThesisLogDTO>> GetThesisLogs(Guid thesisGuid);
         Task<List<string>> GetAvailableGrades(Guid thesisGuid);
+        Task CancelGrade(Guid thesisGuid);
+        Task<bool> HasGrade(Guid thesisGuid);
+        Task<string> GetThesisTermId(Guid thesisGuid);
     }
 }
