@@ -189,6 +189,12 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
         history.push(RouteNames.error);
       });
   }
+
+  useEffect(() => {
+    setSearchedPeople([]);
+    setSearchedKeywords([]);
+    setSearchedText("");
+  }, [searchType]);
   
   useEffect(() => {
     setCurrentPage(0);
