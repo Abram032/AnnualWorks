@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using NCU.AnnualWorks.Api.Theses.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
@@ -587,9 +588,9 @@ namespace NCU.AnnualWorks.Api.Theses
             [FromQuery] int page,
             [FromQuery] int count)
         {
-            var termIds = terms?.Split(';');
-            var userIds = users?.Split(';');
-            var keywordIds = keywords?.Split(';');
+            var termIds = terms?.Split(';').Distinct().ToList();
+            var userIds = users?.Split(';').Distinct().ToList();
+            var keywordList = keywords?.Split(';').Distinct().ToList();
 
             var query = _thesisRepository.GetAll().Where(t => !t.Hidden);
 
@@ -597,16 +598,28 @@ namespace NCU.AnnualWorks.Api.Theses
 
             query = termIds == null ? query : query.Where(t => termIds.Contains(t.TermId));
 
-            query = text == null ? query : query.Where(t =>
-                t.Title.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
-                t.Abstract.Contains(text, StringComparison.InvariantCultureIgnoreCase));
-
-            query = userIds == null ? query : query.Where(t =>
-                userIds.Contains(t.Promoter.Id.ToString()) ||
-                userIds.Contains(t.Reviewer.Id.ToString()) ||
-                userIds.Contains(t.ThesisAuthors.Select(a => a.AuthorId).ToString()));
-
-            query = keywordIds == null ? query : query.Where(t => keywordIds.Contains(t.ThesisKeywords.Select(k => k.KeywordId).ToString()));
+            if (text != null)
+            {
+                query = query.Where(t =>
+                    t.Title.Contains(text, StringComparison.InvariantCultureIgnoreCase) ||
+                    t.Abstract.Contains(text, StringComparison.InvariantCultureIgnoreCase));
+            }
+            else if (userIds != null)
+            {
+                //ToList before where due to EF Core limitations
+                query = query.ToList().Where(t =>
+                    userIds.Contains(t.Promoter.Id.ToString()) ||
+                    userIds.Contains(t.Reviewer.Id.ToString()) ||
+                    t.ThesisAuthors.Select(a => a.AuthorId.ToString()).Intersect(userIds).Any())
+                    .AsQueryable();
+            }
+            else if (keywordList != null)
+            {
+                //ToList before where due to EF Core limitations
+                query = query.ToList()
+                    .Where(t => t.ThesisKeywords.Select(k => k.Keyword.Text).Intersect(keywordList).Count() == keywordList.Count)
+                    .AsQueryable();
+            }
 
             var result = query.ToExtendedDto();
             var resultCount = result.Count;

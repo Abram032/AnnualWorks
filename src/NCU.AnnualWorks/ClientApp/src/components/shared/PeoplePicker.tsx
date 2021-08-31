@@ -51,7 +51,7 @@ export default PeoplePicker;
 
 //#region PeoplePickerWrapper
 
-const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
+export const PeoplePickerWrapper: React.FC<PeoplePickerProps> = (props) => {
 
   const onFilterChanged = (filter: string, selectedItems?: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => 
     filterPeople(filter, props.people, selectedItems, props.maxSuggestions);

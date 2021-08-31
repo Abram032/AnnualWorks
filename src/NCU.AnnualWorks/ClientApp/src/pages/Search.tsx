@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, IStackTokens, mergeStyles } from "@fluentui/react";
-import { useAllTerms, useAllUsers, useCurrentUser } from "../shared/Hooks";
+import { useAllTerms, useAllUsers, useCurrentUser, useKeywords } from "../shared/Hooks";
 import { Redirect } from "react-router-dom";
 import { RouteNames } from "../shared/Consts";
 import { Loader } from "../Components";
@@ -10,8 +10,9 @@ export const Search: React.FC = () => {
   const currentUser = useCurrentUser();
   const [allTerms, allTermsIsFetching] = useAllTerms();
   const [allUsers, allUsersIsFetching] = useAllUsers();
+  const [allKeywords, allKeywordsIsFetching] = useKeywords();
   
-  if(currentUser === null || allTermsIsFetching || allUsersIsFetching) {
+  if(currentUser === null || allTermsIsFetching || allUsersIsFetching || allKeywordsIsFetching) {
     return <Loader />
   }
 
@@ -19,7 +20,7 @@ export const Search: React.FC = () => {
     return <Redirect to={RouteNames.forbidden} />
   }
 
-  if(!allTerms || !allUsers) {
+  if(!allTerms || !allUsers || !allKeywords) {
     return <Redirect to={RouteNames.error} />
   }
 
@@ -29,6 +30,7 @@ export const Search: React.FC = () => {
         <MultiSearch 
           terms={allTerms}
           users={allUsers}
+          keywords={allKeywords}
         />
       </Tile>
     </Stack>

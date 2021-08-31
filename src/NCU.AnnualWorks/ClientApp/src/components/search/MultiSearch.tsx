@@ -1,17 +1,20 @@
-import { Dropdown, IDropdownOption, IStackTokens, Label, mergeStyles, PrimaryButton, Stack, StackItem, TextField } from '@fluentui/react';
+import { Dropdown, IDropdownOption, IPersonaProps, IStackTokens, ITag, Label, mergeStyles, PrimaryButton, Stack, StackItem, TagPicker, TextField } from '@fluentui/react';
 import React, { useState } from 'react';
-import { Term, Thesis, User } from '../../shared/Models';
+import { Keyword, Term, Thesis, User } from '../../shared/Models';
 import { Api } from '../../shared/api/Api';
 import { ThesisSearchResponse } from '../../shared/api/models/ThesisSearchResponse';
 import { AppSettings } from '../../AppSettings';
 import { SearchResultList } from './SearchResultList';
-import { Loader } from '../../Components';
+import { Loader, PeoplePickerWrapper } from '../../Components';
 import { SearchPagination } from './SearchPagination';
 import { useEffect } from 'react';
+import { TagPickerWrapper } from '../shared/TagPicker';
+import { mapKeywordsToTags, mapUsersToPersona } from '../../shared/Utils';
 
 interface MultiSearchProps {
   terms: Term[],
   users: User[],
+  keywords: Keyword[]
 }
 
 export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
@@ -39,15 +42,47 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
     );
 
     //#endregion Search text field
+
+    //#region Search keyword field
+
+    const [searchedKeywords, setSearchedKeywords] = useState<ITag[]>([]);
+    const searchedKeywordsField = (
+      <TagPickerWrapper
+        name=""
+        label=""
+        itemLimit={10}
+        tags={mapKeywordsToTags(props.keywords)}
+        onChange={(tags) => tags ? setSearchedKeywords(tags) : null}
+        selectedTags={searchedKeywords}
+      />
+    );
+
+    //#endregion Search keyword field
+
+    //#region Search people field
+
+    const [searchedPeople, setSearchedPeople] = useState<IPersonaProps[]>([]);
+    const searchedPeopleField = (
+      <PeoplePickerWrapper
+        name=""
+        label=""
+        peopleLimit={10}
+        people={mapUsersToPersona(props.users)}
+        selectedPeople={searchedPeople}
+        onChange={(people) => people ? setSearchedPeople(people) : null}
+      />
+    );
+
+    //#endregion Search people field
     
     const getSearchField = () => {
       switch(searchType?.key) {
         case "text":
           return searchTextField;
         case "users":
-          return null;
+          return searchedPeopleField;
         case "keywords":
-          return null;
+          return searchedKeywordsField;
         default:
           return searchTextField;
       }
@@ -109,17 +144,14 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
     {
       key: "users",
       text: "Osoby",
-      disabled: true
     },
     {
       key: "keywords",
-      text: "Słowa kluczowe",
-      disabled: true
+      text: "Słowa kluczowe"
     },
     {
       key: "noGrade",
-      text: "Prace bez ocen",
-      disabled: false
+      text: "Prace bez ocen"
     }
   ];
 
@@ -131,8 +163,16 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
     setIsSearching(true);
 
     let query = `page=${currentPage}&count=${searchCount}`;
+
+    query += searchTerms && searchTerms.length > 0 ? 
+      `&terms=${searchTerms.map(t => t.key).reduce((a, b) => `${a};${b}`)}` : "";
+
     query += searchedText ? `&text=${searchedText}` : "";
     query += searchType?.key === "noGrade" ? `&noGrade=true` : "";
+    query += searchType?.key === "keywords" && searchedKeywords.length > 0 ? 
+      `&keywords=${searchedKeywords.map(t => t.name).reduce((a, b) => `${a};${b}`)}` : "";
+    query += searchType?.key === "users" && searchedPeople.length > 0 ?
+      `&users=${searchedPeople.map(p => p.key).reduce((a, b) => `${a};${b}`)}` : "";
 
     Api.get<ThesisSearchResponse>(`${AppSettings.API.Theses.Search}?${query}`)
       .then(response => response.data)
