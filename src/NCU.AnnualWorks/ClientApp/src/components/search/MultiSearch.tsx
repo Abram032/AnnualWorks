@@ -10,6 +10,8 @@ import { SearchPagination } from './SearchPagination';
 import { useEffect } from 'react';
 import { TagPickerWrapper } from '../shared/TagPicker';
 import { mapKeywordsToTags, mapUsersToPersona } from '../../shared/Utils';
+import { useHistory } from 'react-router-dom';
+import { RouteNames } from '../../shared/Consts';
 
 interface MultiSearchProps {
   terms: Term[],
@@ -18,6 +20,8 @@ interface MultiSearchProps {
 }
 
 export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
+  const history = useHistory();
+  
   const allTerms = props.terms.map(t => ({ key: t.id, text: t.names.pl }));
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -182,8 +186,7 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
         setIsSearching(false);
       })
       .catch(error => {
-        console.error(error);
-        setIsSearching(false);
+        history.push(RouteNames.error);
       });
   }
   
