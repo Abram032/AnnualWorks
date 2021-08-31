@@ -11,7 +11,6 @@ using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
-using NCU.AnnualWorks.Core.Utils;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using Newtonsoft.Json;
@@ -477,7 +476,7 @@ namespace NCU.AnnualWorks.Api.Theses
             var isPromoter = thesis.Promoter.Id == _userContext.CurrentUser.Id;
             var promoterReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter);
             var reviewerReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer);
-            var canBeAveraged = GradeUtils.TryGetAverageGrade(new List<string>() { promoterReview.Grade, reviewerReview.Grade }, out var grade);
+            //var canBeAveraged = GradeUtils.TryGetAverageGrade(new List<string>() { promoterReview.Grade, reviewerReview.Grade }, out var grade);
 
             if (isPromoter &&
                 thesis.Grade == null &&
@@ -485,7 +484,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 reviewerReview != null &&
                 promoterReview.IsConfirmed &&
                 reviewerReview.IsConfirmed &&
-                !canBeAveraged &&
+                //!canBeAveraged &&
                 regex.IsMatch(request.Grade))
             {
                 thesis.Grade = request.Grade;
