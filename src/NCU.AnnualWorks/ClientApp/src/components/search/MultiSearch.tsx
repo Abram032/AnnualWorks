@@ -189,13 +189,13 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
   
   useEffect(() => {
     setCurrentPage(0);
-  }, [searchCount, searchTerms, searchType]);
+  }, [searchCount]);
 
   useEffect(() => {
     if(!isSearching) {
       onSearch();
     }
-  }, [currentPage, searchCount, searchTerms, searchType]);
+  }, [currentPage, searchCount]);
 
   return (
     <>
