@@ -12,6 +12,7 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Config
             builder.HasAlternateKey(u => u.UsosId);
 
             builder.Property(p => p.UsosId).IsRequired().HasMaxLength(20);
+            builder.Property(p => p.Email).HasMaxLength(255);
 
             builder.Property(p => p.FirstLoginAt).IsRequired(false);
             builder.Property(p => p.LastLoginAt).IsRequired(false);

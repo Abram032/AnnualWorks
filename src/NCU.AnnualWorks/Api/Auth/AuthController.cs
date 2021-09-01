@@ -95,6 +95,7 @@ namespace NCU.AnnualWorks.Api.Auth
             if (user == null)
             {
                 user = _mapper.Map<UsosUser, User>(usosUser);
+                user.Email = usosUser.Email;
                 user.FirstLoginAt = DateTime.Now;
                 user.LastLoginAt = DateTime.Now;
                 user.AdminAccess = isAdmin;
@@ -107,6 +108,7 @@ namespace NCU.AnnualWorks.Api.Auth
                     user.AdminAccess = isAdmin;
                 }
                 user.LastLoginAt = DateTime.Now;
+                user.Email = usosUser.Email != null ? usosUser.Email : user.Email;
                 await _userRepository.UpdateAsync(user);
             }
 

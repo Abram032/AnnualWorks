@@ -7,6 +7,7 @@ namespace NCU.AnnualWorks.Core.Models.DbModels
     public class User : Entity
     {
         public string UsosId { get; set; }
+        public string Email { get; set; }
         public DateTime? FirstLoginAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public bool AdminAccess { get; set; }
