@@ -23,5 +23,6 @@ namespace NCU.AnnualWorks.Core.Services
         Task CancelGrade(Guid thesisGuid);
         Task<bool> HasGrade(Guid thesisGuid);
         Task<string> GetThesisTermId(Guid thesisGuid);
+        Task SendEmailThesisCreated(Guid thesisGuid);
     }
 }

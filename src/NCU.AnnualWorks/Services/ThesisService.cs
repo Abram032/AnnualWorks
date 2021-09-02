@@ -1,11 +1,15 @@
-﻿using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
+﻿using Microsoft.Extensions.Options;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Core.Extensions.Mapping;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto;
 using NCU.AnnualWorks.Core.Models.Dto.Thesis;
 using NCU.AnnualWorks.Core.Models.Enums;
+using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
+using NCU.AnnualWorks.Integrations.Email.Core;
+using NCU.AnnualWorks.Integrations.Email.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using System;
 using System.Collections.Generic;
@@ -16,17 +20,24 @@ namespace NCU.AnnualWorks.Services
 {
     public class ThesisService : IThesisService
     {
+        private readonly ApplicationOptions _options;
+
         private readonly IThesisRepository _thesisRepository;
         private readonly IUsosService _usosService;
         private readonly IUserContext _userContext;
         private readonly IUserRepository _userRepository;
+        private readonly IEmailService _emailService;
 
-        public ThesisService(IThesisRepository thesisRepository, IUsosService usosService, IUserContext userContext, IUserRepository userRepository)
+        public ThesisService(IThesisRepository thesisRepository, IUsosService usosService,
+            IUserContext userContext, IUserRepository userRepository,
+            IOptions<ApplicationOptions> options, IEmailService emailService)
         {
             _thesisRepository = thesisRepository;
             _usosService = usosService;
             _userContext = userContext;
             _userRepository = userRepository;
+            _emailService = emailService;
+            _options = options.Value;
         }
 
         public async Task<ThesisActionsDTO> GetAvailableActions(Thesis thesis, DateTime deadline)
@@ -190,6 +201,23 @@ namespace NCU.AnnualWorks.Services
         {
             var thesis = await _thesisRepository.GetAsync(thesisGuid);
             return thesis.TermId;
+        }
+
+        public async Task SendEmailThesisCreated(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var reviewer = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Reviewer.UsosId);
+            var authors = await _usosService.GetUsers(_userContext.GetCredentials(), thesis.ThesisAuthors.Select(a => a.AuthorId.ToString()));
+            await _emailService.SendEmailThesisCreated(new ThesisCreatedEmailModel
+            {
+                Url = $"{ _options.ApplicationUrl}/details/{thesisGuid}",
+                ThesisTitle = thesis.Title,
+                ReviewerId = thesis.Reviewer.Id,
+                ReviewerEmail = reviewer.Email ?? thesis.Reviewer.Email,
+                AuthorIds = thesis.ThesisAuthors.Select(a => a.AuthorId).ToList(),
+                AuthorEmails = thesis.ThesisAuthors
+                    .Select(a => authors.FirstOrDefault(ua => ua.Id == a.AuthorId.ToString())?.Email ?? a.Author.Email).ToList()
+            });
         }
     }
 }

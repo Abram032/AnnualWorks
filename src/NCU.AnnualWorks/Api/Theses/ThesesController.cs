@@ -11,6 +11,7 @@ using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
+using NCU.AnnualWorks.Integrations.Email.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using Newtonsoft.Json;
@@ -39,10 +40,12 @@ namespace NCU.AnnualWorks.Api.Theses
 
         private readonly IUserContext _userContext;
 
+        private readonly IEmailService _emailService;
+
         public ThesesController(IUsosService usosService, IMapper mapper, IUserRepository userRepository,
             IThesisRepository thesisRepository, IAsyncRepository<Keyword> keywordRepository,
             IFileService fileService, ISettingsService settingsService, IThesisService thesisService,
-            IUserContext userContext)
+            IUserContext userContext, IEmailService emailService)
         {
             _usosService = usosService;
             _mapper = mapper;
@@ -53,6 +56,7 @@ namespace NCU.AnnualWorks.Api.Theses
             _settingsService = settingsService;
             _thesisService = thesisService;
             _userContext = userContext;
+            _emailService = emailService;
         }
 
         [HttpGet("promoted")]
@@ -293,6 +297,8 @@ namespace NCU.AnnualWorks.Api.Theses
             };
 
             await _thesisRepository.AddAsync(thesis);
+
+            await _thesisService.SendEmailThesisCreated(thesisGuid);
 
             return new CreatedResult("/theses", thesisGuid);
         }

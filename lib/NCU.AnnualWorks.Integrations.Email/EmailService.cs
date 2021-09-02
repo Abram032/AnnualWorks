@@ -60,10 +60,10 @@ namespace NCU.AnnualWorks.Integrations.Email
                 message.Subject = "Prace roczne - Konflikt ocen pracy";
                 message.Body = new TextPart("plain")
                 {
-                    Text = $"Pojawił się konflikt ocen na promowanej przez Ciebie pracy pt. \"{model.ThesisTitle}\".\n" +
-                    $"Skontaktuj się z recenzentem pracy i wspólnie ustalcie ocenę końcową.\n" +
-                    $"Następnie przejdź do systemu i za pomocą akcji \"Wystaw ocenę\" zatwierdź ocenę końcową dla studenta.\n\n" +
-                    $"Ten e-mail został wygenerowany automatycznie."
+                    Text = $"Pojawił się konflikt ocen na promowanej przez Ciebie pracy pt. \"{model.ThesisTitle}\"." +
+                    $"\nSkontaktuj się z recenzentem pracy i wspólnie ustalcie ocenę końcową." +
+                    $"\nNastępnie przejdź do systemu i za pomocą akcji \"Wystaw ocenę\" zatwierdź ocenę końcową pracy." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
                 };
 
                 await SendEmail(message);
@@ -71,6 +71,52 @@ namespace NCU.AnnualWorks.Integrations.Email
             catch (Exception e)
             {
                 _logger.LogError($"Failed to send email message to {model.Email}, UserId: {model.UserId}. Reason: {e.Message}");
+            }
+        }
+
+        public async Task SendEmailThesisCreated(ThesisCreatedEmailModel model)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                message.To.Add(MailboxAddress.Parse(model.ReviewerEmail));
+                message.Subject = "Prace roczne - Recenzja pracy";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Zostałeś(aś) przypisany(a) jako recenzent pracy pt. \"{model.ThesisTitle}\"." +
+                    $"\nPraca jest dostępna pod adresem: {model.Url}." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send email message to reviewer {model.ReviewerEmail}, UserId: {model.ReviewerId}. Reason: {e.Message}");
+            }
+
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                foreach (var email in model.AuthorEmails)
+                {
+                    message.To.Add(MailboxAddress.Parse(email));
+                }
+                message.Subject = "Prace roczne - Twoja praca została dodana do systemu";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Twoja praca pt. \"{model.ThesisTitle}\" została dodana do systemu przez promotora." +
+                    $"\nMożesz ją zobaczyć pod adresem: {model.Url}." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send email message to reviewer {string.Join(", ", model.AuthorEmails)} UserIds: {string.Join(", ", model.AuthorIds)}. Reason: {e.Message}");
             }
         }
     }
