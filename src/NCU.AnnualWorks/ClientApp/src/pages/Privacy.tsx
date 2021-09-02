@@ -50,7 +50,7 @@ export const Privacy: React.FC = () => {
               Jakie dane są gromadzone?
             </p>
             <p className={sectionText}>
-              System nie gromadzi żadnych danych osobowych użytkownika. Wszelkie dane, które pojawiają się w systemie są pobierane z systemu USOS za zgodą użytkownika, zgodnie ze zdefiniowanymi przez niego preferencjami. Dane pobierane są również w kontekście samego użytkownika. Oznacza to, że dany użytkownik może zobaczyć informacje na temat innych użytkowników lub nie, zależnie od dostępów w systemie USOS. Jedynymi informacjami gromadzonymi w systemie są identyfikatory użytkowników z systemu USOS oraz pliki z pracami studentów.
+              System nie gromadzi żadnych danych osobowych użytkownika. Wszelkie dane, które pojawiają się w systemie są pobierane z systemu USOS za zgodą użytkownika, zgodnie ze zdefiniowanymi przez niego preferencjami. Dane pobierane są również w kontekście samego użytkownika. Oznacza to, że dany użytkownik może zobaczyć informacje na temat innych użytkowników lub nie, zależnie od dostępów w systemie USOS. Jedynymi informacjami gromadzonymi w systemie są identyfikatory użytkowników wraz z adresem email z systemu USOS oraz pliki z pracami studentów.
             </p>
           </li>
           <li>
@@ -58,7 +58,7 @@ export const Privacy: React.FC = () => {
               Do czego dane są wykorzystywane?
             </p>
             <p className={sectionText}>
-              Dane są wykorzystywane wyłącznie w celach autoryzacji dostępu użytkownika do systemu oraz do wyświetlania odpowiednich informacji, aby umożliwić korzystanie z aplikacji.
+              Dane są wykorzystywane wyłącznie w celach autoryzacji dostępu użytkownika do systemu, wysyłania systemowych wiadomości email oraz do wyświetlania odpowiednich informacji, aby umożliwić korzystanie z aplikacji.
             </p>
           </li>
           <li>

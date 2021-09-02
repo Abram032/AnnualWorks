@@ -11,6 +11,8 @@ using NCU.AnnualWorks.Core.Models.Enums;
 using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Core.Utils;
+using NCU.AnnualWorks.Integrations.Email.Core;
+using NCU.AnnualWorks.Integrations.Email.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using System;
 using System.Collections.Generic;
@@ -32,13 +34,14 @@ namespace NCU.AnnualWorks.Api.Reviews
         private readonly IUsosService _usosService;
         private readonly IReviewService _reviewService;
         private readonly IThesisService _thesisService;
+        private readonly IEmailService _emailService;
         public ReviewsController(IReviewRepository reviewRepository,
             IThesisRepository thesisRepository, IUserRepository userRepository,
             IAsyncRepository<Question> questionRepository,
             IAsyncRepository<ThesisLog> thesisLogRepository,
             IFileService fileService, IAsyncRepository<Answer> answerRepository,
             ISettingsService settingsService, IUserContext userContext, IUsosService usosService,
-            IReviewService reviewService, IThesisService thesisService)
+            IReviewService reviewService, IThesisService thesisService, IEmailService emailService)
         {
             _reviewRepository = reviewRepository;
             _thesisRepository = thesisRepository;
@@ -50,6 +53,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             _usosService = usosService;
             _reviewService = reviewService;
             _thesisService = thesisService;
+            _emailService = emailService;
         }
 
         [HttpGet("{id:guid}")]
@@ -96,6 +100,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
             var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
+            var sendGradeConflictEmail = false;
 
             if (DateTime.Now > deadline && thesis.TermId != currentTerm.Id)
             {
@@ -142,6 +147,7 @@ namespace NCU.AnnualWorks.Api.Reviews
 
                 if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
                 {
+                    //TODO: FIX THIS
                     var grade = request.Grade;
                     var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
                         .Select(r => r.Grade).ToList();
@@ -150,6 +156,10 @@ namespace NCU.AnnualWorks.Api.Reviews
                     if (GradeUtils.TryGetAverageGrade(grades, out var average))
                     {
                         thesis.Grade = average;
+                    }
+                    else
+                    {
+                        sendGradeConflictEmail = true;
                     }
                 }
             }
@@ -189,6 +199,17 @@ namespace NCU.AnnualWorks.Api.Reviews
             }
             await _thesisRepository.UpdateAsync(thesis);
 
+            if (sendGradeConflictEmail)
+            {
+                var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
+                await _emailService.SendEmailGradeConflict(new GradeConflictEmailModel
+                {
+                    UserId = thesis.Promoter.Id,
+                    Email = user.Email ?? thesis.Promoter.Email,
+                    ThesisTitle = thesis.Title
+                });
+            }
+
             return new CreatedResult("/reviews", reviewGuid);
         }
 
@@ -199,6 +220,8 @@ namespace NCU.AnnualWorks.Api.Reviews
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
             var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
+
+            var sendGradeConflictEmail = false;
 
             if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
@@ -256,6 +279,7 @@ namespace NCU.AnnualWorks.Api.Reviews
 
                 if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
                 {
+                    //TODO: FIX THIS
                     var grade = request.Grade;
                     var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
                         .Select(r => r.Grade).ToList();
@@ -264,6 +288,10 @@ namespace NCU.AnnualWorks.Api.Reviews
                     if (GradeUtils.TryGetAverageGrade(grades, out var average))
                     {
                         thesis.Grade = average;
+                    }
+                    else
+                    {
+                        sendGradeConflictEmail = true;
                     }
                 }
             }
@@ -300,6 +328,17 @@ namespace NCU.AnnualWorks.Api.Reviews
                 thesis.LogChange(currentUser, ModificationType.ReviewConfirmed);
             }
             await _thesisRepository.UpdateAsync(thesis);
+
+            if (sendGradeConflictEmail)
+            {
+                var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
+                await _emailService.SendEmailGradeConflict(new GradeConflictEmailModel
+                {
+                    UserId = thesis.Promoter.Id,
+                    Email = user.Email ?? thesis.Promoter.Email,
+                    ThesisTitle = thesis.Title
+                });
+            }
 
             return new OkObjectResult(review.Guid);
         }

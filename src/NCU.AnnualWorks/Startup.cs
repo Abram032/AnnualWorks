@@ -20,6 +20,7 @@ using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Infrastructure.Data.Repositories;
+using NCU.AnnualWorks.Integrations.Email.IoC;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
 using NCU.AnnualWorks.Services;
@@ -77,6 +78,7 @@ namespace NCU.AnnualWorks
             });
 
             services.AddUsosService(Configuration);
+            services.AddEmailService(Configuration);
 
             //TODO: Move mapper to Core
             var mapperConfiguration = new MapperConfiguration(config =>

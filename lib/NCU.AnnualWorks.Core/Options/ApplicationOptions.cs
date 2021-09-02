@@ -2,6 +2,7 @@
 {
     public class ApplicationOptions
     {
+        public string ApplicationUrl { get; set; }
         public string[] AllowedThesisFileExtensions { get; set; }
         public string[] AllowedAdditionalFileExtensions { get; set; }
         public long MaxFileCount { get; set; }
