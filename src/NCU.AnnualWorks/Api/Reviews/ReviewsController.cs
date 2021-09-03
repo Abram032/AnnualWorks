@@ -12,7 +12,6 @@ using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Core.Utils;
 using NCU.AnnualWorks.Integrations.Email.Core;
-using NCU.AnnualWorks.Integrations.Email.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using System;
 using System.Collections.Generic;
@@ -101,6 +100,7 @@ namespace NCU.AnnualWorks.Api.Reviews
             var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var sendGradeConflictEmail = false;
+            var sendGradeConfirmEmail = false;
 
             if (DateTime.Now > deadline && thesis.TermId != currentTerm.Id)
             {
@@ -145,17 +145,18 @@ namespace NCU.AnnualWorks.Api.Reviews
                     return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań");
                 }
 
-                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
+                var reviewerReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer);
+                var promoterReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter);
+
+                if ((isPromoter && reviewerReview != null && reviewerReview.IsConfirmed) ||
+                    (isReviewer && promoterReview != null && promoterReview.IsConfirmed))
                 {
-                    //TODO: FIX THIS
-                    var grade = request.Grade;
-                    var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
-                        .Select(r => r.Grade).ToList();
-                    grades.Add(grade);
+                    var grades = new List<string>() { request.Grade, isPromoter ? reviewerReview.Grade : promoterReview.Grade };
 
                     if (GradeUtils.TryGetAverageGrade(grades, out var average))
                     {
                         thesis.Grade = average;
+                        sendGradeConfirmEmail = true;
                     }
                     else
                     {
@@ -201,13 +202,11 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             if (sendGradeConflictEmail)
             {
-                var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
-                await _emailService.SendEmailGradeConflict(new GradeConflictEmailModel
-                {
-                    UserId = thesis.Promoter.Id,
-                    Email = user.Email ?? thesis.Promoter.Email,
-                    ThesisTitle = thesis.Title
-                });
+                await _thesisService.SendEmailGradeConflict(thesis.Guid);
+            }
+            if (sendGradeConfirmEmail)
+            {
+                await _thesisService.SendEmailGradeConfirmed(thesis.Guid);
             }
 
             return new CreatedResult("/reviews", reviewGuid);
@@ -220,8 +219,8 @@ namespace NCU.AnnualWorks.Api.Reviews
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
             var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
-
             var sendGradeConflictEmail = false;
+            var sendGradeConfirmEmail = false;
 
             if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
@@ -277,17 +276,18 @@ namespace NCU.AnnualWorks.Api.Reviews
                     return new BadRequestObjectResult("Brak odpowiedzi na jedno lub więcej wymaganych pytań.");
                 }
 
-                if (thesis.Reviews.Any(r => r.CreatedBy != currentUser && r.IsConfirmed))
+                var reviewerReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Reviewer);
+                var promoterReview = thesis.Reviews.FirstOrDefault(r => r.CreatedBy == thesis.Promoter);
+
+                if ((isPromoter && reviewerReview != null && reviewerReview.IsConfirmed) ||
+                    (isReviewer && promoterReview != null && promoterReview.IsConfirmed))
                 {
-                    //TODO: FIX THIS
-                    var grade = request.Grade;
-                    var grades = thesis.Reviews.Where(r => r.CreatedBy != currentUser)
-                        .Select(r => r.Grade).ToList();
-                    grades.Add(grade);
+                    var grades = new List<string>() { request.Grade, isPromoter ? reviewerReview.Grade : promoterReview.Grade };
 
                     if (GradeUtils.TryGetAverageGrade(grades, out var average))
                     {
                         thesis.Grade = average;
+                        sendGradeConfirmEmail = true;
                     }
                     else
                     {
@@ -331,13 +331,11 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             if (sendGradeConflictEmail)
             {
-                var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
-                await _emailService.SendEmailGradeConflict(new GradeConflictEmailModel
-                {
-                    UserId = thesis.Promoter.Id,
-                    Email = user.Email ?? thesis.Promoter.Email,
-                    ThesisTitle = thesis.Title
-                });
+                await _thesisService.SendEmailGradeConflict(thesis.Guid);
+            }
+            if (sendGradeConfirmEmail)
+            {
+                await _thesisService.SendEmailGradeConfirmed(thesis.Guid);
             }
 
             return new OkObjectResult(review.Guid);

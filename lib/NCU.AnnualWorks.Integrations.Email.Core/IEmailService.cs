@@ -7,5 +7,8 @@ namespace NCU.AnnualWorks.Integrations.Email.Core
     {
         Task SendEmailGradeConflict(GradeConflictEmailModel model);
         Task SendEmailThesisCreated(ThesisCreatedEmailModel model);
+        Task SendEmailGradeCanceled(GradeCanceledEmailModel model);
+        Task SendEmailReviewCanceled(ReviewCanceledEmailModel model);
+        Task SendEmailGradeConfirmed(GradeConfirmedEmailModel model);
     }
 }

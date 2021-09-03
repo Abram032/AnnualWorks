@@ -1,6 +1,6 @@
 ﻿namespace NCU.AnnualWorks.Integrations.Email.Core.Models
 {
-    public class GradeConflictEmailModel
+    public class ReviewCanceledEmailModel
     {
         public long UserId { get; set; }
         public string Email { get; set; }

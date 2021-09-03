@@ -10,5 +10,6 @@ namespace NCU.AnnualWorks.Core.Services
         bool ReviewExists(Guid reviewGuid);
         Task<bool> IsReviewConfirmed(Guid reviewGuid);
         Task CancelReviewConfirmation(Guid reviewGuid);
+        Task SendEmailCancelReview(Guid reviewGuid);
     }
 }

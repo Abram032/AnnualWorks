@@ -496,6 +496,7 @@ namespace NCU.AnnualWorks.Api.Theses
                 thesis.Grade = request.Grade;
                 thesis.LogChange(thesis.Promoter, ModificationType.GradeConfirmed);
                 await _thesisRepository.UpdateAsync(thesis);
+                await _thesisService.SendEmailGradeConfirmed(thesis.Guid);
 
                 return new OkResult();
             }

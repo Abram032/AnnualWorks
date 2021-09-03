@@ -189,6 +189,7 @@ namespace NCU.AnnualWorks.Services
             thesis.Grade = null;
             thesis.LogChange(currentUser, ModificationType.GradeCanceled);
             await _thesisRepository.UpdateAsync(thesis);
+            await SendEmailGradeCanceled(thesisGuid);
         }
 
         public async Task<bool> HasGrade(Guid thesisGuid)
@@ -217,6 +218,50 @@ namespace NCU.AnnualWorks.Services
                 AuthorIds = thesis.ThesisAuthors.Select(a => a.AuthorId).ToList(),
                 AuthorEmails = thesis.ThesisAuthors
                     .Select(a => authors.FirstOrDefault(ua => ua.Id == a.AuthorId.ToString())?.Email ?? a.Author.Email).ToList()
+            });
+        }
+
+        public async Task SendEmailGradeConflict(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
+            await _emailService.SendEmailGradeConflict(new GradeConflictEmailModel
+            {
+                UserId = thesis.Promoter.Id,
+                Email = user.Email ?? thesis.Promoter.Email,
+                ThesisTitle = thesis.Title,
+                Url = $"{ _options.ApplicationUrl}/details/{thesisGuid}",
+            });
+        }
+
+        public async Task SendEmailGradeCanceled(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var user = await _usosService.GetUser(_userContext.GetCredentials(), thesis.Promoter.UsosId);
+            await _emailService.SendEmailGradeCanceled(new GradeCanceledEmailModel
+            {
+                UserId = thesis.Promoter.Id,
+                Email = user.Email ?? thesis.Promoter.Email,
+                ThesisTitle = thesis.Title,
+                Url = $"{_options.ApplicationUrl}/details/{thesisGuid}"
+            });
+        }
+
+        public async Task SendEmailGradeConfirmed(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+            var thesisUsers = new List<User>();
+            thesisUsers.Add(thesis.Promoter);
+            thesisUsers.Add(thesis.Reviewer);
+            thesisUsers.AddRange(thesis.ThesisAuthors.Select(a => a.Author));
+
+            var users = await _usosService.GetUsers(_userContext.GetCredentials(), thesisUsers.Select(u => u.UsosId));
+            await _emailService.SendEmailGradeConfirmed(new GradeConfirmedEmailModel
+            {
+                UserIds = thesisUsers.Select(u => u.Id).ToList(),
+                Emails = users.Select(u => u.Email ?? thesisUsers.FirstOrDefault(tu => tu.UsosId == u.Id)?.Email).ToList(),
+                ThesisTitle = thesis.Title,
+                Url = $"{_options.ApplicationUrl}/details/{thesisGuid}"
             });
         }
     }

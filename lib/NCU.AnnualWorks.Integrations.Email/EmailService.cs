@@ -60,9 +60,10 @@ namespace NCU.AnnualWorks.Integrations.Email
                 message.Subject = "Prace roczne - Konflikt ocen pracy";
                 message.Body = new TextPart("plain")
                 {
-                    Text = $"Pojawił się konflikt ocen na promowanej przez Ciebie pracy pt. \"{model.ThesisTitle}\"." +
+                    Text = $"Pojawił się konflikt ocen na promowanej przez Ciebie pracy pt \"{model.ThesisTitle}\"." +
                     $"\nSkontaktuj się z recenzentem pracy i wspólnie ustalcie ocenę końcową." +
                     $"\nNastępnie przejdź do systemu i za pomocą akcji \"Wystaw ocenę\" zatwierdź ocenę końcową pracy." +
+                    $"\nLink do pracy: {model.Url}" +
                     $"\n\nTen e-mail został wygenerowany automatycznie."
                 };
 
@@ -84,7 +85,7 @@ namespace NCU.AnnualWorks.Integrations.Email
                 message.Subject = "Prace roczne - Recenzja pracy";
                 message.Body = new TextPart("plain")
                 {
-                    Text = $"Zostałeś(aś) przypisany(a) jako recenzent pracy pt. \"{model.ThesisTitle}\"." +
+                    Text = $"Zostałeś(aś) przypisany(a) jako recenzent pracy pt \"{model.ThesisTitle}\"." +
                     $"\nPraca jest dostępna pod adresem: {model.Url}." +
                     $"\n\nTen e-mail został wygenerowany automatycznie."
                 };
@@ -107,7 +108,7 @@ namespace NCU.AnnualWorks.Integrations.Email
                 message.Subject = "Prace roczne - Twoja praca została dodana do systemu";
                 message.Body = new TextPart("plain")
                 {
-                    Text = $"Twoja praca pt. \"{model.ThesisTitle}\" została dodana do systemu przez promotora." +
+                    Text = $"Twoja praca pt \"{model.ThesisTitle}\" została dodana do systemu przez promotora." +
                     $"\nMożesz ją zobaczyć pod adresem: {model.Url}." +
                     $"\n\nTen e-mail został wygenerowany automatycznie."
                 };
@@ -116,7 +117,81 @@ namespace NCU.AnnualWorks.Integrations.Email
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to send email message to reviewer {string.Join(", ", model.AuthorEmails)} UserIds: {string.Join(", ", model.AuthorIds)}. Reason: {e.Message}");
+                _logger.LogError($"Failed to send email message to authors {string.Join(", ", model.AuthorEmails)} UserIds: {string.Join(", ", model.AuthorIds)}. Reason: {e.Message}");
+            }
+        }
+
+        public async Task SendEmailGradeCanceled(GradeCanceledEmailModel model)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                message.To.Add(MailboxAddress.Parse(model.Email));
+                message.Subject = "Prace roczne - Ocena pracy została anulowana";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Ocena promowanej przez Ciebie pracy pt \"{model.ThesisTitle}\" została anulowana przez administratora systemu." +
+                    $"\nPrzejdź do systemu, aby wystawić ocenę pracy ponownie za pomocą akcji \"Wystaw ocenę\"." +
+                    $"\nPraca jest dostępna pod adresem: {model.Url}." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send email message to {model.Email}, UserId: {model.UserId}. Reason: {e.Message}");
+            }
+        }
+
+        public async Task SendEmailReviewCanceled(ReviewCanceledEmailModel model)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                message.To.Add(MailboxAddress.Parse(model.Email));
+                message.Subject = "Prace roczne - Recenzja pracy została anulowana";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Twoja recenzja pracy pt \"{model.ThesisTitle}\" została anulowana przez administratora systemu." +
+                    $"\nPrzejdź do systemu, aby zrecenzować pracę ponownie." +
+                    $"\nLink do pracy: {model.Url}." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send email message to {model.Email}, UserId: {model.UserId}. Reason: {e.Message}");
+            }
+        }
+
+        public async Task SendEmailGradeConfirmed(GradeConfirmedEmailModel model)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                foreach (var email in model.Emails)
+                {
+                    message.To.Add(MailboxAddress.Parse(email));
+                }
+                message.Subject = "Prace roczne - Ocena pracy";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Recenzje oraz ocena pracy pt \"{model.ThesisTitle}\" została zatwierdzona." +
+                    $"\nPraca jest dostępna pod adresem: {model.Url}." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send email message to {string.Join(", ", model.Emails)}, UserIds: {string.Join(", ", model.UserIds)}. Reason: {e.Message}");
             }
         }
     }
