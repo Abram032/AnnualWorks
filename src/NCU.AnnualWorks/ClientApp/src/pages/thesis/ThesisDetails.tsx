@@ -1,4 +1,4 @@
-import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, Link, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import { CommandBar, DetailsRow, FontSizes, IColumn, ICommandBarItemProps, IconButton, IStackTokens, Label, mergeStyles, MessageBar, MessageBarType, PrimaryButton, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React from 'react';
 import { Tile, Loader, ReviewModal, addActions, editGradeAction, ThesisGradeConfirmDialog, ThesisHideConfirmDialog, ThesisCancelGradeDialog, CancelReviewDialog } from '../../Components';
 import { RouteNames } from '../../shared/Consts';
@@ -7,6 +7,7 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
 import { CurrentUser, Review, Thesis, ThesisActions, ThesisLog, User } from '../../shared/Models';
 import { cancelGradeAction, hideThesisAction, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
+import { Link } from '../../Components';
 
 interface ThesisDetailsProps {
   guid: string

@@ -1,5 +1,6 @@
 import React from "react";
-import { Label, Stack, FontSizes, IStackTokens, mergeStyles, Link } from "@fluentui/react";
+import { Label, Stack, FontSizes, IStackTokens, mergeStyles } from "@fluentui/react";
+import { Link } from '../Components';
 
 export const Privacy: React.FC = () => {
   return (

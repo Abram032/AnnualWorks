@@ -1,8 +1,9 @@
 import React from "react";
-import { IStackTokens, Label, Link, mergeStyles, Stack } from "@fluentui/react";
+import { IStackTokens, Label, mergeStyles, Stack } from "@fluentui/react";
 import { AppSettings } from '../AppSettings';
 import { RouteNames } from '../shared/Consts';
 import { ThemePicker } from "../Components";
+import { Link } from '../Components';
 
 export const Footer: React.FC = () => {
   return (

@@ -1,8 +1,9 @@
 import React from 'react';
-import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, Link, SelectionMode } from '@fluentui/react';
+import { CommandBar, DetailsList, FontSizes, IColumn, IGroup, Label, SelectionMode } from '@fluentui/react';
 import { addActions } from './ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Thesis } from '../../shared/Models';
+import { Link } from '../../Components';
 
 interface ThesisListProps {
   title: string,

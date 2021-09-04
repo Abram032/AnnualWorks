@@ -1,7 +1,8 @@
-import { DetailsList, FontSizes, IColumn, IStackTokens, Label, Link, merge, mergeStyles, Persona, PersonaSize, SelectionMode, Stack, StackItem } from '@fluentui/react';
+import { DetailsList, FontSizes, IColumn, IStackTokens, Label, mergeStyles, Persona, PersonaSize, SelectionMode, Stack, StackItem } from '@fluentui/react';
 import React from 'react';
 import { RouteNames } from '../../shared/Consts';
 import { Term, Thesis, User } from '../../shared/Models';
+import { Link } from '../../Components';
 
 interface SearchResultListProps {
   terms: Term[],

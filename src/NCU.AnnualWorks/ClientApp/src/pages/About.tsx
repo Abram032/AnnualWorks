@@ -1,8 +1,8 @@
 import React from "react";
-import { Label, Stack, FontSizes, IStackTokens, mergeStyles, useTheme, Image, Link } from "@fluentui/react";
+import { Label, Stack, FontSizes, IStackTokens, mergeStyles, useTheme, Image } from "@fluentui/react";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card } from "../Components";
+import { Card, Link } from "../Components";
 import { CardBody, CardFooter, CardFooterIcons } from "../components/Index";
 
 export const About: React.FC = () => {

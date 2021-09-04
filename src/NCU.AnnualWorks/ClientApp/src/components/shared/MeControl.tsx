@@ -4,7 +4,6 @@ import {
   DirectionalHint,
   IStackTokens,
   Label,
-  Link,
   Persona,
   PersonaSize,
   Stack,
@@ -15,6 +14,7 @@ import { CurrentUser } from "../../shared/Models";
 import { ThemePicker } from './ThemePicker';
 import { AppSettings } from '../../AppSettings';
 import { RouteNames } from '../../shared/Consts';
+import { Link } from '../../Components';
 
 interface MeControlProps {
   user: CurrentUser;

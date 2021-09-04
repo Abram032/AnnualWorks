@@ -1,5 +1,6 @@
-import { Link, useTheme } from "@fluentui/react";
+import { useTheme } from "@fluentui/react";
 import React from "react";
+import { Link } from '../../Components';
 
 interface NavLinkProps {
   label: string;

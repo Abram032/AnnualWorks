@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker as FluentDatePicker, DayOfWeek, FontSizes, IDatePickerProps, IDatePickerStrings, mergeStyles, useTheme } from "@fluentui/react";
+import { DatePicker as FluentDatePicker, DayOfWeek, FontSizes, ICalloutProps, IDatePickerProps, IDatePickerStrings, mergeStyles, useTheme } from "@fluentui/react";
 import { HookFormProps } from "../../shared/Models";
 import { Controller } from "react-hook-form";
 import { useState } from "react";
@@ -60,6 +60,15 @@ export const DatePickerWrapper: React.FC<DatePickerProps> = (props) => {
     fontSize: FontSizes.size12,
     marginTop: '5px'
   });
+  const calloutProps: ICalloutProps = {
+    styles: {
+      root: {
+        button: {
+          color: theme.palette.black
+          }
+        }
+      }
+    }
 
   //#endregion
 
@@ -75,6 +84,7 @@ export const DatePickerWrapper: React.FC<DatePickerProps> = (props) => {
         defaultValue={props.defaultValue?.toLocaleDateString()}
         placeholder="Wybierz..."
         aria-placeholder="Wybierz datę..."
+        calloutProps={calloutProps}
       />
       {props.errorMessage ? <span className={validationErrorStyles}>{props.errorMessage}</span> : null}
     </>
