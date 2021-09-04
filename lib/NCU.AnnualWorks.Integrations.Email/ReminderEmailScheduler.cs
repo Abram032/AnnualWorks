@@ -57,6 +57,7 @@ namespace NCU.AnnualWorks.Integrations.Email
                 {
                     var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                     var thesisRepository = scope.ServiceProvider.GetRequiredService<IThesisRepository>();
+                    var usersRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
                     var settingsRepository = scope.ServiceProvider.GetRequiredService<IAsyncRepository<Settings>>();
 
                     var deadline = settingsRepository.GetAll().Single().Deadline;
@@ -70,6 +71,8 @@ namespace NCU.AnnualWorks.Integrations.Email
                     var usersToEmail = new List<string>();
                     usersToEmail.AddRange(thesisRepository.GetAll().Select(p => p.Promoter.Email));
                     usersToEmail.AddRange(thesisRepository.GetAll().Select(r => r.Reviewer.Email));
+                    usersToEmail.AddRange(usersRepository.GetAll().Where(u => u.CustomAccess).Select(u => u.Email));
+                    usersToEmail.AddRange(usersRepository.GetAll().Where(u => u.AdminAccess).Select(u => u.Email));
                     usersToEmail = usersToEmail.Where(e => e != null).Distinct().ToList();
 
                     await emailService.SendEmailReminder(new ReminderEmailModel

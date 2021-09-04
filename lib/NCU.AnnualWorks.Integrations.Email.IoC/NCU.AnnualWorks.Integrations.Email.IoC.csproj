@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lib\NCU.AnnualWorks.Integrations.Email.Core\NCU.AnnualWorks.Integrations.Email.Core.csproj" />
-    <ProjectReference Include="..\lib\NCU.AnnualWorks.Integrations.Email\NCU.AnnualWorks.Integrations.Email.csproj" />
+    <ProjectReference Include="..\NCU.AnnualWorks.Integrations.Email.Core\NCU.AnnualWorks.Integrations.Email.Core.csproj" />
+    <ProjectReference Include="..\NCU.AnnualWorks.Integrations.Email\NCU.AnnualWorks.Integrations.Email.csproj" />
   </ItemGroup>
 
 </Project>

@@ -43,8 +43,8 @@
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.JWT.IoC\NCU.AnnualWorks.Authentication.JWT.IoC.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Authentication.OAuth.IoC\NCU.AnnualWorks.Authentication.OAuth.IoC.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Core\NCU.AnnualWorks.Core.csproj" />
+    <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Email.IoC\NCU.AnnualWorks.Integrations.Email.IoC.csproj" />
     <ProjectReference Include="..\..\lib\NCU.AnnualWorks.Integrations.Usos.IoC\NCU.AnnualWorks.Integrations.Usos.IoC.csproj" />
-    <ProjectReference Include="..\..\NCU.AnnualWorks.Integrations.Email.IoC\NCU.AnnualWorks.Integrations.Email.IoC.csproj" />
   </ItemGroup>
 
   <ItemGroup>
