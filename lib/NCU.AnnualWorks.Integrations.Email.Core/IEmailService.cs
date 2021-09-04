@@ -10,5 +10,6 @@ namespace NCU.AnnualWorks.Integrations.Email.Core
         Task SendEmailGradeCanceled(GradeCanceledEmailModel model);
         Task SendEmailReviewCanceled(ReviewCanceledEmailModel model);
         Task SendEmailGradeConfirmed(GradeConfirmedEmailModel model);
+        Task SendEmailReminder(ReminderEmailModel model);
     }
 }

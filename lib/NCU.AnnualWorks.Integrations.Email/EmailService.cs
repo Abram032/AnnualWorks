@@ -194,5 +194,35 @@ namespace NCU.AnnualWorks.Integrations.Email
                 _logger.LogError($"Failed to send email message to {string.Join(", ", model.Emails)}, UserIds: {string.Join(", ", model.UserIds)}. Reason: {e.Message}");
             }
         }
+
+        public async Task SendEmailReminder(ReminderEmailModel model)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(MailboxAddress.Parse(_options.Email));
+                foreach (var email in model.Emails)
+                {
+                    message.To.Add(MailboxAddress.Parse(email));
+                }
+                message.Subject = "Prace roczne - Przypomnienie";
+
+                var left = model.DaysToDeadline == 1 ? "Pozostał" : "Pozostało";
+                var days = model.DaysToDeadline == 1 ? "dzień" : "dni";
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"{left} {model.DaysToDeadline} {days} do upłynięcia ostatecznego terminu." +
+                    $"\nJeżeli nie dodałeś(aś) jeszcze wszystkich prac, lub jeśli są prace, które oczekują Twojej recenzji, pośpiesz się." +
+                    $"\nPo upłynięciu terminu końcowego, nie będzie dalszej możliwości dodania pracy lub wystawienia recenzji." +
+                    $"\n\nTen e-mail został wygenerowany automatycznie."
+                };
+
+                await SendEmail(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to send reminder email to {string.Join(", ", model.Emails)}. Reason: {e.Message}");
+            }
+        }
     }
 }

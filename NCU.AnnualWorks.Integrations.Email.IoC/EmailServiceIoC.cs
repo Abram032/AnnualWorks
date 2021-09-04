@@ -11,6 +11,7 @@ namespace NCU.AnnualWorks.Integrations.Email.IoC
         {
             services.Configure<EmailServiceOptions>(options => configuration.GetSection(nameof(EmailServiceOptions)).Bind(options));
             services.AddScoped<IEmailService, EmailService>();
+            services.AddHostedService<ReminderEmailScheduler>();
 
             return services;
         }

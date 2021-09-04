@@ -21,17 +21,20 @@ namespace NCU.AnnualWorks.Services
 
         public async Task<DateTime> GetDeadline(OAuthRequest oauthRequest)
         {
-            var deadline = _settingsRepository.GetAll().Single().Deadline;
+            var settings = _settingsRepository.GetAll().Single();
             var term = await _usosService.GetCurrentTerm(oauthRequest);
             var termEndDate = DateTime.Parse(term.EndDate);
             var termStartDate = DateTime.Parse(term.StartDate);
 
-            if (deadline.HasValue && deadline > termStartDate && deadline < termEndDate)
+            if (settings.Deadline.HasValue && settings.Deadline > termStartDate && settings.Deadline < termEndDate)
             {
-                return deadline.Value.Date;
+                return settings.Deadline.Value.Date;
             }
             else
             {
+                //Current deadline is not within term, set a new one
+                settings.Deadline = termEndDate;
+                await _settingsRepository.UpdateAsync(settings);
                 return termEndDate;
             }
         }
