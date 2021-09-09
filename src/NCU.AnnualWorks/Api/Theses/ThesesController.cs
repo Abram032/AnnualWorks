@@ -320,7 +320,7 @@ namespace NCU.AnnualWorks.Api.Theses
 
             var requestData = JsonConvert.DeserializeObject<ThesisRequestData>(request.Data);
 
-            if (thesis.Promoter.Id != currentUser.Id)
+            if (thesis.Promoter.Id != currentUser.Id && !currentUser.AdminAccess)
             {
                 return new ForbidResult();
             }
