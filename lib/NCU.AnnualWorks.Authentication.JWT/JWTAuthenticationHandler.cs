@@ -32,6 +32,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
             var hasAuthorizationHeader = this.Context.Request.Headers.TryGetValue("Authorization", out var authorizationHeader);
             var hasAuthCookie = this.Context.Request.Cookies.TryGetValue(AuthenticationCookies.SecureAuth, out var authCookie);
             var hasTokenCookie = this.Context.Request.Cookies.TryGetValue(AuthenticationCookies.SecureToken, out var tokenCookie);
+            var hasUserCookie = this.Context.Request.Cookies.TryGetValue(AuthenticationCookies.SecureUser, out var userCookie);
 
             if (!hasAuthorizationHeader && !hasAuthCookie && !hasTokenCookie)
             {
@@ -57,7 +58,7 @@ namespace NCU.AnnualWorks.Authentication.JWT
                 return AuthenticateResult.Fail("Authorization missing.");
             }
 
-            if (!_jwtService.TryValidateJWE(token, out var jwt))
+            if (!_jwtService.TryValidateJWE(token, out var jwt) || (!string.IsNullOrEmpty(userCookie) && !_jwtService.TryValidateJWS(userCookie, out var userJwt)))
             {
                 Response.Cookies.Delete(AuthenticationCookies.SecureAuth, _jwtService.GetAuthCookieOptions());
                 Response.Cookies.Delete(AuthenticationCookies.SecureUser, _jwtService.GetUserCookieOptions());
