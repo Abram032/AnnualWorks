@@ -42,7 +42,7 @@ namespace NCU.AnnualWorks.Api.Terms
         }
 
         [HttpGet("All")]
-        [Authorize(AuthorizationPolicies.AdminOnly)]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> GetAllTerms()
         {
             var thesisTerms = _thesisRepository.GetAll().Select(t => t.TermId).Distinct().ToList();
