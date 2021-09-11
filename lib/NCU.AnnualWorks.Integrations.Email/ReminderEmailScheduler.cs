@@ -32,9 +32,11 @@ namespace NCU.AnnualWorks.Integrations.Email
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             //Runs daily at 12:00
-            timer = new Timer(DoWork, null, GetTimeDifferenceToFirstRun(), TimeSpan.FromDays(1));
+            var nextRun = GetTimeDifferenceToFirstRun();
+            timer = new Timer(DoWork, null, nextRun, TimeSpan.FromDays(1));
 
             _logger.LogInformation("Reminder Email Scheduler started.");
+            _logger.LogInformation($"Reminder Email Scheduler next run in {nextRun.TotalHours} hours");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

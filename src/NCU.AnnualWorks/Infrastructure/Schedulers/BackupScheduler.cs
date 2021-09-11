@@ -35,6 +35,7 @@ namespace NCU.AnnualWorks.Infrastructure.Schedulers
             timer = new Timer(DoWork, null, nextRun, TimeSpan.FromDays(1));
 
             _logger.LogInformation("Backup Scheduler started.");
+            _logger.LogInformation($"Next run of backup scheduler in {nextRun.TotalHours} hours.");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -62,7 +63,6 @@ namespace NCU.AnnualWorks.Infrastructure.Schedulers
                 {
                     await BackupData();
                 }
-                nextRun = TimeSpan.FromDays(1);
                 timer?.Change(nextRun, TimeSpan.FromDays(1));
 
                 _logger.LogInformation($"Next run of backup scheduler in {nextRun.TotalHours} hours.");
@@ -174,7 +174,7 @@ namespace NCU.AnnualWorks.Infrastructure.Schedulers
 
         private async Task<TimeSpan> GetTimeToNextRunAsync()
         {
-            TimeSpan nextRun = TimeSpan.FromDays(1);
+            var nextRun = TimeSpan.FromDays(1);
             var deadline = await GetDeadlineAsync();
 
             if (deadline.HasValue && deadline > DateTime.Now)
@@ -182,10 +182,7 @@ namespace NCU.AnnualWorks.Infrastructure.Schedulers
                 nextRun = deadline.Value
                     .Subtract(DateTime.Now)
                     .Add(TimeSpan.FromMinutes(5));
-
-                nextRun = TimeSpan.Zero;
             }
-
             return nextRun;
         }
     }
