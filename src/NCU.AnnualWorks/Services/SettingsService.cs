@@ -19,6 +19,12 @@ namespace NCU.AnnualWorks.Services
             _usosService = usosService;
         }
 
+        public async Task<DateTime?> GetDeadline()
+        {
+            var settings = _settingsRepository.GetAll().Single();
+            return settings.Deadline;
+        }
+
         public async Task<DateTime> GetDeadline(OAuthRequest oauthRequest)
         {
             var settings = _settingsRepository.GetAll().Single();

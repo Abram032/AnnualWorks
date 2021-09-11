@@ -20,6 +20,7 @@ using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Infrastructure.Data;
 using NCU.AnnualWorks.Infrastructure.Data.Repositories;
+using NCU.AnnualWorks.Infrastructure.Schedulers;
 using NCU.AnnualWorks.Integrations.Email.IoC;
 using NCU.AnnualWorks.Integrations.Usos.IoC;
 using NCU.AnnualWorks.Mappers;
@@ -40,6 +41,9 @@ namespace NCU.AnnualWorks
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ApplicationOptions>(options => Configuration.GetSection(nameof(ApplicationOptions)).Bind(options));
+            services.Configure<BackupSchedulerOptions>(options => Configuration.GetSection(nameof(BackupSchedulerOptions)).Bind(options));
+
+            services.AddHostedService<BackupScheduler>();
 
             services.AddControllersWithViews()
                 .AddNewtonsoftJson()
@@ -80,7 +84,7 @@ namespace NCU.AnnualWorks
             services.AddUsosService(Configuration);
             services.AddEmailService(Configuration);
 
-            //TODO: Move mapper to Core
+            //TODO: Replace mapper with custom mapping
             var mapperConfiguration = new MapperConfiguration(config =>
             {
                 config.AddProfile(new MappingProfile());
