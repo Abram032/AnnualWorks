@@ -6,7 +6,7 @@ import { useCurrentUser, useThesis } from '../../shared/Hooks';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Redirect } from 'react-router-dom';
 import { CurrentUser, Review, Thesis, ThesisActions, ThesisLog, User } from '../../shared/Models';
-import { cancelGradeAction, hideThesisAction, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
+import { cancelGradeAction, hideThesisAction, ThesisAddtionalFilesForm, ThesisHistoryLog, unhideThesisAction } from '../../components/Index';
 import { Link } from '../../Components';
 
 interface ThesisDetailsProps {
@@ -20,8 +20,8 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [isReviewerReviewVisible, { toggle: toggleIsReviewerReviewVisible }] = useBoolean(false);
   const [confirmDialogIsVisible, { toggle: toggleConfirmDialogIsVisible }] = useBoolean(false);
   const [cancelDialogIsVisible, { toggle: toggleCancelDialogIsVisible }] = useBoolean(false);
-  const [cancelPromoterReviewDialogIsVisible, {toggle: toggleCancelPromoterReviewDialogIsVisible }] = useBoolean(false);
-  const [cancelReviewerReviewDialogIsVisible, {toggle: toggleCancelReviewerReviewDialogIsVisible }] = useBoolean(false);
+  const [cancelPromoterReviewDialogIsVisible, { toggle: toggleCancelPromoterReviewDialogIsVisible }] = useBoolean(false);
+  const [cancelReviewerReviewDialogIsVisible, { toggle: toggleCancelReviewerReviewDialogIsVisible }] = useBoolean(false);
   const [hideDialogIsVisible, { toggle: toggleHideDialogIsVisible }] = useBoolean(false);
 
   if (thesisFetching) {
@@ -34,66 +34,75 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
 
   return (
     <Stack className={containerStyles} tokens={containerStackTokens}>
-      <Tile title={thesis.title}>
-        {thesis.promoterReview?.grade && thesis.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
-        {thesis?.hidden ? hiddenMessageBar : null}
-        <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} availableGrades={thesis.availableGradeRange} toggleIsVisible={toggleConfirmDialogIsVisible} />
-        <ThesisHideConfirmDialog guid={thesis.guid} isThesisHidden={thesis.hidden} isVisible={hideDialogIsVisible} toggleIsVisible={toggleHideDialogIsVisible} />
-        <ThesisCancelGradeDialog guid={thesis.guid} isVisible={cancelDialogIsVisible} toggleIsVisible={toggleCancelDialogIsVisible} />
-        {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
-        <Stack>
-          <CommandBar
-            className='theses-simple-list-actions'
-            items={getThesisActions(thesis, toggleConfirmDialogIsVisible, toggleHideDialogIsVisible, toggleCancelDialogIsVisible)}
+      <Stack horizontal tokens={stackTokens}>
+        <StackItem grow={2}>
+          <Tile title={thesis.title}>
+            {thesis.promoterReview?.grade && thesis.reviewerReview?.grade && !thesis.grade ? gradeConflictMessageBar : null}
+            {thesis?.hidden ? hiddenMessageBar : null}
+            <ThesisGradeConfirmDialog guid={thesis.guid} isVisible={confirmDialogIsVisible} availableGrades={thesis.availableGradeRange} toggleIsVisible={toggleConfirmDialogIsVisible} />
+            <ThesisHideConfirmDialog guid={thesis.guid} isThesisHidden={thesis.hidden} isVisible={hideDialogIsVisible} toggleIsVisible={toggleHideDialogIsVisible} />
+            <ThesisCancelGradeDialog guid={thesis.guid} isVisible={cancelDialogIsVisible} toggleIsVisible={toggleCancelDialogIsVisible} />
+            {/* Due to a bug, command bar cannot be put inside a flexbox https://github.com/microsoft/fluentui/issues/16268 */}
+            <Stack>
+              <CommandBar
+                className='theses-simple-list-actions'
+                items={getThesisActions(thesis, toggleConfirmDialogIsVisible, toggleHideDialogIsVisible, toggleCancelDialogIsVisible)}
+              />
+            </Stack>
+            <Stack tokens={stackTokens}>
+              <Label>Dodana: {new Date(thesis.createdAt!).toLocaleDateString()}</Label>
+              <Label>
+                {thesis.thesisAuthors.length === 1 ? "Autor" : "Autorzy"}: {thesis.thesisAuthors.map(p => `${p.firstName} ${p.lastName}`).join(', ')}
+              </Label>
+            </Stack>
+            <Stack tokens={stackTokens}>
+              <Label style={{ fontSize: FontSizes.size20 }}>Abstrakt:</Label>
+              <p>{thesis.abstract}</p>
+              <Label style={{ fontSize: FontSizes.size20 }}>Słowa kluczowe:</Label>
+              <p>{thesis.thesisKeywords.map(k => k.text).join(', ')}</p>
+              <Label style={{ fontSize: FontSizes.size20 }}>Recenzja promotora:</Label>
+              <DetailsRow
+                className={rowStyles}
+                selectionMode={SelectionMode.none}
+                itemIndex={0}
+                item={getReviewDetailRow(thesis.actions, thesis.promoter, toggleIsPromoterReviewVisible, toggleCancelPromoterReviewDialogIsVisible, thesis.promoterReview, true)}
+                columns={columns}
+                onRenderItemColumn={onRenderItemColumn}
+              />
+              {thesis.promoterReview?.guid ?
+                <CancelReviewDialog
+                  guid={thesis.promoterReview.guid}
+                  isVisible={cancelPromoterReviewDialogIsVisible}
+                  toggleIsVisible={toggleCancelPromoterReviewDialogIsVisible}
+                /> : null}
+              {getReviewModal(thesis.promoter, isPromoterReviewVisible, toggleIsPromoterReviewVisible, thesis.promoterReview)}
+              <Label style={{ fontSize: FontSizes.size20 }}>Recenzja recenzenta:</Label>
+              <DetailsRow
+                className={rowStyles}
+                selectionMode={SelectionMode.none}
+                itemIndex={0}
+                item={getReviewDetailRow(thesis.actions, thesis.reviewer, toggleIsReviewerReviewVisible, toggleCancelReviewerReviewDialogIsVisible, thesis.reviewerReview)}
+                columns={columns}
+                onRenderItemColumn={onRenderItemColumn}
+              />
+              {thesis.reviewerReview?.guid ?
+                <CancelReviewDialog
+                  guid={thesis.reviewerReview.guid}
+                  isVisible={cancelReviewerReviewDialogIsVisible}
+                  toggleIsVisible={toggleCancelReviewerReviewDialogIsVisible}
+                /> : null}
+              {getReviewModal(thesis.reviewer, isReviewerReviewVisible, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
+              <Label style={{ fontSize: FontSizes.size20 }}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
+            </Stack>
+            {getThesisLogs(currentUser, thesis.thesisLogs)}
+          </Tile>
+        </StackItem>
+        <StackItem grow={1}>
+          <ThesisAddtionalFilesForm 
+            thesisGuid={props.guid}
           />
-        </Stack>
-        <Stack tokens={stackTokens}>
-          <Label>Dodana: {new Date(thesis.createdAt!).toLocaleDateString()}</Label>
-          <Label>
-            {thesis.thesisAuthors.length === 1 ? "Autor" : "Autorzy"}: {thesis.thesisAuthors.map(p => `${p.firstName} ${p.lastName}`).join(', ')}
-          </Label>
-        </Stack>
-        <Stack tokens={stackTokens}>
-          <Label style={{ fontSize: FontSizes.size20 }}>Abstrakt:</Label>
-          <p>{thesis.abstract}</p>
-          <Label style={{ fontSize: FontSizes.size20 }}>Słowa kluczowe:</Label>
-          <p>{thesis.thesisKeywords.map(k => k.text).join(', ')}</p>
-          <Label style={{ fontSize: FontSizes.size20 }}>Recenzja promotora:</Label>
-          <DetailsRow
-            className={rowStyles}
-            selectionMode={SelectionMode.none}
-            itemIndex={0}
-            item={getReviewDetailRow(thesis.actions, thesis.promoter, toggleIsPromoterReviewVisible, toggleCancelPromoterReviewDialogIsVisible, thesis.promoterReview, true)}
-            columns={columns}
-            onRenderItemColumn={onRenderItemColumn}
-          />
-          {thesis.promoterReview?.guid ? 
-            <CancelReviewDialog 
-              guid={thesis.promoterReview.guid} 
-              isVisible={cancelPromoterReviewDialogIsVisible} 
-              toggleIsVisible={toggleCancelPromoterReviewDialogIsVisible} 
-            /> : null}
-          {getReviewModal(thesis.promoter, isPromoterReviewVisible, toggleIsPromoterReviewVisible, thesis.promoterReview)}
-          <Label style={{ fontSize: FontSizes.size20 }}>Recenzja recenzenta:</Label>
-          <DetailsRow
-            className={rowStyles}
-            selectionMode={SelectionMode.none}
-            itemIndex={0}
-            item={getReviewDetailRow(thesis.actions, thesis.reviewer, toggleIsReviewerReviewVisible, toggleCancelReviewerReviewDialogIsVisible, thesis.reviewerReview)}
-            columns={columns}
-            onRenderItemColumn={onRenderItemColumn}
-          />
-          {thesis.reviewerReview?.guid ? 
-            <CancelReviewDialog 
-              guid={thesis.reviewerReview.guid} 
-              isVisible={cancelReviewerReviewDialogIsVisible} 
-              toggleIsVisible={toggleCancelReviewerReviewDialogIsVisible} 
-            /> : null}
-          {getReviewModal(thesis.reviewer, isReviewerReviewVisible, toggleIsReviewerReviewVisible, thesis.reviewerReview)}
-          <Label style={{ fontSize: FontSizes.size20 }}>Ocena końcowa: {thesis.grade ?? "Brak oceny"}</Label>
-        </Stack>
-        {getThesisLogs(currentUser, thesis.thesisLogs)}
-      </Tile>
+        </StackItem>
+      </Stack>
       <Stack horizontal tokens={stackTokens}>
         <StackItem>
           <PrimaryButton href={RouteNames.root}>Powrót do listy prac</PrimaryButton>
@@ -149,10 +158,10 @@ const hiddenMessageBar = (
 //#region Review Actions
 
 const getReviewActions = (allowedActions: ThesisActions, toggleDialog: () => void, isPromoter?: boolean) => {
-  if(isPromoter && allowedActions.canCancelPromoterReview) {
+  if (isPromoter && allowedActions.canCancelPromoterReview) {
     return <IconButton iconProps={{ iconName: 'PageRemove', className: `${iconStyles}` }} title="Anuluj recenzję" onClick={() => toggleDialog()} />
   }
-  else if(!isPromoter && allowedActions.canCancelReviewerReview) {
+  else if (!isPromoter && allowedActions.canCancelReviewerReview) {
     return <IconButton iconProps={{ iconName: 'PageRemove', className: `${iconStyles}` }} title="Anuluj recenzję" onClick={() => toggleDialog()} />
   }
   else {
@@ -164,9 +173,9 @@ const getReviewActions = (allowedActions: ThesisActions, toggleDialog: () => voi
 
 //#region Thesis Actions 
 
-const getThesisActions = (thesis: Thesis, 
-  toggleGradeConfrimDialog: () => void, 
-  toggleHideThesisDialog: () => void, 
+const getThesisActions = (thesis: Thesis,
+  toggleGradeConfrimDialog: () => void,
+  toggleHideThesisDialog: () => void,
   toggleGradeCancelDialog: () => void): ICommandBarItemProps[] => {
   //Adding available actions
   const actionItems: ICommandBarItemProps[] = addActions(thesis, false);
@@ -178,21 +187,21 @@ const getThesisActions = (thesis: Thesis,
     }))
   }
 
-  if(thesis.actions.canCancelGrade) {
+  if (thesis.actions.canCancelGrade) {
     actionItems.push(cancelGradeAction({
       iconOnly: false,
       onClick: toggleGradeCancelDialog
     }))
   }
 
-  if(thesis.actions.canHide) {
+  if (thesis.actions.canHide) {
     actionItems.push(hideThesisAction({
       iconOnly: false,
       onClick: toggleHideThesisDialog
     }))
   }
 
-  if(thesis.actions.canUnhide) {
+  if (thesis.actions.canUnhide) {
     actionItems.push(unhideThesisAction({
       iconOnly: false,
       onClick: toggleHideThesisDialog
@@ -272,7 +281,7 @@ const getReviewDetailRow = (
 //#region Thesis Logs
 
 const getThesisLogs = (currentUser: CurrentUser, thesisLogs: ThesisLog[]) => {
-  if(currentUser.isEmployee && thesisLogs) {
+  if (currentUser.isEmployee && thesisLogs) {
     return (
       <Stack tokens={stackTokens}>
         <ThesisHistoryLog thesisLogs={thesisLogs} />

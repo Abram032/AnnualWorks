@@ -51,7 +51,8 @@ export namespace AppSettings {
       Cancel: process.env.REACT_APP_API_REVIEWS_CANCEL!
     },
     Files: {
-      Base: process.env.REACT_APP_API_FILES!
+      Base: process.env.REACT_APP_API_FILES!,
+      Thesis: process.env.REACT_APP_API_FILES_THESIS!
     },
     Deadline: {
       Base: process.env.REACT_APP_API_DEADLINE!

@@ -36,3 +36,4 @@ export * from './search/MultiSearch';
 export * from './thesis/ThesisCancelGradeDialog';
 export * from './review/CancelReviewDialog';
 export * from './shared/Link';
+export * from './thesis/ThesisAdditionalFilesForm';

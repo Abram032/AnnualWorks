@@ -264,5 +264,51 @@ namespace NCU.AnnualWorks.Services
                 Url = $"{_options.ApplicationUrl}/details/{thesisGuid}"
             });
         }
+
+        public async Task<List<ThesisFileDTO>> GetThesisFiles(Guid thesisGuid)
+        {
+            var thesis = await _thesisRepository.GetAsync(thesisGuid);
+
+            var result = new List<ThesisFileDTO>();
+            result.AddRange(thesis.ThesisAdditionalFiles.Select(f => MapThesisFileToDto(f.Thesis, f.File)));
+            result.Add(MapThesisFileToDto(thesis, thesis.File));
+
+            return result;
+        }
+
+        private ThesisFileDTO MapThesisFileToDto(Thesis thesis, File file)
+        {
+            return new ThesisFileDTO
+            {
+                Guid = file.Guid,
+                FileName = file.FileName,
+                ContentType = file.ContentType,
+                Extension = file.Extension,
+                Size = file.Size,
+                Actions = new ThesisFileActionsDTO
+                {
+                    CanDelete = string.IsNullOrEmpty(thesis.Grade) &&
+                        thesis.FileId != file.Id &&
+                        (thesis.Promoter.Id == _userContext.CurrentUser.Id || _userContext.CurrentUser.IsAdmin),
+                    CanDownload = thesis.ThesisAuthors.Select(a => a.AuthorId).Contains(_userContext.CurrentUser.Id) ||
+                        _userContext.CurrentUser.IsEmployee
+                }
+            };
+        }
+
+        public bool IsAuthor(Guid thesisGuid)
+        {
+            return _thesisRepository.GetAll()
+                .Any(t => t.Guid == thesisGuid &&
+                    t.ThesisAuthors
+                    .Select(a => a.AuthorId)
+                    .Contains(_userContext.CurrentUser.Id));
+        }
+
+        public bool IsPromoter(Guid thesisGuid)
+        {
+            return _thesisRepository.GetAll()
+                .Any(t => t.Guid == thesisGuid && t.Promoter.Id == _userContext.CurrentUser.Id);
+        }
     }
 }

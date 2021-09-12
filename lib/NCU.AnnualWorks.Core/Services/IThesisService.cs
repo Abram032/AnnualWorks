@@ -26,5 +26,8 @@ namespace NCU.AnnualWorks.Core.Services
         Task SendEmailThesisCreated(Guid thesisGuid);
         Task SendEmailGradeConflict(Guid thesisGuid);
         Task SendEmailGradeConfirmed(Guid thesisGuid);
+        Task<List<ThesisFileDTO>> GetThesisFiles(Guid thesisGuid);
+        bool IsPromoter(Guid thesisGuid);
+        bool IsAuthor(Guid thesisGuid);
     }
 }

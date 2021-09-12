@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using NCU.AnnualWorks.Core.Options;
+using NCU.AnnualWorks.Core.Repositories;
 using NCU.AnnualWorks.Core.Services;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +14,13 @@ namespace NCU.AnnualWorks.Services
     public class FileService : IFileService
     {
         private readonly ApplicationOptions _options;
-        public FileService(IOptions<ApplicationOptions> options)
+        private readonly IFileRepository _fileRepository;
+        private readonly IThesisRepository _thesisRepository;
+        public FileService(IOptions<ApplicationOptions> options, IFileRepository fileRepository, IThesisRepository thesisRepository)
         {
             _options = options.Value;
+            _fileRepository = fileRepository;
+            _thesisRepository = thesisRepository;
         }
 
         public string GenerateChecksum(Stream file)
@@ -48,6 +54,15 @@ namespace NCU.AnnualWorks.Services
         public bool FileExists(string path)
             => File.Exists(GetFileSavePath(path));
 
+        public async Task<bool> FileExists(Guid guid)
+            => await _fileRepository.Exists(guid);
+
+        public async Task<bool> CanBeDeleted(Guid guid)
+        {
+            var file = await _fileRepository.GetAsync(guid);
+            return !_thesisRepository.GetAll().Any(t => t.FileId == file.Id);
+        }
+
         public async Task SaveFile(Stream file, string path, string fileName)
         {
             var savePath = GetFileSavePath(path);
@@ -58,6 +73,13 @@ namespace NCU.AnnualWorks.Services
                 file.Seek(0, SeekOrigin.Begin);
                 await file.CopyToAsync(fs);
             }
+        }
+
+        public async Task Delete(Guid guid)
+        {
+            var file = await _fileRepository.GetAsync(guid);
+            await _fileRepository.Delete(guid);
+            File.Delete(GetFileSavePath(file.Path));
         }
     }
 }
