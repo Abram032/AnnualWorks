@@ -25,7 +25,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
   const [hideDialogIsVisible, { toggle: toggleHideDialogIsVisible }] = useBoolean(false);
 
   if (thesisFetching) {
-    return <Loader size='medium' label={"Ładowanie..."} />
+    return <Loader />
   }
 
   if (!thesis || !currentUser) {
@@ -97,9 +97,10 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
             {getThesisLogs(currentUser, thesis.thesisLogs)}
           </Tile>
         </StackItem>
-        <StackItem grow={1}>
+        <StackItem shrink={1}>
           <ThesisAddtionalFilesForm 
             thesisGuid={props.guid}
+            addFileVisible={thesis.promoter.usosId === currentUser.id}
           />
         </StackItem>
       </Stack>

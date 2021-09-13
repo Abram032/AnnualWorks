@@ -8,3 +8,4 @@ export * from './hooks/TermsHooks';
 export * from './hooks/ThesisHooks';
 export * from './hooks/UserHooks';
 export * from './hooks/AuthHooks';
+export * from './hooks/FilesHooks';
