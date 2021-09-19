@@ -85,7 +85,7 @@ const CustomFilePickerWrapper: React.FC<FilePickerProps> = (props) => {
         <StackItem grow={2}>
           <TextField
             value={
-              props.value ? props.value[0]?.name : "Nie wybrano żadnego pliku"
+              props.value ? Array.from(props.value).map(v => v.name).join('; ') : "Nie wybrano żadnego pliku"
             }
             readOnly
           />

@@ -101,7 +101,8 @@ namespace NCU.AnnualWorks.Services
                     reviewerReview != null &&
                     reviewerReview.IsConfirmed &&
                     !isPastDeadline &&
-                    currentTerm.Id == thesisTerm
+                    currentTerm.Id == thesisTerm,
+                CanAddAdditionalFiles = isPromoter && !isPastDeadline && string.IsNullOrEmpty(thesis.Grade)
             };
         }
 

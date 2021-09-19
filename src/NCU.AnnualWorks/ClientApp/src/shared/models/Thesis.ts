@@ -17,6 +17,7 @@ export interface ThesisActions {
   canCancelGrade: boolean;
   canCancelPromoterReview: boolean;
   canCancelReviewerReview: boolean;
+  canAddAdditionalFiles: boolean;
 }
 
 export interface ThesisLog {

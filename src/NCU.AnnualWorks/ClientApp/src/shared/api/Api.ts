@@ -58,3 +58,7 @@ export interface SetAdminsRequestData {
 export interface SetCustomUsersRequestData {
   userIds: string[]
 }
+
+export interface UploadAdditionalFilesRequestData {
+  files: FileList
+}

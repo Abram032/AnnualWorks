@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NCU.AnnualWorks.Api.Files.Models;
 using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
@@ -41,7 +42,17 @@ namespace NCU.AnnualWorks.Api.Files
                 return new NotFoundResult();
             }
 
-            if (!file.Thesis.ThesisAuthors.Any(p => p.Author == currentUser) && !HttpContext.IsCurrentUserEmployee())
+            var isAuthor = false;
+            if (file.Thesis != null)
+            {
+                isAuthor = _thesisService.IsAuthor(file.Thesis.Guid);
+            }
+            else
+            {
+                isAuthor = _thesisService.IsAuthor(file.ThesisAdditionalFiles.FirstOrDefault().Thesis.Guid);
+            }
+
+            if (!isAuthor && !HttpContext.IsCurrentUserEmployee())
             {
                 return new ForbidResult();
             }
@@ -89,23 +100,23 @@ namespace NCU.AnnualWorks.Api.Files
 
         [HttpPost("thesis/{id:guid}")]
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
-        public async Task<IActionResult> AddAdditionalThesisFile(Guid id)
+        public async Task<IActionResult> AddAdditionalThesisFile(Guid id, [FromForm] UploadFilesRequest request)
         {
             if (!_thesisService.ThesisExists(id))
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult("Nie znaleziono pracy dla podanego id.");
             }
 
             var isPromoter = _thesisService.IsPromoter(id);
 
             if (!isPromoter && !_userContext.CurrentUser.IsAdmin)
             {
-                return new ForbidResult();
+                return new ForbidResult("Brak uprawnień do dodania plików.");
             }
 
-            var result = await _thesisService.GetThesisFiles(id);
+            await _fileService.SaveAdditionalThesisFiles(id, request.Files);
 
-            return new OkObjectResult(result);
+            return new OkResult();
         }
 
         [HttpDelete("{id:guid}")]
@@ -114,19 +125,12 @@ namespace NCU.AnnualWorks.Api.Files
         {
             if (!await _fileService.FileExists(id))
             {
-                return new NotFoundResult();
-            }
-
-            var isPromoter = _thesisService.IsPromoter(id);
-
-            if (!isPromoter && !_userContext.CurrentUser.IsAdmin)
-            {
-                return new ForbidResult();
+                return new NotFoundObjectResult("Plik nie istnieje.");
             }
 
             if (!await _fileService.CanBeDeleted(id))
             {
-                return new ForbidResult();
+                return new ForbidResult("Plik nie może zostać usunięty.");
             }
 
             await _fileService.Delete(id);

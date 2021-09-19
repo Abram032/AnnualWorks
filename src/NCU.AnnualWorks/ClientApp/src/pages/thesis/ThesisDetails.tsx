@@ -100,7 +100,7 @@ export const ThesisDetails: React.FC<ThesisDetailsProps> = (props) => {
         <StackItem shrink={1}>
           <ThesisAddtionalFilesForm 
             thesisGuid={props.guid}
-            addFileVisible={thesis.promoter.usosId === currentUser.id}
+            addFileVisible={thesis.actions.canAddAdditionalFiles}
           />
         </StackItem>
       </Stack>

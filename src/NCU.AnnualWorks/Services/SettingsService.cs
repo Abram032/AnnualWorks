@@ -52,7 +52,7 @@ namespace NCU.AnnualWorks.Services
             var termEndDate = DateTime.Parse(term.EndDate);
             var termStartDate = DateTime.Parse(term.StartDate);
 
-            if (deadline > termStartDate && deadline < termEndDate)
+            if (deadline >= termStartDate && deadline <= termEndDate)
             {
                 settings.Deadline = deadline.Date;
                 await _settingsRepository.UpdateAsync(settings);

@@ -3,7 +3,7 @@ export const scrollToTop = () => {
 };
 
 export const fileSizeToHR = (size: number) => {
-  if (size == 0) { 
+  if (size === 0) { 
     return "0.00 B"; 
   }
   const e = Math.floor(Math.log(size) / Math.log(1000));

@@ -18,7 +18,10 @@ namespace NCU.AnnualWorks.Infrastructure.Data.Repositories
             => files.Include(f => f.Thesis)
             .ThenInclude(f => f.ThesisAuthors)
             .Include(f => f.CreatedBy)
-            .Include(f => f.ModifiedBy);
+            .Include(f => f.ModifiedBy)
+            .Include(f => f.ThesisAdditionalFiles)
+            .ThenInclude(f => f.Thesis)
+            .Include(f => f.Thesis);
 
         public async Task<File> GetAsync(Guid guid) =>
             await GetIncludes(_entities).FirstOrDefaultAsync(f => f.Guid == guid);

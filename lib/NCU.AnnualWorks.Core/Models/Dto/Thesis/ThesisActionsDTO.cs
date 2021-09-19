@@ -14,5 +14,6 @@
         public bool CanUnhide { get; set; }
         public bool CanCancelPromoterReview { get; set; }
         public bool CanCancelReviewerReview { get; set; }
+        public bool CanAddAdditionalFiles { get; set; }
     }
 }

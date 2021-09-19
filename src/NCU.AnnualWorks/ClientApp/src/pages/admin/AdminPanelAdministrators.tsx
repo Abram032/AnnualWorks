@@ -54,7 +54,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
       .then(res => mapUsersToPersona(res.data))
       .then(people => filterPeople(filter, people, selectedItems))
       .catch(err => {
-        setErrorMessage(err.data);
+        setErrorMessage(err.data ?? err.message);
         return [];
       });
   };
@@ -76,7 +76,7 @@ const AdminPanelAdministratorsForm: React.FC<AdminPanelAdministratorsFormProps> 
           .catch(err => {
             scrollToTop();
             setUploadSuccess(false);
-            setErrorMessage(err.data);
+            setErrorMessage(err.data ?? err.message);
           })
       },
       (err) => {

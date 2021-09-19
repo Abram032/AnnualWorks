@@ -48,7 +48,7 @@ export const AdminPanelDeadline: React.FC = () => {
           .catch(err => {
             scrollToTop();
             setUploadSuccess(false);
-            setErrorMessage(err.data);
+            setErrorMessage(err.data ?? err.message);
           })
       },
       (err) => {

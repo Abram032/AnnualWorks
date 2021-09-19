@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ namespace NCU.AnnualWorks.Core.Services
         Task<bool> FileExists(Guid guid);
         Task<bool> CanBeDeleted(Guid guid);
         Task Delete(Guid guid);
+        Task SaveAdditionalThesisFiles(Guid thesisGuid, IFormFile[] files);
     }
 }
