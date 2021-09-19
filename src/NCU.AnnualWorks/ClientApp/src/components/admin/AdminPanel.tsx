@@ -62,11 +62,17 @@ const groups: INavLinkGroup[] = [
         icon: 'Education'
       },
       {
+        name: 'Pytania recenzji',
+        url: RouteNames.adminPanelQuestions,
+        key: RouteNames.adminPanelQuestions,
+        icon: 'SurveyQuestions'
+      },
+      {
         name: 'Eksport ocen',
         url: RouteNames.adminPanelExport,
         key: RouteNames.adminPanelExport,
         icon: 'Export',
-      },
+      }
     ],
   },
 ];

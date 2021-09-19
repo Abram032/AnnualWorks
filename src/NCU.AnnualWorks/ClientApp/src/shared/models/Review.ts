@@ -2,7 +2,9 @@ export type Question = {
   id: number,
   text: string,
   order: number,
+  isActive: boolean,
   isRequired: boolean,
+  isNew?: boolean,
 };
 
 export type QnA = {

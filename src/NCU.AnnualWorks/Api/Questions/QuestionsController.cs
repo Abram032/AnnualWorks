@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCU.AnnualWorks.Api.Questions.Models;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
-using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Models.Dto.Questions;
 using NCU.AnnualWorks.Core.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,10 +18,12 @@ namespace NCU.AnnualWorks.Api.Questions
     {
         private readonly IAsyncRepository<Question> _questionRepository;
         private readonly IUserRepository _userRepository;
-        public QuestionsController(IAsyncRepository<Question> questionRepository, IUserRepository userRepository)
+        private readonly IUserContext _userContext;
+        public QuestionsController(IAsyncRepository<Question> questionRepository, IUserRepository userRepository, IUserContext userContext)
         {
             _questionRepository = questionRepository;
             _userRepository = userRepository;
+            _userContext = userContext;
         }
 
         [HttpGet]
@@ -32,6 +35,7 @@ namespace NCU.AnnualWorks.Api.Questions
                     Id = q.Id,
                     Order = q.Order,
                     Text = q.Text,
+                    IsActive = q.IsActive,
                     IsRequired = q.IsRequired,
                 }).ToList();
 
@@ -49,51 +53,51 @@ namespace NCU.AnnualWorks.Api.Questions
                     Id = q.Id,
                     Order = q.Order,
                     Text = q.Text,
+                    IsActive = q.IsActive,
                     IsRequired = q.IsRequired,
                 }).ToList();
 
             return new OkObjectResult(questions);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionRequest request)
+        public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionsRequest request)
         {
-            var currentUserId = HttpContext.CurrentUserUsosId();
-            var user = await _userRepository.GetAsync(currentUserId);
-            var question = new Question
+            var user = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+            var dbQuestions = _questionRepository.GetAll().ToList();
+
+            var updatedQuestions = new List<Question>();
+            var addedQuestions = new List<Question>();
+            foreach (var question in request.Questions)
             {
-                Text = request.Text,
-                Order = request.Order,
-                IsActive = true,
-                CreatedBy = user,
-                IsRequired = request.IsRequired,
-            };
-
-            await _questionRepository.AddAsync(question);
-            return new OkResult();
-        }
-
-        [HttpPut("{id:long}")]
-        [Authorize(AuthorizationPolicies.AdminOnly)]
-        public async Task<IActionResult> UpdateQuestion(long id, [FromBody] UpdateQuestionRequest request)
-        {
-            var currentUserId = HttpContext.CurrentUserUsosId();
-            var user = await _userRepository.GetAsync(currentUserId);
-            var question = await _questionRepository.GetAsync(id);
-
-            if (question == null)
-            {
-                return new NotFoundResult();
+                var dbQuestion = dbQuestions.FirstOrDefault(q => q.Id == question.Id);
+                if (dbQuestion != null)
+                {
+                    dbQuestion.Text = question.Text;
+                    dbQuestion.IsActive = question.IsActive;
+                    dbQuestion.IsRequired = question.IsRequired;
+                    dbQuestion.Order = question.Order;
+                    dbQuestion.ModifiedAt = DateTime.Now;
+                    dbQuestion.ModifiedBy = user;
+                    updatedQuestions.Add(dbQuestion);
+                }
+                else
+                {
+                    addedQuestions.Add(new Question
+                    {
+                        Text = question.Text,
+                        IsActive = question.IsActive,
+                        IsRequired = question.IsRequired,
+                        Order = question.Order,
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = user
+                    });
+                }
             }
 
-            question.ModifiedBy = user;
-            question.ModifiedAt = DateTime.Now;
-            question.IsActive = request.IsActive;
-            question.Order = request.Order;
-            question.IsRequired = request.IsRequired;
-
-            await _questionRepository.UpdateAsync(question);
+            await _questionRepository.UpdateRangeAsync(updatedQuestions);
+            await _questionRepository.AddRangeAsync(addedQuestions);
 
             return new OkResult();
         }

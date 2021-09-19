@@ -38,3 +38,5 @@ export * from './review/CancelReviewDialog';
 export * from './shared/Link';
 export * from './thesis/ThesisAdditionalFilesForm';
 export * from './thesis/ThesisFileUploadDialog';
+export * from './shared/SpinButton';
+export * from './shared/Checkbox';

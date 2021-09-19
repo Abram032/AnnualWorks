@@ -22,6 +22,7 @@ import { AdminPanelUsers } from '../pages/admin/AdminPanelUsers';
 import { AdminPanelDeadline } from '../pages/admin/AdminPanelDeadline';
 import { AdminPanelCourse } from '../pages/admin/AdminPanelCourse';
 import { AdminPanelExport } from '../pages/admin/AdminPanelExport';
+import { AdminPanelQuestions } from '../pages/admin/AdminPanelQuestions';
 
 export const Routes: React.FC = () => (
   <Switch>
@@ -111,6 +112,14 @@ export const Routes: React.FC = () => (
       <AuthenticatedWrapper>
         <AdminPanel>
           <AdminPanelExport />
+        </AdminPanel>
+      </AuthenticatedWrapper>
+    )} />
+
+    <Route exact path={RouteNames.adminPanelQuestions} render={props => (
+      <AuthenticatedWrapper>
+        <AdminPanel>
+          <AdminPanelQuestions />
         </AdminPanel>
       </AuthenticatedWrapper>
     )} />

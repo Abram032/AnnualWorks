@@ -25,4 +25,5 @@ export namespace RouteNames {
   export const adminPanelDeadline = `${adminPanel}/deadline`;
   export const adminPanelExport = `${adminPanel}/export-grades`;
   export const adminPanelCourse = `${adminPanel}/course`;
+  export const adminPanelQuestions = `${adminPanel}/questions`
 };

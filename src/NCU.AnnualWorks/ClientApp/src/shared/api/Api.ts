@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CsrfNames } from '../Consts';
-import { Keyword, Grade } from '../Models';
+import { Keyword, Grade, Question } from '../Models';
 
 export const Api = axios.create({
   xsrfCookieName: CsrfNames.csrfCookie,
@@ -62,3 +62,7 @@ export interface SetCustomUsersRequestData {
 export interface UploadAdditionalFilesRequestData {
   files: FileList
 }
+
+export interface UpdateReviewQuestionsRequestData {
+  questions: Question[]
+};
