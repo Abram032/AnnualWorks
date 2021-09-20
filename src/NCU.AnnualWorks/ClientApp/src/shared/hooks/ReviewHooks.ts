@@ -33,3 +33,33 @@ export const useReview = (guid: string): [Review | undefined, boolean] => {
 
   return [review, isFetching];
 };
+
+export const useValidateQuestions = (guid: String): [boolean | undefined, boolean] => {
+  const [isValid, setIsValid] = useState<boolean>();
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const isAuthenticated = useIsAuthenticated();
+
+  useEffect(() => {
+    if (isAuthenticated === null) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setIsFetching(false);
+      return;
+    }
+
+    setIsFetching(true);
+    Api.get<boolean>(`${AppSettings.API.Reviews.ValidateQuestions}/${guid}`)
+      .then(response => {
+        setIsValid(response.data);
+        setIsFetching(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setIsFetching(false)
+      });
+  }, [isAuthenticated]);
+
+  return [isValid, isFetching];
+}

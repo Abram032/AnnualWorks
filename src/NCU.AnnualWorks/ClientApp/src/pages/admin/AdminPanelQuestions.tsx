@@ -175,7 +175,7 @@ export const AdminPanelQuestions: React.FC = () => {
 
   const warningMessageBar = 
     <MessageBar messageBarType={MessageBarType.severeWarning}>
-      Uwaga! Zmiana treści pytania zmodyfikuje pytania widoczne na recenzji, wliczając zatwierdzone recenzje. Dodanie, ukrycie lub zmiana wymagalności pytania wpływa tylko na przyszłe oraz niezatwierdzone recenzje. W przypadku zmian, które spowodują zmianę znaczenia całego pytania, zalecane jest ukrycie starego pytania i dodanie nowego. Po aktualizacji pytań nie będzie możliwości ich usunięcia.
+      Uwaga! Zmiana treści pytania zmodyfikuje pytania widoczne na recenzji, wliczając zatwierdzone recenzje. Dodanie, ukrycie lub zmiana wymagalności pytania wpływa na przyszłe oraz niezatwierdzone recenzje. Wszystkie niezatwierdzone recenzje będą wymagać aktualizacji pytań oraz ponownej recenzji od recenzenta. W przypadku zmian, które spowodują zmianę znaczenia całego pytania, zalecane jest ukrycie starego pytania i dodanie nowego. Po aktualizacji pytań nie będzie możliwości ich usunięcia, lecz można oznaczyć je jako niewidoczne.
     </MessageBar>
   const errorMessageBar = <MessageBar messageBarType={MessageBarType.error}>{errorMessage}</MessageBar>
   const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Pytania zostały zaktualizowane.</MessageBar>

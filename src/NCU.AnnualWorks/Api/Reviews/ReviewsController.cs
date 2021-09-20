@@ -372,5 +372,81 @@ namespace NCU.AnnualWorks.Api.Reviews
 
             return new OkResult();
         }
+
+        [HttpPost("updateQuestions/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        public async Task<IActionResult> UpdateReviewQuestions(Guid id)
+        {
+            var review = await _reviewRepository.GetAsync(id);
+            var user = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
+            if (review == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (review.CreatedBy.Id != _userContext.CurrentUser.Id)
+            {
+                return new ForbidResult("Nie masz uprawnień do aktualizacji pytań recenzji.");
+            }
+
+            if (review.IsConfirmed)
+            {
+                return new BadRequestObjectResult("Nie można edytować zatwierdzonej recenzji.");
+            }
+
+            var questions = review.ReviewQnAs.Select(r => r.Question).ToList();
+            var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
+
+            //Not all active questions have been answered
+            if (!activeQuestions.Select(q => q.Id).All(questions.Select(q => q.Id).Distinct().Contains) || activeQuestions.Count != questions.Count)
+            {
+                review.ReviewQnAs.Clear();
+                review.ReviewQnAs = activeQuestions.Select(aq => new ReviewQnA
+                {
+                    Question = aq,
+                    Answer = new Answer
+                    {
+                        Text = string.Empty,
+                        CreatedBy = user,
+                        CreatedAt = DateTime.Now
+                    },
+                    Review = review
+                }).ToList();
+                await _reviewRepository.UpdateAsync(review);
+            }
+            else
+            {
+                return new BadRequestObjectResult("Lista pytań jest aktualna.");
+            }
+
+            return new OkResult();
+        }
+
+        [HttpGet("validateQuestions/{id:guid}")]
+        [Authorize(AuthorizationPolicies.AtLeastEmployee)]
+        public async Task<IActionResult> ValidateReviewQuestions(Guid id)
+        {
+            var review = await _reviewRepository.GetAsync(id);
+            if (review == null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (review.CreatedBy.Id != _userContext.CurrentUser.Id)
+            {
+                return new ForbidResult("Nie masz uprawnień do weryfikacji pytań recenzji.");
+            }
+
+            var questions = review.ReviewQnAs.Select(r => r.Question).ToList();
+            var activeQuestions = _questionRepository.GetAll().Where(q => q.IsActive).ToList();
+
+            //Not all active questions have been answered
+            if (!activeQuestions.Select(q => q.Id).All(questions.Select(q => q.Id).Distinct().Contains) || activeQuestions.Count != questions.Count)
+            {
+                return new OkObjectResult(true);
+            }
+
+            return new OkObjectResult(false);
+        }
     }
 }

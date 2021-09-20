@@ -184,6 +184,23 @@ export const cancelGradeAction = (props: ActionProps): ICommandBarItemProps => {
     disabled: props.disabled ?? false,
     visible: props.visible ?? false,
   }
+};
+
+export const updateReviewQuestionsAction = (props: ActionProps): ICommandBarItemProps => {
+  return {
+    key: 'updateReviewQuestions',
+    text: 'Zaktualizuj pytania',
+    iconProps: {
+      iconName: 'SurveyQuestions',
+      className: iconStyles
+    },
+    ariaLabel: 'Update review questions',
+    iconOnly: props.iconOnly ?? true,
+    onClick: props.onClick,
+    href: props.href,
+    disabled: props.disabled ?? false,
+    visible: props.visible ?? false,
+  }
 }
 
 export const addActions = (thesis: Thesis, iconOnly: boolean): ICommandBarItemProps[] => {

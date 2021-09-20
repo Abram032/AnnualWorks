@@ -1,23 +1,25 @@
 import { CommandBar, IStackTokens, Stack, StackItem, PrimaryButton, DefaultButton, MessageBar, MessageBarType } from '@fluentui/react';
 import React, { useRef, useState } from 'react';
-import { addActions } from '../thesis/ThesisActions';
+import { addActions, updateReviewQuestionsAction } from '../thesis/ThesisActions';
 import { RouteNames } from '../../shared/Consts';
 import { Review, Question, Thesis } from '../../shared/Models';
 import { AxiosResponse } from 'axios';
 import { Tile } from '../../Components';
 import { useForm } from 'react-hook-form';
-import { ReviewRequestData } from '../../shared/api/Api';
+import { Api, ReviewRequestData } from '../../shared/api/Api';
 import { useHistory } from 'react-router-dom';
 import { useBoolean } from '@fluentui/react-hooks';
 import { ReviewFormConfirmDialog } from './ReviewFormConfirmDialog';
 import { ReviewFormQnA } from './ReviewFormQnA';
 import { scrollToTop } from '../../shared/Utils';
+import { AppSettings } from '../../AppSettings';
 
 interface ReviewFormProps {
   thesis: Thesis,
   questions: Question[],
   onSave: (data: ReviewRequestData) => Promise<AxiosResponse<any>>;
   review?: Review,
+  updateRequired?: boolean,
 };
 
 export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
@@ -80,10 +82,27 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
   };
 
   const actionItems = addActions(props.thesis, false);
+  if(props.updateRequired) {
+    actionItems.push(updateReviewQuestionsAction({
+      iconOnly: false,
+      onClick: () => {
+        Api.post(`${AppSettings.API.Reviews.UpdateQuestions}/${props.review?.guid}`)
+          .then(response => {
+            history.push(RouteNames.editReviewPath(props.thesis.guid, props.review?.guid!));
+          })
+          .catch(error => history.push(RouteNames.error));
+      }
+    }));
+  }
 
   //#region Messages
   const errorMessageBar = <MessageBar messageBarType={MessageBarType.error}>{errorMessage}</MessageBar>
   const successMessageBar = <MessageBar messageBarType={MessageBarType.success}>Recenzja została zapisana</MessageBar>
+  const invalidQuestionsMessageBar = (
+    <MessageBar messageBarType={MessageBarType.blocked}>
+      Lista pytań została zmieniona. Aby móc zrecenzować pracę, należy najpierw zaktualizować listę pytań recenzji! UWAGA! Aktualizacja pytań wyczyści dotychczasową recenzję.
+    </MessageBar>
+  )
   //#endregion
 
   return (
@@ -91,6 +110,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = (props) => {
       <Tile title={`Recenzja pracy - "${props.thesis.title}"`}>
         {errorMessage ? errorMessageBar : null}
         {uploadSuccess ? successMessageBar : null}
+        {props.updateRequired ? invalidQuestionsMessageBar : null}
         <CommandBar className='theses-simple-list-actions' items={actionItems} />
         <ReviewFormQnA
           control={control}

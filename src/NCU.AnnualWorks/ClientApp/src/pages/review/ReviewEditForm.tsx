@@ -1,9 +1,9 @@
 import React from 'react';
 import { ReviewForm, Loader } from '../../Components';
-import { useActiveQuestions, useCurrentUser, useReview, useThesis } from '../../shared/Hooks';
+import { useActiveQuestions, useCurrentUser, useReview, useThesis, useValidateQuestions } from '../../shared/Hooks';
 import { ReviewRequestData, Api } from '../../shared/api/Api';
 import { AppSettings } from '../../AppSettings';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { RouteNames } from '../../shared/Consts';
 
 interface ReviewEditFormProps {
@@ -16,8 +16,9 @@ export const ReviewEditForm: React.FC<ReviewEditFormProps> = (props) => {
   const [questions, questionsFetching] = useActiveQuestions();
   const [thesis, thesisFetching] = useThesis(props.thesisGuid);
   const [review, reviewFetching] = useReview(props.reviewGuid);
+  const [isValid, isValidFetching] = useValidateQuestions(props.reviewGuid);
 
-  if (thesisFetching || reviewFetching || questionsFetching) {
+  if (thesisFetching || reviewFetching || questionsFetching || isValidFetching) {
     return <Loader />
   }
 
@@ -37,6 +38,7 @@ export const ReviewEditForm: React.FC<ReviewEditFormProps> = (props) => {
       thesis={thesis}
       questions={questions}
       onSave={onSave}
+      updateRequired={isValid}
     />
   )
 };

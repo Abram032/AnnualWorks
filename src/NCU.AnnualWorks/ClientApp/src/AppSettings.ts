@@ -48,7 +48,9 @@ export namespace AppSettings {
     },
     Reviews: {
       Base: process.env.REACT_APP_API_REVIEWS!,
-      Cancel: process.env.REACT_APP_API_REVIEWS_CANCEL!
+      Cancel: process.env.REACT_APP_API_REVIEWS_CANCEL!,
+      ValidateQuestions: process.env.REACT_APP_API_REVIEWS_VALIDATE_QUESTIONS!,
+      UpdateQuestions: process.env.REACT_APP_API_REVIEWS_UPDATE_QUESTIONS!,
     },
     Files: {
       Base: process.env.REACT_APP_API_FILES!,
