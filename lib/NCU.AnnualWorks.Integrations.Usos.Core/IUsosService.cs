@@ -21,14 +21,14 @@ namespace NCU.AnnualWorks.Integrations.Usos.Core
         Task<UsosTerm> GetCurrentTerm(OAuthRequest oauthRequest);
         Task<UsosTerm> GetTerm(OAuthRequest oauthRequest, string termId);
         Task<List<UsosTerm>> GetTerms(OAuthRequest oauthRequest);
-        Task<bool> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId);
-        Task<bool> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId);
-        Task<bool> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId);
+        Task<bool?> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId);
+        Task<bool?> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId);
+        Task<bool?> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId);
         Task<List<UsosUser>> GetCourseEditionParticipants(OAuthRequest oauthRequest, string termId);
         Task<List<UsosUser>> GetCourseEditionLecturers(OAuthRequest oauthRequest, string termId);
         Task<List<UsosUser>> GetCourseEditionCoordinators(OAuthRequest oauthRequest, string termId);
         Task<bool> CourseExists(OAuthRequest oauthRequest, string courseId, string termId);
-        Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId, string termId);
+        Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId);
         Task<List<UsosUser>> SearchUsers(OAuthRequest oauthRequest, string userQuery);
     }
 }

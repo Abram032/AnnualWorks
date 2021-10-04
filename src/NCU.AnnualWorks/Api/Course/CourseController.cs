@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NCU.AnnualWorks.Api.Course.Models;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.JWT.Core.Constants;
 using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
@@ -17,18 +18,19 @@ namespace NCU.AnnualWorks.Api.Configure
     {
         private readonly IAsyncRepository<Settings> _settingsRepository;
         private readonly IUsosService _usosService;
-        public CourseController(IAsyncRepository<Settings> settingsRepository, IUsosService usosService)
+        private readonly IUserContext _userContext;
+        public CourseController(IAsyncRepository<Settings> settingsRepository, IUsosService usosService, IUserContext userContext)
         {
             _settingsRepository = settingsRepository;
             _usosService = usosService;
+            _userContext = userContext;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCourseConfiguration()
         {
             var settings = _settingsRepository.GetAll().Single();
-            var term = await _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
-            var url = await _usosService.GetCourseUrl(HttpContext.BuildOAuthRequest(), settings.CourseCode, term.Id);
+            var url = await _usosService.GetCourseUrl(HttpContext.BuildOAuthRequest(), settings.CourseCode);
             return new OkObjectResult(new CourseDTO
             {
                 CourseCode = settings.CourseCode,
@@ -52,7 +54,7 @@ namespace NCU.AnnualWorks.Api.Configure
             }
             else
             {
-                return new BadRequestObjectResult("Kurs nie istnieje");
+                return new BadRequestObjectResult("Kurs nie istnieje.");
             }
         }
     }

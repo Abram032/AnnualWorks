@@ -54,28 +54,22 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request)
         {
-            //TODO: Replace with polly retry policy
-            var retryCount = 10;
-            for (int i = 0; i < retryCount; i++)
+            var response = await _client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                {
-                    return response;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UsosUnauthorizedException("USOS could not authorize request.");
-                }
-                else
-                {
-                    _logger.LogWarning($"Could not connect to USOS. {response.StatusCode} - {response.ReasonPhrase}", request, response);
-                }
-                //Wait before retry
-                await Task.Delay(1000);
+                return response;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UsosUnauthorizedException("USOS could not authorize request.");
+            }
+            else
+            {
+                _logger.LogWarning($"Could not connect to USOS. {response.StatusCode} - {response.ReasonPhrase}", request, response);
             }
 
-            throw new UsosConnectionException("Could not connect to USOS.");
+            return response;
+            //throw new UsosConnectionException("Could not connect to USOS.");
         }
 
         private void AppendOAuthConsumer(OAuthRequest oauthRequest)
@@ -212,6 +206,11 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.TermsSearch}?min_finish_date={today}&max_start_date={today}");
 
             var response = await SendRequestAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
             var value = await response.Content.ReadAsStringAsync();
             var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
 
@@ -221,34 +220,45 @@ namespace NCU.AnnualWorks.Integrations.Usos
             return term;
         }
 
-        public async Task<bool> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId)
+        public async Task<bool?> IsCurrentUserCourseParticipant(OAuthRequest oauthRequest, string termId)
         {
             var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsParticipant}?course_id={GetCourseCode()}&term_id={termId}");
 
             var response = await SendRequestAsync(request);
-            var value = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
 
+            var value = await response.Content.ReadAsStringAsync();
             return Convert.ToBoolean(int.Parse(value));
         }
 
-        public async Task<bool> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId)
+        public async Task<bool?> IsCurrentUserCourseLecturer(OAuthRequest oauthRequest, string termId)
         {
             var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsLecturer}?course_id={GetCourseCode()}&term_id={termId}");
 
             var response = await SendRequestAsync(request);
-            var value = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
 
+            var value = await response.Content.ReadAsStringAsync();
             return Convert.ToBoolean(int.Parse(value));
         }
 
-        public async Task<bool> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId)
+        public async Task<bool?> IsCurrentUserCourseCoordinator(OAuthRequest oauthRequest, string termId)
         {
             var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesIsCoordinator}?course_id={GetCourseCode()}&term_id={termId}");
 
-
             var response = await SendRequestAsync(request);
-            var value = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
 
+            var value = await response.Content.ReadAsStringAsync();
             return Convert.ToBoolean(int.Parse(value));
         }
 
@@ -280,7 +290,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
 
         public async Task<bool> CourseExists(OAuthRequest oauthRequest, string courseId, string termId)
         {
-            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={courseId}&term_id={termId}");
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourse}?course_id={courseId}");
             //Custom call in case of bad request => course doesn't exist
             var response = await _client.SendAsync(request);
 
@@ -292,10 +302,10 @@ namespace NCU.AnnualWorks.Integrations.Usos
             return false;
         }
 
-        public async Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId, string termId)
+        public async Task<string> GetCourseUrl(OAuthRequest oauthRequest, string courseId)
         {
             var field = "profile_url";
-            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourseEdition}?course_id={courseId}&term_id={termId}&fields={field}");
+            var request = GetBaseRequest(oauthRequest, $"{_options.UsosEndpoints.CoursesCourse}?course_id={courseId}&fields={field}");
             var response = await SendRequestAsync(request);
 
             var data = await response.Content.ReadAsStringAsync();

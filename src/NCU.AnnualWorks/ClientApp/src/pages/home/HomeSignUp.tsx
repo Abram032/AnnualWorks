@@ -1,5 +1,5 @@
 import React from "react";
-import { Label, PrimaryButton, Stack, FontSizes } from "@fluentui/react";
+import { Label, PrimaryButton, Stack, FontSizes, IStackTokens } from "@fluentui/react";
 import { useCourse } from "../../shared/Hooks";
 import { Loader } from "../../Components";
 import { RouteNames } from "../../shared/Consts";
@@ -17,13 +17,13 @@ export const HomeSignUp: React.FC = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Item align="center">
+    <Stack tokens={stackTokens}>
+      <Stack.Item align="center" tokens={stackTokens}>
         <Label style={{ fontSize: FontSizes.size24 }}>
           Dostęp do systemu wymaga rejestracji na zajęcia w systemie USOS
         </Label>
       </Stack.Item>
-      <Stack.Item align="center">
+      <Stack.Item align="center" tokens={stackTokens}>
         <PrimaryButton href={course?.courseUrl}>Zarejestruj się</PrimaryButton>
       </Stack.Item>
     </Stack>
@@ -31,3 +31,9 @@ export const HomeSignUp: React.FC = () => {
 };
 
 export default HomeSignUp;
+
+//#region Styles
+
+const stackTokens: IStackTokens = { childrenGap: 15 };
+
+//#endregion

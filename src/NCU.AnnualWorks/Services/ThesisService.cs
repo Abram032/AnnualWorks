@@ -311,5 +311,15 @@ namespace NCU.AnnualWorks.Services
             return _thesisRepository.GetAll()
                 .Any(t => t.Guid == thesisGuid && t.Promoter.Id == _userContext.CurrentUser.Id);
         }
+
+        public bool IsPromoter(User user)
+        {
+            return _thesisRepository.GetAll().Any(t => t.Promoter == user);
+        }
+
+        public bool IsAuthor(User user)
+        {
+            return _thesisRepository.GetAll().Any(t => t.ThesisAuthors.Select(a => a.Author).Contains(user));
+        }
     }
 }

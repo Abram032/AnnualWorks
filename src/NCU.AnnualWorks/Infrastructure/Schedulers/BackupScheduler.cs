@@ -179,10 +179,13 @@ namespace NCU.AnnualWorks.Infrastructure.Schedulers
 
             if (deadline.HasValue && deadline > DateTime.Now)
             {
-                nextRun = deadline.Value
-                    .Subtract(DateTime.Now)
-                    .Add(TimeSpan.FromMinutes(5));
+                var difference = GetDifferenceBetweenDates(DateTime.Now, deadline.Value);
+                nextRun = difference > TimeSpan.FromDays(1) ?
+                    TimeSpan.FromDays(1) : deadline.Value
+                        .Subtract(DateTime.Now)
+                        .Add(TimeSpan.FromMinutes(5));
             }
+
             return nextRun;
         }
     }

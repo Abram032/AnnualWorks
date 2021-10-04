@@ -11,6 +11,7 @@ using NCU.AnnualWorks.Core.Extensions;
 using NCU.AnnualWorks.Core.Models.DbModels;
 using NCU.AnnualWorks.Core.Options;
 using NCU.AnnualWorks.Core.Repositories;
+using NCU.AnnualWorks.Core.Services;
 using NCU.AnnualWorks.Integrations.Usos.Core;
 using NCU.AnnualWorks.Integrations.Usos.Core.Models;
 using NCU.AnnualWorks.Integrations.Usos.Core.Options;
@@ -29,9 +30,10 @@ namespace NCU.AnnualWorks.Api.Auth
         private readonly UsosServiceOptions _usosOptions;
         private readonly ApplicationOptions _appOptions;
         private readonly IMapper _mapper;
+        private readonly IThesisService _thesisService;
         public AuthController(IUsosService usosService, IJWTAuthenticationService jwtService,
             IAsyncRepository<User> userRepository, IOptions<UsosServiceOptions> usosOptions,
-            IOptions<ApplicationOptions> appOptions, IMapper mapper)
+            IOptions<ApplicationOptions> appOptions, IMapper mapper, IThesisService thesisService)
         {
             _usosService = usosService;
             _jwtService = jwtService;
@@ -39,6 +41,7 @@ namespace NCU.AnnualWorks.Api.Auth
             _usosOptions = usosOptions.Value;
             _appOptions = appOptions.Value;
             _mapper = mapper;
+            _thesisService = thesisService;
         }
 
         [IgnoreAntiforgeryToken]
@@ -82,11 +85,12 @@ namespace NCU.AnnualWorks.Api.Auth
             var currentTerm = await _usosService.GetCurrentTerm(oauthRequest);
 
             //TODO: Run requests in parallel
-            var isParticipant = await _usosService.IsCurrentUserCourseParticipant(oauthRequest, currentTerm.Id);
-            var isLecturer = await _usosService.IsCurrentUserCourseLecturer(oauthRequest, currentTerm.Id);
+            bool? isParticipant = await _usosService.IsCurrentUserCourseParticipant(oauthRequest, currentTerm.Id);
+            bool? isLecturer = await _usosService.IsCurrentUserCourseLecturer(oauthRequest, currentTerm.Id);
+            bool? customAccess = null;
             var isAdmin = false;
 
-            var user = _userRepository.GetAll().FirstOrDefault(p => p.UsosId == usosUser.Id);
+            var user = await _userRepository.GetAsync(int.Parse(usosUser.Id));
             if (usosUser.Id == _appOptions.DefaultAdministratorUsosId)
             {
                 isAdmin = true;
@@ -112,7 +116,17 @@ namespace NCU.AnnualWorks.Api.Auth
                 await _userRepository.UpdateAsync(user);
             }
 
-            //TODO: Remove
+            //Fallback
+            if (isParticipant == null)
+            {
+                isParticipant = _thesisService.IsAuthor(user);
+            }
+            //Fallback, for safety reason we only set custom access
+            if (isLecturer == null)
+            {
+                customAccess = _thesisService.IsPromoter(user);
+            }
+
             if (_appOptions.DebugMode)
             {
                 isAdmin = true;
@@ -123,10 +137,10 @@ namespace NCU.AnnualWorks.Api.Auth
             var authClaims = new AuthClaims
             {
                 Id = usosUser.Id,
-                IsParticipant = isParticipant,
-                IsLecturer = isLecturer,
+                IsParticipant = isParticipant.GetValueOrDefault(),
+                IsLecturer = isLecturer.GetValueOrDefault(),
                 IsAdmin = user.AdminAccess,
-                IsCustom = user.CustomAccess,
+                IsCustom = customAccess ?? user.CustomAccess, //If fallback didn't applied the rule, we take info from database
                 Token = accessTokenResponse.OAuthToken,
                 TokenSecret = accessTokenResponse.OAuthTokenSecret
             };
@@ -139,10 +153,10 @@ namespace NCU.AnnualWorks.Api.Auth
                 Name = $"{usosUser.FirstName} {usosUser.LastName}",
                 Email = usosUser.Email ?? string.Empty,
                 AvatarUrl = usosUser.PhotoUrls.FirstOrDefault().Value ?? string.Empty,
-                IsParticipant = isParticipant,
-                IsLecturer = isLecturer,
+                IsParticipant = isParticipant.GetValueOrDefault(),
+                IsLecturer = isLecturer.GetValueOrDefault(),
                 IsAdmin = user.AdminAccess,
-                IsCustom = user.CustomAccess,
+                IsCustom = customAccess ?? user.CustomAccess, //If fallback didn't applied the rule, we take info from database
             };
             var userClaimsIdentity = _jwtService.GenerateClaimsIdentity(userClaims);
             var userJWT = _jwtService.GenerateJWS(userClaimsIdentity);

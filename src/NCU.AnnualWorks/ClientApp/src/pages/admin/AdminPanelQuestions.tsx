@@ -163,7 +163,7 @@ export const AdminPanelQuestions: React.FC = () => {
   };
   const columns: IColumn[] = [
     { key: 'order', name: 'Kolejność', fieldName: 'order', minWidth: 100, maxWidth: 100, onRender: orderColumn },
-    { key: 'text', name: 'Treść pytania', fieldName: 'text', minWidth: 725, maxWidth: 725, onRender: textColumn },
+    { key: 'text', name: 'Treść pytania', fieldName: 'text', minWidth: 100, maxWidth: 725, onRender: textColumn },
     { key: 'isActive', name: 'Widoczne', fieldName: 'isActive', minWidth: 75, maxWidth: 75, onRender: activeColumn },
     { key: 'isRequired', name: 'Wymagane', fieldName: 'isRequired', minWidth: 75, maxWidth: 75, onRender: requiredColumn },
     { key: 'actions', name: 'Akcje', fieldName: 'actions', minWidth: 100, maxWidth: 100, onRender: actionsColumn }

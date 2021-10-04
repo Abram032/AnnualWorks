@@ -29,5 +29,7 @@ namespace NCU.AnnualWorks.Core.Services
         Task<List<ThesisFileDTO>> GetThesisFiles(Guid thesisGuid);
         bool IsPromoter(Guid thesisGuid);
         bool IsAuthor(Guid thesisGuid);
+        bool IsPromoter(User user);
+        bool IsAuthor(User user);
     }
 }

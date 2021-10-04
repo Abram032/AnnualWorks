@@ -29,6 +29,11 @@ namespace NCU.AnnualWorks.Services
         {
             var settings = _settingsRepository.GetAll().Single();
             var term = await _usosService.GetCurrentTerm(oauthRequest);
+            if (term == null)
+            {
+                return settings.Deadline.Value.Date;
+            }
+
             var termEndDate = DateTime.Parse(term.EndDate);
             var termStartDate = DateTime.Parse(term.StartDate);
 

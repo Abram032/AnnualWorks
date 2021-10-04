@@ -30,6 +30,7 @@ namespace NCU.AnnualWorks.Api.Questions
         public IActionResult GetQuestions()
         {
             var questions = _questionRepository.GetAll()
+                .OrderBy(q => q.Order)
                 .Select(q => new QuestionDTO
                 {
                     Id = q.Id,

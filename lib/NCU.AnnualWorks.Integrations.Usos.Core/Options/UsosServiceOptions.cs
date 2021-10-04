@@ -37,6 +37,7 @@
         public string UsersUser { get; set; }
         public string UsersUsers { get; set; }
         public string UsersSearch { get; set; }
+        public string CoursesCourse { get; set; }
         public string CoursesCourseEdition { get; set; }
         public string CoursesIsCoordinator { get; set; }
         public string CoursesIsLecturer { get; set; }
