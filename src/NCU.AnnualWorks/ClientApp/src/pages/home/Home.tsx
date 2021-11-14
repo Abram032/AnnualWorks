@@ -2,23 +2,23 @@ import React from "react";
 import { IStackTokens, Label, PrimaryButton, Stack } from "@fluentui/react";
 import { Tile, ThesisList, Loader } from '../../Components';
 import { RouteNames } from "../../shared/Consts";
-import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses, useDeadline, useCurrentTerm, useCurrentUser } from "../../shared/Hooks";
+import { useAuthoredTheses, usePromotedTheses, useReviewedTheses, useCurrentTheses, useDeadline, useCurrentUser, useCurrentYear } from "../../shared/Hooks";
 import { Redirect } from "react-router-dom";
 
 export const Home: React.FC = () => {
   const currentUser = useCurrentUser();
   const [deadline, deadlineFetching] = useDeadline();
-  const [currentTerm, currentTermFetching] = useCurrentTerm();
+  const [currentYear, currentYearFetching] = useCurrentYear();
   const [currentTheses, curentThesesFetching] = useCurrentTheses();
   const [authoredTheses, authoredThesesFetching] = useAuthoredTheses();
   const [promotedTheses, promotedThesesFetching] = usePromotedTheses();
   const [reviewedTheses, reviewedThesesFetching] = useReviewedTheses();
 
-  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || deadlineFetching || currentTermFetching) {
+  if(curentThesesFetching || authoredThesesFetching || promotedThesesFetching || reviewedThesesFetching || deadlineFetching || currentYearFetching) {
     return <Loader />
   };
 
-  if(!currentUser || !deadline || !currentTerm) {
+  if(!currentUser || !deadline || !currentYear) {
     return <Redirect to={RouteNames.error} />
   }
 
@@ -43,7 +43,7 @@ export const Home: React.FC = () => {
       {authoredList}
       {promotedList}
       {reviewedList} 
-      <ThesisList title={currentTerm?.names.pl} items={currentTheses} />
+      <ThesisList title={currentYear?.names.pl} items={currentTheses} />
     </Tile>
   );
 };

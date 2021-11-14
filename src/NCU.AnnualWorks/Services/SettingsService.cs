@@ -28,7 +28,7 @@ namespace NCU.AnnualWorks.Services
         public async Task<DateTime> GetDeadline(OAuthRequest oauthRequest)
         {
             var settings = _settingsRepository.GetAll().Single();
-            var term = await _usosService.GetCurrentTerm(oauthRequest);
+            var term = await _usosService.GetCurrentAcademicYear();
             if (term == null)
             {
                 return settings.Deadline.Value.Date;
@@ -53,7 +53,7 @@ namespace NCU.AnnualWorks.Services
         public async Task<bool> SetDeadline(OAuthRequest oauthRequest, DateTime deadline)
         {
             var settings = _settingsRepository.GetAll().Single();
-            var term = await _usosService.GetCurrentTerm(oauthRequest);
+            var term = await _usosService.GetCurrentAcademicYear();
             var termEndDate = DateTime.Parse(term.EndDate);
             var termStartDate = DateTime.Parse(term.StartDate);
 

@@ -97,7 +97,7 @@ namespace NCU.AnnualWorks.Api.Reviews
         public async Task<IActionResult> CreateReview([FromBody] ReviewRequest request)
         {
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var sendGradeConflictEmail = false;
             var sendGradeConfirmEmail = false;
@@ -217,7 +217,7 @@ namespace NCU.AnnualWorks.Api.Reviews
         public async Task<IActionResult> UpdateReview(Guid id, ReviewRequest request)
         {
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var thesis = await _thesisRepository.GetAsync(request.ThesisGuid);
             var sendGradeConflictEmail = false;
             var sendGradeConfirmEmail = false;
@@ -345,7 +345,7 @@ namespace NCU.AnnualWorks.Api.Reviews
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> CancelReview(Guid id)
         {
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
 
             if (!_reviewService.ReviewExists(id))

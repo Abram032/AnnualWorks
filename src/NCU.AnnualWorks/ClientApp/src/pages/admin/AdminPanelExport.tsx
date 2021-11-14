@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IStackTokens, Label, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem, Dropdown, IDropdownOption } from "@fluentui/react";
-import { useExportValidation, useCurrentTerm, useAllTerms } from '../../shared/Hooks';
+import { useExportValidation, useCurrentTerm, useAllTerms, useCurrentYear } from '../../shared/Hooks';
 import { AppSettings } from "../../AppSettings";
 import { Loader } from "../../Components";
 import { RouteNames } from "../../shared/Consts";
@@ -9,7 +9,7 @@ import { mapTermToDropdownOptions, mapTermsToDropdownOptions } from "../../share
 import { useEffect } from "react";
 
 export const AdminPanelExport: React.FC = () => {
-  const [currentTerm, currentTermFetching] = useCurrentTerm();
+  const [currentTerm, currentTermFetching] = useCurrentYear();
   const [exportTerms, exportTermsFetching] = useAllTerms();
   const [selectedTerm, setSelectedTerm] = useState<IDropdownOption>();
   const [isExportValid, exportValidationFetching] = useExportValidation(selectedTerm?.key ? selectedTerm.key.toString() : currentTerm?.id);
@@ -46,7 +46,7 @@ export const AdminPanelExport: React.FC = () => {
       <StackItem tokens={tokens}>
         <Label>Eksport ocen</Label>
         <Dropdown
-          title="Semestr"
+          title="Okres"
           selectedKey={selectedTerm?.key}
           options={mapTermsToDropdownOptions(exportTerms)}
           onChange={(e, item) => item ? setSelectedTerm(item) : setSelectedTerm(undefined)}

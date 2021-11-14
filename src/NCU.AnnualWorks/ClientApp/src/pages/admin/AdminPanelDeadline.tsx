@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IStackTokens, MessageBar, MessageBarType, PrimaryButton, Stack, StackItem } from '@fluentui/react';
-import { useCurrentTerm, useDeadline } from '../../shared/Hooks';
+import { useCurrentTerm, useCurrentYear, useDeadline } from '../../shared/Hooks';
 import { DatePicker, Loader } from '../../Components';
 import { SetDeadlineRequestData, Api } from "../../shared/api/Api";
 import { AppSettings } from "../../AppSettings";
@@ -15,7 +15,7 @@ interface Form {
 
 export const AdminPanelDeadline: React.FC = () => {
   const [deadline, deadlineFetching] = useDeadline();
-  const [term, termFetching] = useCurrentTerm();
+  const [term, termFetching] = useCurrentYear();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [uploadSuccess, setUploadSuccess] = useState<boolean>();
   const { handleSubmit, control, setValue } = useForm<Form>({
@@ -88,10 +88,10 @@ export const AdminPanelDeadline: React.FC = () => {
                 return "Wybierz datę, aby zapisać nowy termin końcowy.";
               }
               else if (value > term.endDate) {
-                return "Termin końcowy nie może przekraczać daty końca semestru.";
+                return "Termin końcowy nie może przekraczać daty końca roku akademickiego.";
               }
               else if (value < term.startDate) {
-                return "Termin końcowy nie może być wcześniejszy data startu semestru.";
+                return "Termin końcowy nie może być wcześniejszy data startu roku akademickiego.";
               }
             }
           }}

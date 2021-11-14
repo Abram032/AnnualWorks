@@ -65,7 +65,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var currentUser = HttpContext.GetCurrentUser();
 
-            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentAcademicYear();
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
@@ -85,7 +85,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var currentUser = HttpContext.GetCurrentUser();
 
-            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentAcademicYear();
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
@@ -105,7 +105,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var currentUser = HttpContext.GetCurrentUser();
 
-            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentAcademicYear();
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
@@ -125,7 +125,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var currentUser = HttpContext.GetCurrentUser();
 
-            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentAcademicYear();
             var getDeadlne = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
             await Task.WhenAll(getCurrentTerm, getDeadlne);
 
@@ -187,7 +187,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var currentUser = HttpContext.GetCurrentUser();
             var getDeadline = _settingsService.GetDeadline(HttpContext.BuildOAuthRequest());
-            var getCurrentTerm = _usosService.GetCurrentTerm(HttpContext.BuildOAuthRequest());
+            var getCurrentTerm = _usosService.GetCurrentAcademicYear();
             await Task.WhenAll(getCurrentTerm, getDeadline);
 
             if (DateTime.Now > getDeadline.Result)
@@ -310,7 +310,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
             var currentUser = await _userRepository.GetAsync(_userContext.CurrentUser.Id);
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var thesis = await _thesisRepository.GetAsync(id);
 
             if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
@@ -470,7 +470,7 @@ namespace NCU.AnnualWorks.Api.Theses
         {
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
             var thesis = await _thesisRepository.GetAsync(id);
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
 
             if (DateTime.Now > deadline || thesis.TermId != currentTerm.Id)
             {
@@ -510,7 +510,7 @@ namespace NCU.AnnualWorks.Api.Theses
         [Authorize(AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> CancelGrade(Guid id)
         {
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var deadline = await _settingsService.GetDeadline(_userContext.GetCredentials());
 
             if (!_thesisService.ThesisExists(id))

@@ -41,6 +41,14 @@ namespace NCU.AnnualWorks.Api.Terms
             return new OkObjectResult(term);
         }
 
+        [HttpGet("CurrentYear")]
+        public async Task<IActionResult> GetCurrentYear()
+        {
+            var usosTerm = await _usosService.GetCurrentAcademicYear();
+            var term = _mapper.Map<TermDTO>(usosTerm);
+            return new OkObjectResult(term);
+        }
+
         [HttpGet("All")]
         [Authorize(AuthorizationPolicies.AtLeastEmployee)]
         public async Task<IActionResult> GetAllTerms()
@@ -54,7 +62,7 @@ namespace NCU.AnnualWorks.Api.Terms
                 terms.AddRange(usosTerms.Where(t => thesisTerms.Contains(t.Id)).ToDto());
             }
 
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
 
             if (terms.FirstOrDefault(t => t.Id == currentTerm.Id) == null)
             {

@@ -42,7 +42,7 @@ namespace NCU.AnnualWorks.Services
 
         public async Task<ThesisActionsDTO> GetAvailableActions(Thesis thesis, DateTime deadline)
         {
-            var currentTerm = await _usosService.GetCurrentTerm(_userContext.GetCredentials());
+            var currentTerm = await _usosService.GetCurrentAcademicYear();
             var currentUser = _userContext.CurrentUser;
             var isAuthor = thesis.ThesisAuthors.Any(a => a.AuthorId == currentUser.Id);
             var isPromoter = thesis.Promoter.Id == currentUser.Id;

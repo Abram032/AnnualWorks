@@ -59,8 +59,8 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props) => {
     },
     {
       key: 'term',
-      name: 'Semestr',
-      minWidth: 150,
+      name: 'Okres',
+      minWidth: 175,
       onRender: (item: Thesis) => (
         <span className={fontStyles}>{props.terms.filter(t => t.id === item.termId)?.shift()?.names.pl}</span>
       )

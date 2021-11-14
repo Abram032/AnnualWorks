@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NCU.AnnualWorks.Authentication.JWT.Core.Abstractions;
 using NCU.AnnualWorks.Authentication.OAuth.Core;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Constants;
 using NCU.AnnualWorks.Authentication.OAuth.Core.Models;
@@ -29,15 +30,18 @@ namespace NCU.AnnualWorks.Integrations.Usos
         private readonly IOAuthService _oauthService;
         private readonly ILogger _logger;
         private readonly IAsyncRepository<Settings> _settingsRepository;
+        private readonly IUserContext _userContext;
 
         public UsosService(IOptions<UsosServiceOptions> options, IOAuthService oauthService,
-            HttpClient client, ILogger<UsosService> logger, IAsyncRepository<Settings> settingsRepository)
+            HttpClient client, ILogger<UsosService> logger, IAsyncRepository<Settings> settingsRepository,
+            IUserContext userContext)
         {
             _logger = logger;
             _options = options.Value;
             _client = client;
             _oauthService = oauthService;
             _settingsRepository = settingsRepository;
+            _userContext = userContext;
 
             _client.BaseAddress = new Uri(_options.BaseApiAddress);
             _client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
@@ -183,7 +187,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var value = await response.Content.ReadAsStringAsync();
             var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
 
-            var pattern = @"^\d{4}\/\d{2}(Z|L)$"; //Ex. 2020/21Z
+            var pattern = @"^\d{4}\/\d{2}(Z|L)?$"; //Ex. 2020/21Z or 2020/21
 
             return terms.Where(t => Regex.IsMatch(t.Id, pattern)).ToList();
         }
@@ -214,7 +218,7 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var value = await response.Content.ReadAsStringAsync();
             var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
 
-            var pattern = @"^\d{4}\/\d{2}(Z|L)$"; //Ex. 2020/21Z
+            var pattern = @"^\d{4}\/\d{2}(Z|L)?$"; //Ex. 2020/21Z or 2020/21
             var term = terms.Where(t => Regex.IsMatch(t.Id, pattern)).FirstOrDefault();
 
             return term;
@@ -326,6 +330,26 @@ namespace NCU.AnnualWorks.Integrations.Usos
             var users = await GetUsers(oauthRequest, userIds);
 
             return users;
+        }
+
+        public async Task<UsosTerm> GetCurrentAcademicYear()
+        {
+            var today = DateTime.Today.ToString(_options.DateFormatPattern);
+            var request = GetBaseRequest(_userContext.GetCredentials(), $"{_options.UsosEndpoints.TermsSearch}?min_finish_date={today}&max_start_date={today}");
+
+            var response = await SendRequestAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var value = await response.Content.ReadAsStringAsync();
+            var terms = JsonConvert.DeserializeObject<UsosTerm[]>(value);
+
+            var pattern = @"^\d{4}\/\d{2}$"; //Ex. 2020/21
+            var term = terms.Where(t => Regex.IsMatch(t.Id, pattern)).FirstOrDefault();
+
+            return term;
         }
     }
 }

@@ -223,7 +223,7 @@ export const MultiSearch: React.FC<MultiSearchProps> = (props) => {
           />
         </StackItem>
         <StackItem className={searchOptionField} tokens={tokens}>
-        <Label>Semestry</Label>
+        <Label>Okresy</Label>
           <Dropdown
             options={searchTermsOptions}
             selectedKeys={searchTerms?.map(k => k.key.toString())}
