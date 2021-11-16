@@ -56,7 +56,8 @@ export const ThesisForm: React.FC<ThesisFormProps> = (props) => {
   const [authors, selectedAuthors, onChangeSelectedAuthors] = usePeoplePicker(props.students);
   const [reviewer, selectedReviewer, onChangeSelectedReviewer] = usePeoplePicker(props.employees, props.excludedUserIds);
   const [thesisFile, setThesisFile] = useState<FileList | null>();
-
+  //Added due to a bug in react-hook-form library https://github.com/react-hook-form/react-hook-form/issues/6679
+  // @ts-ignore
   const { handleSubmit, control } = useForm<Form, any>({
     defaultValues: {
       title: props.thesis?.title ?? "",
